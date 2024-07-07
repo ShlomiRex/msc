@@ -62,92 +62,96 @@
 
 
         % Draw middle
-
-        % Arrow in
         \coordinate (Z_TEXT) at ($(E_CENTER) + (3, 0)$);
-        \draw[->] ($(E_CENTER) + (2, 0)$) -- ($(Z_TEXT) + (-0.25, 0)$);
 
-        \coordinate (MIDDLE_BEGIN) at ($(Z_TEXT) + (-0.25, -0.5)$);
-        \coordinate (MIDDLE_END) at ($(Z_TEXT) + (2.25, 1)$);
-        \coordinate (MU_BEGIN) at ($(MIDDLE_BEGIN) + (0.25, 0.75)$);
-        \coordinate (MU_END) at ($(MU_BEGIN) + (0.75, 0.5)$);
-        \coordinate (SIGMA_BEGIN) at ($(MIDDLE_BEGIN) + (0.75, -0.5)$);
-        \coordinate (SIGMA_END) at ($(SIGMA_BEGIN) + (0.75, 0.5)$);
+        \coordinate (MIDDLE_BEGIN) at ($(Z_TEXT) + (-0.5, 0)$);
+        \coordinate (MU_BEGIN) at ($(MIDDLE_BEGIN) + (0.25, 0.5)$);
+        \coordinate (SIGMA_BEGIN) at ($(MIDDLE_BEGIN) + (0.25, -0.5)$);
+        \coordinate (Z_BEGIN) at ($(Z_TEXT) + (0.75, 0)$);
 
-        % Big rect, Mu, Sigma
-        % \draw[draw=black] (MIDDLE_BEGIN) rectangle (MIDDLE_END);
-        \draw (MU_BEGIN) rectangle (MU_END) node[pos=.5] {$\mu$};
-        \draw (SIGMA_BEGIN) rectangle (SIGMA_END) node[pos=.5] {$\sigma$};
+        \coordinate (ARROW_OUT_BEGIN) at ($(Z_TEXT) + (1.75, 0)$);
+        \coordinate (ARROW_OUT_END) at ($(ARROW_OUT_BEGIN) + (0.5, 0)$);
+
+        % Middle nodes
+        \node[draw,rectangle] (SIGMA) at ($(SIGMA_BEGIN) + (0.5, 0)$) {$\sigma$};
+        \node[draw,rectangle] (MU) at ($(MU_BEGIN) + (0.5, 0)$) {$\mu$};
+        \node[draw,rectangle] (Z) at ($(Z_BEGIN) + (0.5, 0)$) {$z$};
+
+        % Rectangle around all nodes
+        \node[draw, rectangle, inner sep=5pt, fit=(SIGMA) (MU) (Z)] (middle_rect) {};
+
+        % Equations below the rectangle
+        \node[below=0cm of middle_rect] (eq1) {$z = \mu + \sigma \cdot \epsilon$};
+        \node[below=0cm of eq1] (eq2) {$z \sim \mathcal{N}(\mu, \sigma^2)$};
+
+        % Arrow from trapazoid to rectangle
+        \draw[->] ($(E_CENTER) + (2, 0)$) -- (middle_rect);
+
+        % Inner arrows
+        \draw[->, to path={-| (\tikztotarget)}] (SIGMA) edge (Z) (MU) edge (Z);
 
 
-        % \draw ($(Z_TEXT) + (-0.25, -0.5)$) rectangle ($(Z_TEXT) + (0.25, 0.5)$) node[pos=.5] {$z$};
+
+
+
+
+
+
+
+
+
+        % Draw decoder
+        \coordinate (D_CENTER) at ($(Z_TEXT) + (2.5, 0)$);
+        \node at ($(D_CENTER) + (1, 1.5)$) {Decoder $p_\theta(x|z)$};
+
+        % Arrow from the rectangle to the trapezoid
+        \draw[->] (middle_rect.east) -- (D_CENTER);
+
+        % Draw trapazoid
+        \coordinate (A2) at ($(D_CENTER) + (0, 0.5)$);
+        \coordinate (B2) at ($(D_CENTER) + (2, 1)$);
+        \coordinate (C2) at ($(D_CENTER) + (2, -1)$);
+        \coordinate (D2) at ($(D_CENTER) + (0, -0.5)$);
+        \draw[fill=gray!30] (A2) -- (B2) -- (C2) -- (D2) -- cycle;
         
-        % % Arrow out
-        % \coordinate (D_CENTER) at ($(E_CENTER) + (4, 0)$);
-        % \draw[->] ($(Z_TEXT) + (0.25, 0)$) -- (D_CENTER);
-
-
-
-
-
-
-
-
-
-
-
-        % % Draw decoder
-        % \node at ($(D_CENTER) + (1, 1.5)$) {Decoder $p_\theta(x|z)$};
+        % Define the coordinates for the first set of circles (2 neurons)
+        \coordinate (n2_1) at ($(D_CENTER) + (0.5, 0.25)$);
+        \coordinate (n2_2) at ($(D_CENTER) + (0.5, -0.25)$);
         
-        % \coordinate (A2) at ($(D_CENTER) + (0, 0.5)$);
-        % \coordinate (B2) at ($(D_CENTER) + (2, 1)$);
-        % \coordinate (C2) at ($(D_CENTER) + (2, -1)$);
-        % \coordinate (D2) at ($(D_CENTER) + (0, -0.5)$);
-        % \draw[fill=gray!30] (A2) -- (B2) -- (C2) -- (D2) -- cycle;
+        % Define the coordinates for the second set of circles (3 neurons)
+        \coordinate (m2_1) at ($(n2_1) + (1, 0.25)$);
+        \coordinate (m2_2) at ($(n2_1) + (1, -0.25)$);
+        \coordinate (m2_3) at ($(n2_1) + (1, -0.75)$);
         
-        % % Define the coordinates for the first set of circles (2 neurons)
-        % \coordinate (n2_1) at ($(D_CENTER) + (0.5, 0.25)$);
-        % \coordinate (n2_2) at ($(D_CENTER) + (0.5, -0.25)$);
+        % Draw the first set of circles
+        \foreach \i in {n2_1, n2_2} {
+            \filldraw[fill=white] (\i) circle (6pt);
+        }
         
-        % % Define the coordinates for the second set of circles (3 neurons)
-        % % \coordinate (m2_1) at (1.5, 0.5);
-        % % \coordinate (m2_2) at (1.5, 1);
-        % % \coordinate (m2_3) at (1.5, 1.5);
-        % \coordinate (m2_1) at ($(n2_1) + (1, 0.25)$);
-        % \coordinate (m2_2) at ($(n2_1) + (1, -0.25)$);
-        % \coordinate (m2_3) at ($(n2_1) + (1, -0.75)$);
+        % Draw the second set of circles
+        \foreach \i in {m2_1, m2_2, m2_3} {
+            \filldraw[fill=white] (\i) circle (6pt);
+        }
         
-        % % Draw the first set of circles
-        % \foreach \i in {n2_1, n2_2} {
-        %     \filldraw[fill=white] (\i) circle (6pt);
-        % }
-        
-        % % Draw the second set of circles
-        % \foreach \i in {m2_1, m2_2, m2_3} {
-        %     \filldraw[fill=white] (\i) circle (6pt);
-        % }
-        
-        % % Draw arrows from each circle in the first set to each circle in the second set
-        % \foreach \i in {n2_1, n2_2} {
-        %     \foreach \j in {m2_1, m2_2, m2_3} {
-        %         \draw[-] (\i) -- (\j);
-        %     }
-        % }
+        % Draw arrows from each circle in the first set to each circle in the second set
+        \foreach \i in {n2_1, n2_2} {
+            \foreach \j in {m2_1, m2_2, m2_3} {
+                \draw[-] (\i) -- (\j);
+            }
+        }
 
 
-        % \coordinate (D_END) at ($(D_CENTER) + (2, 0)$);
+        \coordinate (D_END) at ($(D_CENTER) + (2, 0)$);
 
-
-
-
-        % % Draw output vector
-        % \coordinate (X_OUT_TEXT) at ($(m2_2) + (2, 0)$);
-        % \draw[->] (D_END) -- ($(X_OUT_TEXT) + (-0.25, 0)$);
+        % Draw output vector
+        \coordinate (X_OUT_TEXT) at ($(m2_2) + (2, 0)$);
+        \draw[->] (D_END) -- ($(X_OUT_TEXT) + (-0.25, 0)$);
         
-        % \draw ($(X_OUT_TEXT) + (-0.25, -1)$) rectangle ($(X_OUT_TEXT) + (0.25, 1)$) node[pos=.5] {$\hat{x}$};
+        \draw ($(X_OUT_TEXT) + (-0.25, -1)$) rectangle ($(X_OUT_TEXT) + (0.25, 1)$) node[pos=.5] {$\hat{x}$};
         
-        % % \node at (X_OUT_TEXT) {$\hat{x}$};
+        % \node at (X_OUT_TEXT) {$\hat{x}$};
         
     \end{tikzpicture}
-    \caption{Autoencoder architecture.}
+    \caption{Variational Autoencoder architecture.}
+    \label{figure:vae}
 \end{figure}

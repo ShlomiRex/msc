@@ -16,7 +16,7 @@
 
 % For figures
 \usepackage{tikz}
-\usetikzlibrary{shapes,arrows,positioning,automata,calc}
+\usetikzlibrary{shapes,arrows,positioning,automata,calc,fit}
 
 
 % References
@@ -40,19 +40,16 @@
 
 % Introduction
 \input{sections/introduction}
-\newpage
 
 % VAE
 \input{sections/vae}
+
+% VQ-VAE
+\input{sections/vqvae}
+
+% VQ-GAN
+\input{sections/vqgan}
 \newpage
-
-% % VQ-VAE
-% \input{sections/vqvae}
-% \newpage
-
-% % VQ-GAN
-% \input{sections/vqgan}
-% \newpage
 
 % References / bibliography
 \printbibliography
