@@ -1,0 +1,140 @@
+
+\begin{figure}[h]
+    \centering
+    \begin{tikzpicture}
+        % Center point of encoder
+        \coordinate (E_CENTER) at (1, 1);
+        \coordinate (INPUT_TEXT) at (-0.25, 0.5);
+
+
+
+        % Draw input vector
+        \draw ($(INPUT_TEXT) + (-0.25, -0.5)$) rectangle ($(INPUT_TEXT) + (0.25, 1.5)$) node[pos=.5] {$x$};
+        \draw[->] ($(E_CENTER) + (-1, 0)$) -- (E_CENTER);
+
+        
+
+
+
+
+
+
+
+
+        % Draw the encoder
+        \node at ($(E_CENTER) + (1, 1.5)$) {Encoder};
+        
+        \coordinate (A) at ($(E_CENTER) + (0, -1)$);
+        \coordinate (B) at ($(E_CENTER) + (2, -0.5)$);
+        \coordinate (C) at ($(E_CENTER) + (2, 0.5)$);
+        \coordinate (D) at ($(E_CENTER) + (0, 1)$);
+        \draw[fill=gray!30] (A) -- (B) -- (C) -- (D) -- cycle;
+        
+        % Define the coordinates for the first set of circles (3 neurons)
+        \coordinate (n1) at ($(E_CENTER) + (0.5, -0.5)$);
+        \coordinate (n2) at ($(E_CENTER) + (0.5, 0)$);
+        \coordinate (n3) at ($(E_CENTER) + (0.5, 0.5)$);
+        
+        % Define the coordinates for the second set of circles (2 neurons)
+        \coordinate (m1) at ($(E_CENTER) + (1.5, 0.25)$);
+        \coordinate (m2) at ($(E_CENTER) + (1.5, -0.25)$);
+        
+        % Draw the first set of circles
+        \foreach \i in {n1, n2, n3} {
+            \filldraw[fill=white] (\i) circle (6pt);
+        }
+        
+        % Draw the second set of circles
+        \foreach \i in {m1, m2} {
+            \filldraw[fill=white] (\i) circle (6pt);
+        }
+        
+        % Draw arrows from each circle in the first set to each circle in the second set
+        \foreach \i in {n1, n2, n3} {
+            \foreach \j in {m1, m2} {
+                \draw[-] (\i) -- (\j);
+            }
+        }
+
+
+
+
+
+
+        % Draw code vector
+
+        % Arrow in
+        \coordinate (Z_TEXT) at ($(E_CENTER) + (3, 0)$);
+        \draw[->] ($(E_CENTER) + (2, 0)$) -- ($(Z_TEXT) + (-0.25, 0)$);
+
+        \draw ($(Z_TEXT) + (-0.25, -0.5)$) rectangle ($(Z_TEXT) + (0.25, 0.5)$) node[pos=.5] {$z$};
+        
+        % Arrow out
+        \coordinate (D_CENTER) at ($(E_CENTER) + (4, 0)$);
+        \draw[->] ($(Z_TEXT) + (0.25, 0)$) -- (D_CENTER);
+
+
+
+
+
+
+
+
+
+
+
+        % Draw decoder
+        \node at ($(D_CENTER) + (1, 1.5)$) {Decoder};
+        
+        \coordinate (A2) at ($(D_CENTER) + (0, 0.5)$);
+        \coordinate (B2) at ($(D_CENTER) + (2, 1)$);
+        \coordinate (C2) at ($(D_CENTER) + (2, -1)$);
+        \coordinate (D2) at ($(D_CENTER) + (0, -0.5)$);
+        \draw[fill=gray!30] (A2) -- (B2) -- (C2) -- (D2) -- cycle;
+        
+        % Define the coordinates for the first set of circles (2 neurons)
+        \coordinate (n2_1) at ($(D_CENTER) + (0.5, 0.25)$);
+        \coordinate (n2_2) at ($(D_CENTER) + (0.5, -0.25)$);
+        
+        % Define the coordinates for the second set of circles (3 neurons)
+        % \coordinate (m2_1) at (1.5, 0.5);
+        % \coordinate (m2_2) at (1.5, 1);
+        % \coordinate (m2_3) at (1.5, 1.5);
+        \coordinate (m2_1) at ($(n2_1) + (1, 0.25)$);
+        \coordinate (m2_2) at ($(n2_1) + (1, -0.25)$);
+        \coordinate (m2_3) at ($(n2_1) + (1, -0.75)$);
+        
+        % Draw the first set of circles
+        \foreach \i in {n2_1, n2_2} {
+            \filldraw[fill=white] (\i) circle (6pt);
+        }
+        
+        % Draw the second set of circles
+        \foreach \i in {m2_1, m2_2, m2_3} {
+            \filldraw[fill=white] (\i) circle (6pt);
+        }
+        
+        % Draw arrows from each circle in the first set to each circle in the second set
+        \foreach \i in {n2_1, n2_2} {
+            \foreach \j in {m2_1, m2_2, m2_3} {
+                \draw[-] (\i) -- (\j);
+            }
+        }
+
+
+        \coordinate (D_END) at ($(D_CENTER) + (2, 0)$);
+
+
+
+
+        % Draw output vector
+        \coordinate (X_OUT_TEXT) at ($(m2_2) + (2, 0)$);
+        \draw[->] (D_END) -- ($(X_OUT_TEXT) + (-0.25, 0)$);
+        
+        \draw ($(X_OUT_TEXT) + (-0.25, -1)$) rectangle ($(X_OUT_TEXT) + (0.25, 1)$) node[pos=.5] {$\hat{x}$};
+        
+        % \node at (X_OUT_TEXT) {$\hat{x}$};
+        
+    \end{tikzpicture}
+    \caption{Autoencoder architecture.}
+\end{figure}

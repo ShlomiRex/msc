@@ -1,0 +1,51 @@
+\subsection{Latent Variables}
+\label{appendix:latent_variables}
+Latent variables represent the underlying constructs that we can't directly measure. They are denoted by $z$. In the sampling process, we assume a specific probability distribution for $z$ denoted as $P(z)$. This distribution reflects prior knowledge about the latent variable. Usually its the normal distribution (Gaussian):
+
+\[ P(z) = \mathcal{N} (\mu, \Sigma) \]
+
+where $\mu$ is the mean, $\Sigma$ is the covariance of $z$ and $P(z)$ is called the \textbf{prior distribution}. This represents our belief about the distribution of the latent variables before considering the observed data. It helps us incorporate prior knowledge into the model.
+
+Once the observed data ($x$) are collected, the goal is to estimate the \textbf{posterior distribution} of the latent variables, denoted by $P(z|x)$.  This distribution reflects our updated belief about the latent variables after considering the observed data.  Bayes' theorem provides the framework for obtaining the posterior distribution:
+
+\[ P(z|x) = \frac{P(x|z) \cdot P(z)}{P(x)} \]
+
+where $P(x|z)$ is the likelihood function, representing the conditional probability of observing $x$ given a specific value of $z$.
+
+
+\begin{equation*}
+  \left.\begin{aligned}
+  z \sim P(z)\\
+  x \sim P(x|z)
+\end{aligned}\right\} P(x,z) = P(x|z) \cdot P(z)
+\end{equation*}
+
+
+Let's take a real-life example. We know that humans have high intelligence, but we don't have direct measurement for intelligence. IQ tests however, imperfectly measure (estimates) some part of our intelligence. We say that the observable variable is the IQ score, since we can directly and perfectly measure it, and the latent variable is the intelligence. One can describe such relationship with a simple graph:
+
+
+\begin{center}
+\begin{tikzpicture}[
+  roundnode/.style={circle, draw=green!60, fill=green!5, very thick, minimum size=7mm},
+  squarednode/.style={rectangle, draw=red!60, fill=red!5, very thick, minimum size=5mm},
+]
+
+% Nodes
+\node[squarednode] (maintopic) {IQ score};
+\node[roundnode] (intelligence) [left=of maintopic] {Intelligence};
+
+% Text labels with positioning
+\node [below=of intelligence, yshift=10mm] {Latent variable};
+\node [below=of maintopic, yshift=5mm] {Observable variable};
+\node [below=of maintopic, yshift=2mm] {(measurable)};
+
+% Lines
+\draw[->] (intelligence.east) -- (maintopic.west);
+
+\end{tikzpicture}
+\end{center}
+
+This is why we must first measure or observe values $x$ (IQ score), so we can estimate $P(z|x)$ (intelligence). We know that the IQ score tests is Gaussian (normal) distributed with mean ($\mu$) of 100 with standard deviation ($\sigma$) of 15 points. We can say that $P(intelligence)$ is the prior distribution, because it represents our initial belief of possible values of intelligence. If we have little to no prior knowledge about intelligence, we can also assume its uniform distributed, similarly to IQ score.
+
+The posterior distribution $P(intelligence|IQ)$ is the updated belief about the possible values of intelligence \textbf{after} we observed their IQ score. It takes into account the prior knowledge and the information from observed variables, such as IQ.
+

@@ -1,0 +1,13 @@
+.vscode/
+main.aux
+main.log
+main.pdf
+main.blg
+main.bcf
+main.bbl
+main.fls
+main.out
+main.toc
+main.synctex.gz
+main.run.xml
+main.fdb_latexmk

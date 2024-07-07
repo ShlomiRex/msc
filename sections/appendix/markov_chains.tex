@@ -1,0 +1,25 @@
+\subsection{Markov Chains}
+\label{appendix:markov_chains}
+
+Markov chains represent a fundamental class of stochastic processes widely used to model systems exhibiting sequential dependence. Unlike fully independent random variables, the probability distribution of a state in a Markov chain depends solely on the state immediately preceding it. This "memoryless" property forms the core principle behind these models – the future state is only influenced by the present state, and the entire history leading up to it becomes irrelevant.
+
+\begin{figure}
+  \centering
+  \begin{tikzpicture}[scale=1.2]
+    % Define states as nodes
+    \node[state, initial] (Sunny) {Sunny};
+    \node[state, right=of Sunny] (Rainy) {Rainy};
+
+    % Draw bent arrows with labels
+    \draw[->, bend left=40] (Sunny.north) to node[above, midway] {0.8} (Rainy.north);
+    \draw[->, bend left=40] (Rainy.south) to node[above, midway] {0.6} (Sunny.south);
+
+    % Add labels for states
+    \label{node:sunny} (Sunny);
+    \label{node:rainy} (Rainy);
+  \end{tikzpicture}
+  \caption{A simple Markov chain representing weather transitions.}
+  \label{fig:markov_chain}
+\end{figure}
+
+In figure \ref{fig:markov_chain} we can see a Markov chain example. It has two states: sunny and rainy. The arrows that connect the states, signify the transition between them, and the label above them is the probability of transition. The defining characteristic of a Markov chain is that the probability of transitioning to the next state depends solely on the current state. The history of previous states has no influence on the future. 

@@ -1,0 +1,30 @@
+\section{Introduction}
+
+The field of image and video synthesis is large and continuously expanding. While image generation has come a long way, recent advancements in video synthesis emerged recently, highlighted by the significant breakthrough of OpenAI's Sora model \cite{sora_website}. A solid foundation in image synthesis techniques is essential to fully comprehend the methodologies and techniques involved in video synthesis.
+
+In this work we will review two main models that are used as a basis in image and video generation models: Generative Adversarial Networks (GANs) \cite{gan} \ref{sec:gan} and Diffusion Probabilistic Models (DPMs) \cite{diffusion_models} \cite{ddpm} \ref{sec:dpm}.
+
+In generative models we are given a set of data points (e.g. images) and our goal is to create a new sample (new image) from this dataset. That is, we don't want to randomly select an image from the dataset, but rather we want to create a new image that does not appear in the dataset, but is similar to it. The key word is "similar" - mathematically speaking, we are talking about predicting the probability function of the dataset. That is, the model needs to learn the underlying distribution of the dataset and create new samples that represent the same distribution. Generative models provide an efficient method for analyzing and understanding unlabeled data in unsupervised learning.
+
+It can be said that the development of image synthesis models reached its peak with the most advanced and biggest models, such as DALL-E \cite{dalle} and Stable Diffusion \cite{stable_diffusion}, and new image synthesis models don't add significant contributions as they used to. However, the research and development of long video synthesis models is still in its infancy. Video synthesis poses a distinct challenge compared to image synthesis due to its incorporation of the temporal dimension.
+
+New models for generating images and videos are developed by building upon existing models, enhancing them through innovative techniques and adjustments. In this work we explore the VQGAN model \cite{vqgan} \ref{sec:vqgan} which combines the GAN model \cite{gan} \ref{sec:gan} with the VQVAE model \cite{vqvae} \ref{sec:vqvae} and the Transformer model \cite{transformer} \ref{sec:transformer} together. Notably, VQGAN generates images based on textual descriptions, converting text inputs into visual outputs that reflect the text's description. The VQVAE model, derived from the VAE model \cite{vae} \ref{sec:vae} and employing vector quantization technique \cite{vq} \ref{sec:vq}, is itself an advancement of the Autoencoder model \cite{autoencoder} \ref{sec:autoencoder}. In short, understanding these models and their inner workings requires prior familiarity with their foundations and previous works.
+
+Another example is the Variational Autoencoder (VAE) \cite{vae} \ref{sec:vae} model, which is used as a basis in VQVAE model. 
+
+\subsection{Mathematical Formulation of Generative Models}
+Mathematically speaking, let $x$ be a random variable representing a single data point (e.g. an image) of a dataset ${x_1,x_2,...,x_n}$. And let $p(x)$ denote the true probability density function (PDF) of the dataset. Then our objective (as in generative modeling) is to learn a function $q(x;\theta)$ that approximates the true data distribution $p(x)$ (where $\theta$ is the model's parameters). The goal is to estimate $p(x)$ such that new samples $\hat{x} \in p(x)$ drawn from this distribution resemble the dataset.
+
+Most of the time, it is infeasible to calculate directly $p(x)$ because computing the exact probability density for high-dimensional data is computationally expensive and often requires integrating over a large number of variables. This complexity leads to intractable calculations, making it difficult to directly model $p(x)$. Instead, we use various techniques to approximate it, and we denote it as: $q(x;\theta) \sim p(x)$.
+
+\subsection{Approximating the Data Distribution}
+
+In order to approximate $p(x)$ we can use a generative model, where the training objective is to learn the parameters $\theta$ of the model. The success or failure of the model to correctly approximate the dataset distribution can be evaluated using different loss functions, such as maximizing likelihood functions (Appendix \ref{appendix:likelihood_function}), minimizing Kullback-Leibler (KL) divergence (Appendix \ref{appendix:kl_divergence}), or using adversarial training loss (in the case of GANs).
+
+\subsection{Sampling}
+
+Once trained, the generative model can be used to generate new samples $\hat{x} \sim q(x;\theta)$. Sampling data point $\hat{x}$ will be consistent with the patterns and characteristics of the original dataset, as the model has learned to approximate the true data distribution.
+
+\subsection{Evaluation}
+
+Evaluation of the trained model is done using metrics such as sample quality, diversity (variaty in generated samples), and coverage (how well the model covers the data distribution). As we will find later, one of the main problems of the GAN model is a problem called 'mode collapse' \ref{gan_mode_collapse} which causes instability of the model during training, which is manifested in large fluctuations in the loss function or in the fact that the generator fails to converge to an optimal solution that represents the entire distribution of training data.

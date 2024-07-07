@@ -1,0 +1,64 @@
+% !TeX program = pdflatex
+
+\documentclass[]{article}
+
+% Packages
+\usepackage{graphicx}
+\usepackage{biblatex}
+\usepackage{subfiles}
+\usepackage{standalone}
+\usepackage{import}
+\usepackage{amsmath}
+\usepackage{amssymb} % For math symbol E (expected)
+\usepackage{datetime} % Title page current date
+\usepackage{hyperref} % For now I'm just seeing the green bounding boxes around citations
+\usepackage{url} % For URL references
+
+% For figures
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows,positioning,automata,calc}
+
+
+% References
+\addbibresource{references.bib}
+
+
+
+
+\begin{document}
+
+% Cover (Title page)
+\input{sections/cover}
+
+% Table of Contents (ToC)
+\tableofcontents
+\newpage
+
+% Abstract
+\input{sections/abstract.tex}
+\newpage
+
+% Introduction
+\input{sections/introduction}
+\newpage
+
+% VAE
+\input{sections/vae}
+\newpage
+
+% % VQ-VAE
+% \input{sections/vqvae}
+% \newpage
+
+% % VQ-GAN
+% \input{sections/vqgan}
+% \newpage
+
+% References / bibliography
+\printbibliography
+\newpage
+
+% Appendix
+\input{sections/appendix/appendix}
+
+\end{document}
