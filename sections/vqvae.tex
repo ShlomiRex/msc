@@ -3,6 +3,13 @@
 
 Vector Quantized Variational Autoencoder (VQ-VAE) \cite{vqvae} is a generative models based on VAE \ref{sec:vae} model with the addition of vector quantization (VQ) (section \ref{subsec:vqvae_vq}) technique. 
 
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale=0.4]{images/vqvae_architecture.png}
+    \caption{VQ-VAE architecture \cite{vqvae}.}
+    \label{fig:vqvae}
+\end{figure}
+
 \subsection{Vector Quantization}
 \label{subsec:vqvae_vq}
 
@@ -24,10 +31,10 @@ This technique involves the use of a codebook, which is a discrete collection of
 
 where $z_e$ is the encoder output, $z_q$ is the quantized output, $\text{sg}[\cdot]$ is the stop gradient operation (which prevents gradients from flowing through the quantization operation), and $\beta$ is a hyperparameter that controls the weighting of the two terms in the loss function. The first term in the loss function is the quantization loss, which measures the distance between the encoder output and the quantized output. The second term is the commitment loss, which measures the distance between the quantized output and the encoder output. The commitment loss encourages the model to use the codebook, and prevents the model from ignoring the quantization operation.
 
-\subsection*{Architecture}
+\subsection{Architecture}
 
 ABC
 
-\subsection*{Training}
+\subsection{Training}
 
 ABC

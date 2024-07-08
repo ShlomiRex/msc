@@ -12,6 +12,37 @@ New models for generating images and videos are developed by building upon exist
 
 Another example is the Variational Autoencoder (VAE) \cite{vae} \ref{sec:vae} model, which is used as a basis in VQVAE model. 
 
+\begin{figure}[h!]
+    \centering
+    \begin{tikzpicture}[scale=1, transform shape]
+        % Timeline
+        \draw[->] (0,0) -- (14,0) node[right] {Year};
+
+        % Points and labels
+        \foreach \x/\year/\model in {
+            0/1987/Autoencoders$^*$,
+            3/2006/Autoencoders$^*$,
+            5/2013/VAE,
+            7/2014/GAN,
+            9/2017/VQVAE,
+            11/2022/Imagen,
+            12/2022/Stable Diffusion,
+            13/2024/Sora$^\dag$
+        } {
+            \draw (\x, 0.2) -- (\x, -0.2) node[below] {\year};
+            \node[rotate=45, above] at (\x, 0.5) {\model};
+        }
+
+        % % Autoencoder description
+        % \node[align=center, above] at (2, 1.5) {
+        %     Autoencoders \\ (1980s) \\
+        %     \small First introduced in the 1980s, autoencoders were not widely used until advancements in neural networks and computational power in the 2000s.
+        % };
+    \end{tikzpicture}
+    \caption{Chronology of key image generation models publications $^*$The earliest mention of autoencoders appears in an 1986 publication \cite{autoencoder_original_paper_1986}, however the model was not widely used until 2006 when Hinton published a paper that uses autoencoders for dimensionality reduction \cite{autoencoder_2006_paper} which sparked interest in the model.$^\dag$Although Sora \cite{sora_website} is not specifically an image generation model, its considered a significant advancement in video synthesis field, which largly relies on image generation.}
+    \label{fig:models_timeline}
+\end{figure}
+
 \subsection{Mathematical Formulation of Generative Models}
 Mathematically speaking, let $x$ be a random variable representing a single data point (e.g. an image) of a dataset ${x_1,x_2,...,x_n}$. And let $p(x)$ denote the true probability density function (PDF) of the dataset. Then our objective (as in generative modeling) is to learn a function $q(x;\theta)$ that approximates the true data distribution $p(x)$ (where $\theta$ is the model's parameters). The goal is to estimate $p(x)$ such that new samples $\hat{x} \in p(x)$ drawn from this distribution resemble the dataset.
 
@@ -27,4 +58,5 @@ Once trained, the generative model can be used to generate new samples $\hat{x} 
 
 \subsection{Evaluation}
 
-Evaluation of the trained model is done using metrics such as sample quality, diversity (variaty in generated samples), and coverage (how well the model covers the data distribution). As we will find later, one of the main problems of the GAN model is a problem called 'mode collapse' \ref{gan_mode_collapse} which causes instability of the model during training, which is manifested in large fluctuations in the loss function or in the fact that the generator fails to converge to an optimal solution that represents the entire distribution of training data.
+Evaluation of the trained model is done using metrics such as sample quality, diversity (variaty in generated samples), and coverage (how well the model covers the data distribution). As we will find later, one of the main problems of the GAN model is called 'mode collapse' \ref{gan_mode_collapse} which causes instability of the model during training, which is manifested in large fluctuations in the loss function or in the fact that the generator fails to converge to an optimal solution that represents the entire distribution of training data.
+
