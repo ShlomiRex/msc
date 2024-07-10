@@ -15,6 +15,42 @@
 \usepackage{url} % For URL references
 \usepackage[symbol]{footmisc} % For footnotes symbols
 
+% For code listings
+\usepackage{listings}
+\usepackage{color}
+\usepackage{xcolor}
+
+\definecolor{codebg}{rgb}{0.96, 0.96, 0.96}
+\definecolor{codeborder}{rgb}{0.78, 0.78, 0.78}
+\definecolor{keywordcolor}{rgb}{0, 0, 1}
+\definecolor{stringcolor}{rgb}{0.64, 0.08, 0.08}
+\definecolor{commentcolor}{rgb}{0, 0.5, 0}
+\definecolor{identifiercolor}{rgb}{0, 0, 0}
+\definecolor{numbercolor}{rgb}{0.5, 0, 0.5}
+
+% Define custom style for Python code
+\lstdefinestyle{mypython}{
+    backgroundcolor=\color{codebg},
+    frame=single,
+    rulecolor=\color{codeborder},
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{keywordcolor}\bfseries,
+    stringstyle=\color{stringcolor},
+    commentstyle=\color{commentcolor}\itshape,
+    identifierstyle=\color{identifiercolor},
+    numberstyle=\color{numbercolor},
+    numbers=left,
+    numbersep=10pt,
+    showspaces=false,
+    showstringspaces=false,
+    tabsize=4,
+    language=Python
+}
+
+% Apply the custom style to Python code
+\lstset{style=mypython}
+
+
 % For figures
 \usepackage{tikz}
 \usetikzlibrary{shapes,arrows,positioning,automata,calc,fit}

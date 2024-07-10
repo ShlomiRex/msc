@@ -1,0 +1,69 @@
+\subsection{VQ-VAE}
+
+In listing \ref{lst:vq_codebook} we can see that the researchers divided the code vectors by number of embeddings, which normalizes the vectors in order to stabilize the training (the codebook vectors will have unit variance).
+
+\begin{lstlisting}[language=Python, label=lst:vq_codebook, caption=Code of the quantisizer module of VQ-VAE paper. Shows the initialization of the codebook vectors.]
+    class VectorQuantizer(nn.Module):
+    """
+    Discretization bottleneck part of the VQ-VAE.
+
+    Inputs:
+    - n_e : number of embeddings
+    - e_dim : dimension of embedding
+    - beta : commitment cost used in loss term, beta * ||z_e(x)-sg[e]||^2
+    """
+
+    def __init__(self, n_e, e_dim, beta):
+        super(VectorQuantizer, self).__init__()
+        self.n_e = n_e
+        self.e_dim = e_dim
+        self.beta = beta
+
+        self.embedding = nn.Embedding(self.n_e, self.e_dim)
+        self.embedding.weight.data.uniform_(-1.0 / self.n_e, 1.0 / self.n_e)
+\end{lstlisting}
+
+
+
+
+\begin{lstlisting}[language=Python, label=lst:vqvae_distance, caption=Euclidean distance calculation in VQ-VAE paper between embedding and codebook vectors $\Vert z-e \Vert$.]
+
+    def forward(self, z):
+        """
+        Inputs the output of the encoder network z and maps it to a discrete 
+        one-hot vector that is the index of the closest embedding vector e_j
+
+        z (continuous) -> z_q (discrete)
+
+        z.shape = (batch, channel, height, width)
+
+        quantization pipeline:
+
+            1. get encoder input (B,C,H,W)
+            2. flatten input to (B*H*W,C)
+
+        """
+        # reshape z -> (batch, height, width, channel) and flatten
+        z = z.permute(0, 2, 3, 1).contiguous()
+        z_flattened = z.view(-1, self.e_dim)
+        # distances from z to embeddings e_j (z - e)^2 = z^2 + e^2 - 2 e * z
+
+        d = torch.sum(z_flattened ** 2, dim=1, keepdim=True) + \
+            torch.sum(self.embedding.weight**2, dim=1) - 2 * \
+            torch.matmul(z_flattened, self.embedding.weight.t())
+    
+\end{lstlisting}
+
+
+\begin{lstlisting}[language=Python, label=lst:vqvae_loss, caption=Loss function as defined in the VQ-VAE paper (eq. \ref{eq:vq_loss}). The detach keyword is the stop gradient operation.]
+    # compute loss for embedding
+    loss = torch.mean((z_q.detach()-z)**2) + self.beta * \
+        torch.mean((z_q - z.detach()) ** 2)
+\end{lstlisting}
+
+
+
+\begin{lstlisting}[language=Python, label=lst:vqvae_stop_gradients, caption=Allow gradients to flow through the snapping operation.]
+    # preserve gradients
+    z_q = z + (z_q - z).detach()
+\end{lstlisting}
