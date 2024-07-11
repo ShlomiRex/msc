@@ -1,0 +1,65 @@
+\section{Generative Adversarial Networks (GANs)}
+
+Generative Adversarial Networks (GANs) \cite{gan} are a class of deep learning models that are used to generate new data samples from a given distribution. More specifically, they are very good at synthesizing high-quality images. The model can be used by itself, or as we will see later, it can also be the basis of other image and video generation models, such as VQ-GAN \ref{sec:vqgan}.
+
+\input{figures/gan_architecture.tex}
+
+% TODO: \ref{fig:gan_architecture} is referencing to the GAN section, and not the figure! WTF
+The model consists of two neural networks: a generator $G$ and a discriminator $D$ (as shown in figure \ref{fig:gan_architecture}). The generator is responsible for generating new samples $x$ (images), while the discriminator is responsible for distinguishing between real samples (from the dataset, $D(x) = 1$) and generated samples (fake, from the generator, $D(x) = 0$). The two networks are trained simultaneously in a minimax game (see training section \ref{subsec:gan_training}), where the generator tries to generate samples that are indistinguishable from real samples, and the discriminator tries to distinguish between real and generated samples. The training process continues until the generator is able to generate realistic and high-quality images. 
+
+The noise vector is sampled from a simple distribution like Gaussian. The basic idea of using noise as input is that the model learns to establish relationships between each dimension in the vector and the output image, similar to latent vectors or code vectors. For instance, the model might learn that the first dimension of the noise vector corresponds to the shape of the middle of the image (like the shape of the head of a person), while the second dimension might corresponds to the color of the shape, and so on.
+
+
+
+
+\subsection{Training}
+\label{subsec:gan_training}
+
+The loss function of the GAN model is defined as the following min-max game:
+
+\begin{equation}
+    \label{eq:gan_loss}
+    \min_G \max_D V(D,G) = \mathbb{E}_{x \sim p_{\text{data}}(x)}[\log D(x)] + \mathbb{E}_{z \sim p_z(z)}[\log(1 - D(G(z)))]
+\end{equation}
+
+We have two prior distributions: $x \sim p_{\text{data}}$ and $z \sim p_z(z)$, where the noise vector $z$ is sampled from a noise distribution, and $p_{\text{data}}$ represents the true underlying distribution of the dataset, and $x$ is sampled from this distribution.
+
+With respect to the discriminator gradients, the loss function tries to maximize the probability that:
+
+\begin{enumerate}
+    \item the discriminator correctly classifies real samples as real (the first term)
+    \item the discriminator correctly classifies generated samples as fake (the second term)
+\end{enumerate}
+
+
+With respect to the generator gradients \footnote{When we do backpropogation with respect to the generatoe gradients, the first term is constant.}, the loss function tries to minimize the probability that:
+
+\begin{enumerate}
+    \item the generator tries to fool the discriminator in thinking that the generated samples are real (the second term)
+\end{enumerate}
+
+
+The researchers mentioned that at the beginning of the training, the discriminator rejects samples with high confidense. To address this, they suggested instead of \textbf{minimizing} the second term, to \textbf{maximize} a new second term in the loss function: $\log D(G(z))$.
+
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.75\textwidth]{images/gan_training.png}
+    \caption{The training algorithm for GAN using minibatch stochastic gradient decent \cite{gan}.}
+    \label{fig:gan_training}
+\end{figure}
+
+In order to balance of the training for both $G$ and $D$ the authors suggested using iterative approach using minibatch stochastic gradient decent (see figure \ref{fig:gan_training}). Instead of fully optimizing $D$ in each iteration, the algorithm alternates between a few steps ($k$ steps) of optimizing the discriminator and one step of optimizing the generator. By updating $D$ more often the researchers hope to update the generator more slowly and stabilize the training process.
+
+
+
+\subsection{Mode Collapse}
+
+One of the main challenges of training GANs is mode collapse. Mode collapse occurs when the generator learns to generate only a few samples, instead of learning to generate a diverse set of samples. This can happen when the generator learns to generate samples that fool the discriminator, but failed to capture the full diversity of the training data distribution (see figure \ref{fig:gan_mode_collapse}). This can happen when the discriminator is too strong, and the generator is not able to generate diverse samples. In other words, the generator tries to fool the discriminator so much that it only focuses on this goal, while ignoring to diversify the samples.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=\textwidth]{images/gan_mode_collapse.png}
+    \caption{Mode collapse in GANs (top row) \cite{gan_mode_collapse_image_source}. Bottom row shows GAN samples without mode-collapse. Blue dots are the prior $x \sim p_{\text{data}}(x)$ and the orange dots are the generated samples $p_g$.}
+    \label{fig:gan_mode_collapse}
+\end{figure}
