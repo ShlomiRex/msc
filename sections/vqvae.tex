@@ -83,6 +83,7 @@ Finally, the loss function of the VQ-VAE is given by:
 
 \begin{equation}
     \mathcal{L}_\text{VQ-VAE} = \text{log } p(x|z_q(x)) + \Vert \text{sg}[z_e(x)] - e \Vert_2^2 + \beta \Vert z_e(x) - \text{sg}[e] \Vert_2^2
+    \label{eq:vqvae_loss}
 \end{equation}
     
     where the first term is the reconstruction loss (MSE), the second term is the quantization loss, and the third term is the commitment loss. The decoder optimizes the first loss term only, the encoder optimizes the first and last loss terms, and the embeddings are optimized in the middle term.
