@@ -1,3 +1,23 @@
 \subsection{Evidence Lower Bound (ELBO)}
 \label{appendix:elbo}
-...
+
+Evidence Lower Bound (ELBO) provides an efficient way to optimize and train models that are based on variational inference (often called latent models), like VAEs or GANs. ELBO is an estimation for the log-likelihood function, and since the likelihood function is intractable in latent models (that use latent variables $z$) to calculate directly, ELBO is used instead as approximation (its tractable). ELBO achieves this by setting a lower bound on the likelihood of observing data $x$. By maximizing ELBO we essentially optimize the model by maximizing likelihood.
+
+As we saw in equation \ref{eq:vae_posterior} the likelihood function we want to optimize is:
+
+\begin{equation}
+    p(x) = \int p(x | z) \cdot p(z) dz
+\end{equation}
+
+where $p(x)$ is the likelihood of observing data $x$, $p(x | z)$ is probability of reconstructing $x$ given latent variable $z$,  $p(z)$ is the prior distribution of latent variable $z$, and the integral is over all possible values of $z$ (if $z$ is discrete, the integral is replaced by a sum).
+
+The reason this integral is intractable is because it is computationally expensive to calculate the likelihood of all possible values of $z$. To solve this, we can use ELBO (also defined at equation \ref{eq:vae_elbo}), which is defined as:
+
+\begin{equation}
+    \text{ELBO} = \mathbb{E}_z[\log p(x | z)] - KL(q(z) \Vert p(z))
+    \label{eq:elbo}
+\end{equation}
+
+where $\mathbb{E}_z[\log p(x | z)]$ is the expected reconstruction loss, and $KL(q(z) \Vert p(z))$ is the Kullback-Leibler divergence (see appendix \ref{appendix:kl_divergence}) between the approximate posterior $q(z)$ and the prior distribution $p(z)$.
+
+The reason this is tractable is because we use mean (expectation) instead of integrating, and both the reconstruction loss and KL divergence are well defined and tractable. 

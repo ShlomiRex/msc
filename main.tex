@@ -53,10 +53,14 @@
 
 % For figures
 \usepackage{tikz}
-\usetikzlibrary{shapes,arrows,positioning,automata,calc,fit,matrix}
+\usetikzlibrary{shapes,arrows.meta,positioning,automata,calc,fit,matrix}
 
 % For timeline figures
 \usepackage{geometry} 
+
+% For plots
+\usepackage{pgfplots}
+\pgfplotsset{compat=newest}
 
 % References
 \newpage
@@ -99,6 +103,7 @@
 \printbibliography
 
 % Appendix
+\newpage
 \input{sections/appendix/appendix}
 
 \end{document}

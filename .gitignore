@@ -13,3 +13,6 @@ main.run.xml
 main.fdb_latexmk
 main.bbl-SAVE-ERROR
 .DS_Store
+main.bcf*
+*.aux
+*.log
