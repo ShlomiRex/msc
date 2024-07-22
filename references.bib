@@ -1,24 +1,5 @@
-% Original GAN paper
-% Citations: 65266
-@article{goodfellow2014generative,
-  title={Generative adversarial nets},
-  author={Goodfellow, Ian and Pouget-Abadie, Jean and Mirza, Mehdi and Xu, Bing and Warde-Farley, David and Ozair, Sherjil and Courville, Aaron and Bengio, Yoshua},
-  journal={Advances in neural information processing systems},
-  volume={27},
-  year={2014}
-}
-
-% cGAN - Conditional GAN
-% Citations: 12258
-@article{mirza2014conditional,
-  title={Conditional generative adversarial nets},
-  author={Mirza, Mehdi and Osindero, Simon},
-  journal={arXiv preprint arXiv:1411.1784},
-  year={2014}
-}
-
 % DDPM Image Generation
-% Citations: 7133
+% Citations: 10799
 @article{ddpm,
   title={Denoising diffusion probabilistic models},
   author={Ho, Jonathan and Jain, Ajay and Abbeel, Pieter},
@@ -722,17 +703,6 @@
   publisher={American Association for the Advancement of Science}
 }
 
-% PixelCNN
-% Citations: 2758
-@inproceedings{van2016pixel,
-  title={Pixel recurrent neural networks},
-  author={Van Den Oord, A{\"a}ron and Kalchbrenner, Nal and Kavukcuoglu, Koray},
-  booktitle={International conference on machine learning},
-  pages={1747--1756},
-  year={2016},
-  organization={PMLR}
-}
-
 % Very interesting read. Explains why the round function is not differentiable, which is important for the VQ-VAE model, since in VQ we 'round' embeddings to nearest codebook vectors.
 @misc{why_round_function_is_not_differentiable,
   title = {Why the round function is not differentiable},
@@ -783,4 +753,63 @@
   journal={Advances in neural information processing systems},
   volume={29},
   year={2016}
+}
+
+% FID score
+% Citations: 12474
+@article{fid_score,
+  title={Gans trained by a two time-scale update rule converge to a local nash equilibrium},
+  author={Heusel, Martin and Ramsauer, Hubert and Unterthiner, Thomas and Nessler, Bernhard and Hochreiter, Sepp},
+  journal={Advances in neural information processing systems},
+  volume={30},
+  year={2017}
+}
+
+% Inception Score (IS)
+% Citations: 10394
+@article{is_score,
+  title={Improved techniques for training gans},
+  author={Salimans, Tim and Goodfellow, Ian and Zaremba, Wojciech and Cheung, Vicki and Radford, Alec and Chen, Xi},
+  journal={Advances in neural information processing systems},
+  volume={29},
+  year={2016}
+}
+
+% InfoGAN
+% Citations: 5346
+@article{infogan,
+  title={Infogan: Interpretable representation learning by information maximizing generative adversarial nets},
+  author={Chen, Xi and Duan, Yan and Houthooft, Rein and Schulman, John and Sutskever, Ilya and Abbeel, Pieter},
+  journal={Advances in neural information processing systems},
+  volume={29},
+  year={2016}
+}
+
+% StyleGAN
+% Citations: 11245
+@inproceedings{stylegan,
+  title={A style-based generator architecture for generative adversarial networks},
+  author={Karras, Tero and Laine, Samuli and Aila, Timo},
+  booktitle={Proceedings of the IEEE/CVF conference on computer vision and pattern recognition},
+  pages={4401--4410},
+  year={2019}
+}
+
+% CycleGAN
+% Citations: 23308
+@inproceedings{cyclegan,
+  title={Unpaired image-to-image translation using cycle-consistent adversarial networks},
+  author={Zhu, Jun-Yan and Park, Taesung and Isola, Phillip and Efros, Alexei A},
+  booktitle={Proceedings of the IEEE international conference on computer vision},
+  pages={2223--2232},
+  year={2017}
+}
+
+% Conditional GAN (cGAN)
+% Citations: 13302
+@article{cgan,
+  title={Conditional generative adversarial nets},
+  author={Mirza, Mehdi and Osindero, Simon},
+  journal={arXiv preprint arXiv:1411.1784},
+  year={2014}
 }

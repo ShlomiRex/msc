@@ -1,9 +1,17 @@
 \section{Variational Autoencoder}
 \label{sec:vae}
 
-Variational Autoencoder (VAE) \cite{vae} is generative model is used to learn the underlying distribution of data and generate new samples (similar to the dataset). The model consists of 3 main components: an encoder, latent space (sometimes called 'code vectors' or 'bottleneck layer') and a decoder. The main idea behind VAE is to use the autoencoder model \cite{autoencoder} \cite{autoencoder2} to compress large dimensional vectors (in our case, images) into smaller, low dimension vectors that represent the underlying features hidden within the input data. These code vectors are then fed into a decoder network which reconstructs the image (i.e. high dimensional vector).
+Variational Autoencoder (VAE) \cite{vae} is generative model is used to learn the underlying distribution of data and generate new samples (similar to the dataset). The model consists of 3 main components: an encoder, latent space (sometimes called 'code vectors' or 'bottleneck layer') and a decoder. The main idea behind VAE is to use the autoencoder model \cite{autoencoder} \cite{autoencoder2} to compress large dimensional vectors (in our case, images) into smaller, lower dimension vectors that represent the underlying features hidden within the input data. These code vectors are then fed into a decoder network which reconstructs the image (i.e. high dimensional vector).
+
+Compared to the autoencoder model, VAEs gives significant control over how we want to model our latent distribution, which in turn gives precise control over the output samples. This kind of control (the prior) doesn't exists in the usual autoencoder framework.In addition, VAEs are more practical and feasable for large datasets. 
 
 \input{figures/autoencoder}
+
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.5]{images/vae.png}
+    \caption{Visualization a VAE model of learned data with 2D latent space \cite{vae}, learned on two different datasets. Notice how its easy to control the output by only adjusting the latent vector in 2 dimensions. The variational aspect makes it possible to control the generated images.}
+\end{figure}
 
 More formally, the encoder network takes an input data point $x$ and maps it to a latent space representation $z$, which is compressed representation of $x$. The input is a vector, therefor an image must be flattened from 2D to 1D vector. This flattening will become an issue later in image generation, as this action removes important spatial information and hidden structures in the image. Because of this, modifications were made to the VAE model which allows the capture of spatial information by using a CNN (Convolutional Neural Network) \cite{cnn} layers \cite{vae_cnn_example}, max pooling layers, and more. After compression, the latent vector $z$ is then passed onto the decoder for reconstruction. 
 
@@ -20,7 +28,7 @@ The code vectors learned by autoencoders, however, are one-to-one map of the inp
 
 \begin{figure}[h]
     \centering
-    \includegraphics[scale=0.5]{images/autoencoder-vs-variational-autoencoder-point-vs-distribution-768x409.png}
+    \includegraphics[scale=0.4]{images/autoencoder-vs-variational-autoencoder-point-vs-distribution-768x409.png}
     \caption{Illustration of mapping an input image to code vector (left) and mapping an input image to a distribution (right) \cite{ae_vs_vae}.}
     \label{fig:ae_vs_vae}
 \end{figure}

@@ -8,40 +8,43 @@ In generative models we are given a set of data points (e.g. images) and our goa
 
 It can be said that the development of image synthesis models reached its peak with the most advanced and biggest models, such as DALL-E \cite{dalle} and Stable Diffusion \cite{stable_diffusion}, and new image synthesis models don't add significant contributions as they used to. However, the research and development of long video synthesis models is still in its infancy. Video synthesis poses a distinct challenge compared to image synthesis due to its incorporation of the temporal dimension.
 
-New models for generating images and videos are developed by building upon existing models, enhancing them through innovative techniques and adjustments. In this work we explore the VQGAN model \cite{vqgan} \ref{sec:vqgan} which combines the GAN model \cite{gan} \ref{sec:gan} with the VQVAE model \cite{vqvae} \ref{sec:vqvae} and the Transformer model \cite{transformer} \ref{sec:transformer} together. Notably, VQGAN generates images based on textual descriptions, converting text inputs into visual outputs that reflect the text's description. The VQVAE model, derived from the VAE model \cite{vae} \ref{sec:vae} and employing vector quantization technique \cite{vq} \ref{sec:vq}, is itself an advancement of the Autoencoder model \cite{autoencoder} \ref{sec:autoencoder}. In short, understanding these models and their inner workings requires prior familiarity with their foundations and previous works.
+New models for generating images and videos are developed by building upon existing models, enhancing them through innovative techniques and adjustments. In this work we explore the VQGAN model \cite{vqgan} \ref{sec:vqgan} which combines the GAN model \cite{gan} \ref{sec:gan} with the VQVAE model \cite{vqvae} \ref{sec:vqvae} and the Transformer model \cite{transformer} (appendix \ref{appendix:transformers}) together. Notably, VQGAN generates images based on textual descriptions, converting text inputs into visual outputs that reflect the text's description. The VQVAE model, derived from the VAE model \cite{vae} \ref{sec:vae} and employing vector quantization technique \cite{vqvae} \ref{sec:vq}, is itself an advancement of the Autoencoder model \cite{autoencoder} \ref{sec:vae}. In short, understanding these models and their inner workings requires prior familiarity with their foundations and previous works.
 
 Another example is the Variational Autoencoder (VAE) \cite{vae} \ref{sec:vae} model, which is used as a basis in VQVAE model. 
 
-\begin{figure}[h!]
-    \centering
-    \begin{tikzpicture}[scale=1, transform shape]
-        % Timeline
-        \draw[->] (0,0) -- (14,0) node[right] {Year};
+\input{figures/intro_timeline.tex}
 
-        % Points and labels
-        \foreach \x/\year/\model in {
-            0/1987/Autoencoders$^*$,
-            3/2006/Autoencoders$^*$,
-            5/2013/VAE,
-            7/2014/GAN,
-            9/2017/VQVAE,
-            11/2022/Imagen,
-            12/2022/Stable Diffusion,
-            13/2024/Sora$^\dag$
-        } {
-            \draw (\x, 0.2) -- (\x, -0.2) node[below] {\year};
-            \node[rotate=45, above] at (\x, 0.5) {\model};
-        }
 
-        % % Autoencoder description
-        % \node[align=center, above] at (2, 1.5) {
-        %     Autoencoders \\ (1980s) \\
-        %     \small First introduced in the 1980s, autoencoders were not widely used until advancements in neural networks and computational power in the 2000s.
-        % };
-    \end{tikzpicture}
-    \caption{Chronology of key image generation models publications $^*$The earliest mention of autoencoders appears in an 1986 publication \cite{autoencoder_original_paper_1986}, however the model was not widely used until 2006 when Hinton published a paper that uses autoencoders for dimensionality reduction \cite{autoencoder_2006_paper} which sparked interest in the model.$^\dag$Although Sora \cite{sora_website} is not specifically an image generation model, its considered a significant advancement in video synthesis field, which largly relies on image generation.}
-    \label{fig:models_timeline}
-\end{figure}
+% \begin{figure}[h!]
+%     \centering
+%     \begin{tikzpicture}[scale=1, transform shape]
+%         % Timeline
+%         \draw[->] (0,0) -- (14,0) node[right] {Year};
+
+%         % Points and labels
+%         \foreach \x/\year/\model in {
+%             0/1987/Autoencoders$^*$,
+%             3/2006/Autoencoders$^*$,
+%             5/2013/VAE,
+%             7/2014/GAN,
+%             9/2017/VQVAE,
+%             11/2022/Imagen,
+%             12/2022/Stable Diffusion,
+%             13/2024/Sora$^\dag$
+%         } {
+%             \draw (\x, 0.2) -- (\x, -0.2) node[below] {\year};
+%             \node[rotate=45, above] at (\x, 0.5) {\model};
+%         }
+
+%         % % Autoencoder description
+%         % \node[align=center, above] at (2, 1.5) {
+%         %     Autoencoders \\ (1980s) \\
+%         %     \small First introduced in the 1980s, autoencoders were not widely used until advancements in neural networks and computational power in the 2000s.
+%         % };
+%     \end{tikzpicture}
+%     \caption{Chronology of key image generation models publications $^*$The earliest mention of autoencoders appears in an 1986 publication \cite{autoencoder_original_paper_1986}, however the model was not widely used until 2006 when Hinton published a paper that uses autoencoders for dimensionality reduction \cite{autoencoder_2006_paper} which sparked interest in the model.$^\dag$Although Sora \cite{sora_website} is not specifically an image generation model, its considered a significant advancement in video synthesis field, which largly relies on image generation.}
+%     \label{fig:models_timeline}
+% \end{figure}
 
 \subsection{Mathematical Formulation of Generative Models}
 Mathematically speaking, let $x$ be a random variable representing a single data point (e.g. an image) of a dataset ${x_1,x_2,...,x_n}$. And let $p(x)$ denote the true probability density function (PDF) of the dataset. Then our objective (as in generative modeling) is to learn a function $q(x;\theta)$ that approximates the true data distribution $p(x)$ (where $\theta$ is the model's parameters). The goal is to estimate $p(x)$ such that new samples $\hat{x} \in p(x)$ drawn from this distribution resemble the dataset.
@@ -54,9 +57,37 @@ In order to approximate $p(x)$ we can use a generative model, where the training
 
 \subsection{Sampling}
 
-Once trained, the generative model can be used to generate new samples $\hat{x} \sim q(x;\theta)$. Sampling data point $\hat{x}$ will be consistent with the patterns and characteristics of the original dataset, as the model has learned to approximate the true data distribution.
+Once trained, the generative model can be used to generate new samples $\hat{x} \sim q(x;\theta)$. Sampling data point $\hat{x}$ will be consistent with the patterns and characteristics of the original dataset, as the model has learned to approximate the true data distribution. Each model will have different strategies to sample. For example, in GANs a random noise vector is sampled from a normal distribution and passed through the generator to generate a new sample, and in VQ-GAN a transformer is used to generate latent codes that are then passed through the decoder to generate an image.
 
 \subsection{Evaluation}
 
 Evaluation of the trained model is done using metrics such as sample quality, diversity (variaty in generated samples), and coverage (how well the model covers the data distribution). As we will find later, one of the main problems of the GAN model is called 'mode collapse' \ref{gan_mode_collapse} which causes instability of the model during training, which is manifested in large fluctuations in the loss function or in the fact that the generator fails to converge to an optimal solution that represents the entire distribution of training data.
 
+\textbf{FID Score.} One of the most common metrics used to evaluate the quality of generated samples is the Frechet Inception Distance (FID) score \cite{fid_score}. The FID score measures the similarity between the generated samples and the real data distribution. A good generative model should not only produce images that look visually realistic but also capture the underlying statistical properties of the dataset. FID aims to capture this by comparing the feature distributions, not just individual image similarity. The lower the FID score, the better the model is at generating samples that resemble the real data distribution. FID leverages a pre-trained image classification model (typically Inception V3 model), to extract high-level features from both the generated images and the dataset. These features capture the essential characteristics of the images, like shapes, textures, and object relationships. Then, its possible to compare generative models based on the similarity of these features relatively to the same dataset. The FID score is calculated as:
+
+\begin{equation}
+    \text{FID} = ||\mu_x - \mu_g||^2 + Tr(\Sigma_x + \Sigma_g - 2(\Sigma_x\Sigma_g)^{1/2})
+    \label{eq:fid_score}
+\end{equation}
+
+where $\mu_x$ and $\Sigma_x$ are the mean and covariance of the feature distribution of the dataset, and $\mu_g$ and $\Sigma_g$ are the mean and covariance of the feature distribution of the generated images. The FID score is the Euclidean distance between the means and the trace (matrix operation) of the covariance matrices. A lower FID score indicates that the generated samples are more similar to the real data distribution.
+
+% TODO: Check again
+\textbf{Inception Score.} Another common metric used to evaluate generative models is the Inception Score (IS) \cite{is_score}. The IS metric measures the quality and diversity of the generated samples. FID score is an improvement of IS. A high IS score indicates that the generated samples are both realistic and diverse. Just like FID, IS also uses pre-trained Inception V3 model to extract features. The IS is calculated by first computing the conditional entropy of the generated samples given the class label: 
+\[
+    p(y) = \frac{1}{N} \sum_{i=1}^{N} p(y|x_i)
+\] 
+
+(where $y$ is the class label and $x$ is an image) (i.e., the diversity of generated samples) and then computing the KL divergence between the marginal distribution of the generated samples and the conditional distribution:
+
+\[
+    D_{\text{KL}}(p(y|x) \| p(y)) = \sum_{y} p(y|x) \log \frac{p(y|x)}{p(y)}
+\]
+
+(i.e., the quality of generated samples). Finally we get the IS score as:
+
+\[
+    \text{IS} = \exp \left( \frac{1}{N} \sum_{i=1}^{N} D_{\text{KL}}(p(y|x_i) \| p(y)) \right)
+\]
+
+The IS score is the exponential of the sum of these two terms. A high IS score indicates that the generated samples are both realistic and diverse.

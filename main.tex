@@ -18,7 +18,7 @@
 % For code listings
 \usepackage{listings}
 \usepackage{color}
-\usepackage{xcolor}
+\usepackage[x11names,table]{xcolor}
 
 \definecolor{codebg}{rgb}{0.96, 0.96, 0.96}
 \definecolor{codeborder}{rgb}{0.78, 0.78, 0.78}
@@ -66,7 +66,13 @@
 \newpage
 \addbibresource{references.bib}
 
+% Define general colors for use
+\definecolor{lightblue}{rgb}{0.678, 0.847, 0.902}
+\definecolor{lightgreen}{rgb}{0.678, 0.902, 0.847}
+\definecolor{lightred}{rgb}{0.902, 0.678, 0.847}
+\definecolor{lightgray}{rgb}{0.902, 0.902, 0.902}
 
+\definecolor{darkgray}{rgb}{0.502, 0.502, 0.502}
 
 
 \begin{document}
@@ -96,7 +102,10 @@
 
 % VQ-GAN
 \input{sections/vqgan}
-\newpage
+
+% Diffusion models
+\input{sections/diffusion_models}
+\input{sections/stable_diffusion}
 
 % References / bibliography
 \newpage
