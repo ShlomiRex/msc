@@ -75,6 +75,8 @@
 \definecolor{darkgray}{rgb}{0.502, 0.502, 0.502}
 
 
+\usepackage{tocbibind} % Automatically includes bibliography in the ToC
+
 \begin{document}
 
 % Cover (Title page)
@@ -109,7 +111,7 @@
 
 % References / bibliography
 \newpage
-\printbibliography
+\printbibliography[heading=bibintoc]{}
 
 % Appendix
 \newpage

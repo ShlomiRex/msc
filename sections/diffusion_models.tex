@@ -7,6 +7,9 @@ We previously talked about GANs, VAEs, and their variants (VQ-VAE, VQ-GAN). Diff
 
 A diffusion model consists of two main components: an encoder which takes a data sample $x$ and maps it through a series of intermediate latent variables $z_1, ..., z_T$, and a decoder which reverses this process, until it creates a sample image. The mappings are stochastic rather than discrete (the transformation between the latent variables involve some randomness).
 
+% TODO: Explain LDMs
+In the next section, we will take a closer look at DDPMs, which is subclass of DMs. Another class of DMs is called Latent Diffusion Models (LDMs) \cite{ldm}. 
+
 
 \subsection{DDPMs}
 
@@ -42,4 +45,5 @@ The forward diffusion process maps a data image $x$ through a series of intermed
     \mathbf{z}_t &= \sqrt{1 - \beta_t} \cdot \mathbf{z}_{t-1} + \sqrt{\beta_t} \cdot \epsilon_t \quad \forall \, t \in \{2, \ldots, T\}
     \end{aligned}
 \end{equation}
-    
+
+At each step $i \in {1, 2, ..., t, t+1, ..., T}$, $e_i$ is a noise vector drawn from a standard normal distribution. 

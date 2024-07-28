@@ -1,0 +1,11 @@
+* Switched order of IS and FID in evaluation metrics
+* Added more explanation of the math of IS metric
+* Added statistics subsection in appendix for explanation on probability and statistics
+* Added clarification to AE, VAE that the encoder network is not used in inference, but is learned during training.
+* The KL-Divergence figure is numbered, the caption is just above it. Added reference to KL-Divergence figure.
+* Appendix is now numbering: A.1, A.2, ...
+* Reference section is now showing in table of contents / bibliography
+* Added explanation in caption for the VQ-VAE architecture figure.
+* Small misspelling fix: "When we do backpropogation with respect to the generatoe gradients, the first term is constant."
+* Added detailed GAN architecture figure that shows its made of CNN layers.
+* 

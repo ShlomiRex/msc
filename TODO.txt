@@ -1,0 +1,25 @@
+Explain in VQ-GAN paper how they researchers converted conditional information, such as depth map, semantic masks, text, and so on, to tokens. How did images converted to tokens?
+
+Maybe the minGPT encoder converted images to tokens automatically?
+
+Also, you need to explain in the paper what it means that the researchers had to train a new VQ-GAN model for each conditional type.
+
+
+
+
+
+
+ב VQ-GAN
+להבין איך הם אימנו על conditioning
+כלומר למה יצרו מודל חדש עם codebook 
+חדש?
+
+
+
+
+
+
+לא הבנתי איך ב VQ-GAN
+הופכים conditional images
+לטוקנים ומעבירים ל transformer
+לבדוק את הקוד, לראות איך הופכים תמונות לטוקנים, זה מעניין מאד

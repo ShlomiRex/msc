@@ -11,7 +11,15 @@ Generative Adversarial Networks (GANs) \cite{gan} are a class of deep learning m
 
 \input{figures/gan_architecture.tex}
 
-The model consists of two neural networks: a generator $G$ and a discriminator $D$ (as shown in figure \ref{fig:gan_architecture}). The generator is responsible for generating new samples $x$ (images), while the discriminator is responsible for distinguishing between real samples (from the dataset, $D(x) = 1$) and generated samples (fake, from the generator, $D(x) = 0$). The two networks are trained simultaneously in a minimax game (see training section \ref{subsec:gan_training}), where the generator tries to generate samples that are indistinguishable from real samples, and the discriminator tries to distinguish between real and generated samples. The training process continues until the generator is able to generate realistic and high-quality images. 
+% Picture
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/gan/gan_architecture.png}
+    \caption{More detailed architecture of GAN (from \cite{gan_architecture_figure_paper}). Its important to note that both the $G$ and $D$ networks are made up of multiple CNN layers (convolutional, deconvolution, fully connected and activation layers, such as relu, leaky relu, softmax and more). Softmax in $D$ indicates wether the image is real or fake (statistically 1 or 0).}
+    \label{fig:gan_architecture}
+\end{figure}
+
+The model consists of two neural networks: a generator $G$ and a discriminator $D$ (as shown in figure \ref{fig:gan_architecture} and \ref{fig:gan_architecture_highlevel}). The generator is responsible for generating new samples $x$ (images), while the discriminator is responsible for distinguishing between real samples (from the dataset, $D(x) = 1$) and generated samples (fake, from the generator, $D(x) = 0$). The two networks are trained simultaneously in a minimax game (see training section \ref{subsec:gan_training}), where the generator tries to generate samples that are indistinguishable from real samples, and the discriminator tries to distinguish between real and generated samples. The training process continues until the generator is able to generate realistic and high-quality images. 
 
 The noise vector is sampled from a simple distribution like Gaussian. A noise vector is simply a vector that each element in the vector is samples from a given distribution. The basic idea of using noise as input is that the model learns to establish relationships between each dimension in the vector and the output image, similar to latent vectors or code vectors. For instance, the model might learn that the first dimension of the noise vector corresponds to the shape of the middle of the image (like the shape of the head of a person), while the second dimension might corresponds to the color of the shape, and so on.
 
@@ -40,7 +48,7 @@ With respect to the discriminator gradients, the loss function tries to maximize
 \end{enumerate}
 
 
-With respect to the generator gradients \footnote{When we do backpropogation with respect to the generatoe gradients, the first term is constant.}, the loss function tries to minimize the probability that:
+With respect to the generator gradients \footnote{When we do backpropogation with respect to the generator gradients, the first term is constant.}, the loss function tries to minimize the probability that:
 
 \begin{enumerate}
     \item the generator tries to fool the discriminator in thinking that the generated samples are real (the second term)

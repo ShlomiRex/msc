@@ -49,7 +49,7 @@ Equation \ref{eq:vq_onehot} shows the one-hot representation of the posterior ca
 \begin{figure}[h]
     \centering
     \includegraphics[width=\textwidth]{images/vqvae_architecture.png}
-    \caption{VQ-VAE architecture \cite{vqvae}.}
+    \caption{VQ-VAE architecture \cite{vqvae}. The embedding space are the code vectors (purple), the green cube are the latent space vectors before quantization, and the blue matrix is the codebook indencies to the coresponding code vectors. Right: the 'snapping' operation is the quantization operation, which replaces the embeddings with the closest code vector from the codebook. This operation is not differentiable (see STE \ref{subsec:vqvae_ste}).}
     \label{fig:vqvae_architecture}
 \end{figure}
 
@@ -94,6 +94,7 @@ Finally, the loss function of the VQ-VAE is given by:
 
 
 \subsection{Streight Through Estimator (STE)}
+\label{subsec:vqvae_ste}
 
 It is important to note that snapping embeddings to nearest codebook vectors operation is not differentiable (right side of figure \ref{fig:vqvae_architecture}), which means the gradients will always be 0 at the backpropogation \cite{why_round_function_is_not_differentiable}. For this reason, the researchers used the straight-through estimator (STE) to approximate the gradients. The STE is a technique used to approximate the gradients of a non-differentiable function by passing the gradients of the function through the function itself (see listing \ref{lst:vqvae_stop_gradients}) (in other words, they skip the quantization operation in the backward pass).
 
