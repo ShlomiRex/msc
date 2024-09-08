@@ -29,9 +29,27 @@ Because the addition of noise is a known stochastic process, all the learned par
 \begin{figure}
     \centering
     \includegraphics[width=1\textwidth]{images/diffusion_models/ddpm_process.png}
-    \caption{A graph representing the forward and reverse diffusion process in DDPMs \cite{ddpm}. The next step (either in forward or reverse diffusion) depends conditionally on the previous steps ($p_\theta (x_{t-1} | x_t)$ and $q(x_t | x_{t-1})$).}
+    \caption{A graph representing the forward and reverse diffusion process in DDPMs \cite{ddpm}. The next step (either in forward or reverse diffusion) depends conditionally on the previous steps ($p_\theta (x_{t-1} | x_t)$ is the reverse step, and forward step is $q(x_t | x_{t-1})$).}
     \label{fig:ddpm_process}
 \end{figure}
+
+
+
+
+\subsection{Noise Schedulers}
+
+In the paper \cite{ddpm} the authors used linear scheduler, however OpenAI released a paper \cite{openai_improved_ddpm} that uses cosine scheduler. They have shown that a cosine scheduler performs better than a linear scheduler in terms of image generation quality (see figure \ref{fig:linear_cosine_scheduler}).
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\textwidth]{images/diffusion_models/linear_cosine_scheduler.png}
+    \caption{Linear scheduler (top) and cosine scheduler (bottom) shows that linear scheduler adds noise too quickly which degrades the model's performance whereas cosine scheduler adds noise more slowly.}
+    \label{fig:linear_cosine_scheduler}
+\end{figure}
+
+
+
+
 
 
 
@@ -42,8 +60,48 @@ The forward diffusion process maps a data image $x$ through a series of intermed
 \begin{equation}
     \begin{aligned}
     \mathbf{z}_1 &= \sqrt{1 - \beta_1} \cdot \mathbf{x} + \sqrt{\beta_1} \cdot \epsilon_1, \\
+    &\;\;\vdots \notag \\
     \mathbf{z}_t &= \sqrt{1 - \beta_t} \cdot \mathbf{z}_{t-1} + \sqrt{\beta_t} \cdot \epsilon_t \quad \forall \, t \in \{2, \ldots, T\}
     \end{aligned}
 \end{equation}
 
-At each step $i \in {1, 2, ..., t, t+1, ..., T}$, $e_i$ is a noise vector drawn from a standard normal distribution. 
+At each step $i \in {1, 2, ..., t, t+1, ..., T}$ a noise vector $e_i$ is drawn from a standard normal distribution. This equation adds random noise $e_i$ to the data (image) $x = z_0$ and $\beta$ is a schedule function ($\beta(t):[1, ..., T] \rightarrow \mathbb{R}$) that determines the amount of noise added at each step ($\beta$ is a variance schedule, which can be linear, cosine, quadratic and more). 
+
+A more formal notation for the forward process is:
+
+\begin{equation}
+    \begin{aligned}
+        q(x_t | x_{t-1}) = \mathcal{N}(x_t; \sqrt{1-\beta_t} \cdot x_{t-1}, \beta_t \mathbf{I}) \\
+        q(x_{1:T} | x_0) = \prod_{t=1}^{T} q(x_t | x_{t-1})
+    \end{aligned}
+\end{equation}
+
+
+
+
+
+
+
+
+\subsection{Decoder}
+
+The decoder removes noise from the intermediate latent variables $z_1, ..., z_T$ and reconstructs the original image $x$ using the following recursion:
+
+\begin{equation}
+    p_\theta(\mathbf{x}_{t-1} | \mathbf{x}_t) = \mathcal{N}(\mathbf{x}_{t-1}; \mu_\theta(\mathbf{x}_t, t), \Sigma_\theta(\mathbf{x}_t, t))
+\end{equation}
+
+where $\theta$ are the learned parameters of the model. The variance $\Sigma$ in the original paper \cite{ddpm} is fixed, however in the OpenAI paper \cite{openai_improved_ddpm} the variance is learned. The authors said:
+
+\begin{quote}
+    \textit{"We also see that learning reverse process variances (by incorporating a parameterized diagonal $\Sigma_\theta(x_t)$ into the variational bound) leads to unstable training and poorer sample quality compared to fixed variances."} \cite{ddpm}
+\end{quote}
+
+
+
+
+
+
+\subsection{Loss function}
+
+The loss function of DDPMs is typically the ELBO loss function (negative log-likelihood \ref{eq:elbo}) 

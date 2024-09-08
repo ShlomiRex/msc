@@ -1,0 +1,6 @@
+Things done before the next meeting with doctor Mireilie:
+
+Worked on DDPM Encoder
+Added linear, cosine scheduler explanation
+Used Papers With Code to examine DDPM implementation!
+

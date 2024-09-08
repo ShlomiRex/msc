@@ -23,3 +23,9 @@ Also, you need to explain in the paper what it means that the researchers had to
 הופכים conditional images
 לטוקנים ומעבירים ל transformer
 לבדוק את הקוד, לראות איך הופכים תמונות לטוקנים, זה מעניין מאד
+
+
+
+ב DDPMs
+להסביר על noise scheduler
+אולי לא ברור מה זה הבנתי זה רק פונקציה וזהו
