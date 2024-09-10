@@ -74,6 +74,8 @@ In order to balance of the training for both $G$ and $D$ the authors suggested u
 
 One of the main challenges of training GANs is mode collapse. Mode collapse occurs when the generator learns to generate only a few samples, instead of learning to generate a diverse set of samples. This can happen when the generator learns to generate samples that fool the discriminator, but failed to capture the full diversity of the training data distribution (see figure \ref{fig:gan_mode_collapse}). This can happen when the discriminator is too strong, and the generator is not able to generate diverse samples. In other words, the generator tries to fool the discriminator so much that it only focuses on this goal, while ignoring to diversify the samples.
 
+Mode-collapse is general term and is not limited to GANs only. We return to this subject in the diffusion models section \ref{subsec:diffusion_models}.
+
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{images/gan/gan_mode_collapse.png}

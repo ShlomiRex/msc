@@ -1,3 +1,14 @@
+Read the "High-Resolution Image Synthesis with Latent Diffusion Models" paper, read it carefully and write summorization in onenote
+
+Then take these summorizations and explain the stable diffusion model.
+
+Need to rewrite the introduction to Stable Diffusion. Some of the paragraphs are OK but we need bigger context, put them all together somehow.
+
+
+
+
+
+
 Explain in VQ-GAN paper how they researchers converted conditional information, such as depth map, semantic masks, text, and so on, to tokens. How did images converted to tokens?
 
 Maybe the minGPT encoder converted images to tokens automatically?
@@ -25,7 +36,3 @@ Also, you need to explain in the paper what it means that the researchers had to
 לבדוק את הקוד, לראות איך הופכים תמונות לטוקנים, זה מעניין מאד
 
 
-
-ב DDPMs
-להסביר על noise scheduler
-אולי לא ברור מה זה הבנתי זה רק פונקציה וזהו
