@@ -7,3 +7,7 @@ Used Papers With Code to examine DDPM implementation (loss function)
 Explained loss function of DDPMs
 
 Add Stable Diffusion architecture image 
+
+Add markov chain in appendix
+
+Add 'Classifier-free diffusion guidance' in stable diffusion

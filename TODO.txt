@@ -4,7 +4,9 @@ Then take these summorizations and explain the stable diffusion model.
 
 Need to rewrite the introduction to Stable Diffusion. Some of the paragraphs are OK but we need bigger context, put them all together somehow.
 
+Fix appendix: markov chains. We need to add one more image to atleast illustrate it.
 
+In stable diffusion paper, explain the figure 2.
 
 
 
