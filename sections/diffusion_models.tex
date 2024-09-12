@@ -155,3 +155,16 @@ The training of diffusion models is done by sampling a batch of images from the 
 \end{figure}
 
 In figure \ref{fig:ddpm_training} line 5, we try to optimize the model's parameters $\theta$ by gradient decent. $\epsilon_\theta$ is the predicted noise added at timestep $t$ (a function approximator with 2 parameters that intends to predict $\epsilon$ from $x_t$) where the first parameter is the noisy image at timestep $t$, and the second parameter is the timestep ($t$). 
+
+
+
+
+
+
+
+\subsection{UNet backbone}
+
+% TODO: Redo this section, maybe different wording
+UNet is a convolutional neural network architecture that is commonly used in diffusion models, particularly in stable diffusion models and its variants. UNet is used as a backbone in the encoder and decoder networks. The UNet architecture is a symmetric encoder-decoder network with skip connections between the encoder and decoder. The skip connections help the network to learn the high-level features of the image. The UNet architecture is used in many image segmentation tasks, and it is also used in diffusion models to learn the high-level features of the image.
+
+In the original DDPM paper \cite{ddpm} the authors didn't explicitly used UNet, however they used CNN with residual blocks, which is similar in structure and intent to UNet. In the Stable Diffusion paper \cite{stable_diffusion} the authors used UNet as a backbone in the encoder and decoder networks. The UNet architecture is a symmetric encoder-decoder network with skip connections between the encoder and decoder. The skip connections help the network to learn the high-level features of the image. The UNet architecture is used in many image segmentation tasks, and it is also used in diffusion models to learn the high-level features of the image.

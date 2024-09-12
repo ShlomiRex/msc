@@ -1,15 +1,19 @@
-Read the "High-Resolution Image Synthesis with Latent Diffusion Models" paper, read it carefully and write summorization in onenote
-
-Then take these summorizations and explain the stable diffusion model.
-
-Need to rewrite the introduction to Stable Diffusion. Some of the paragraphs are OK but we need bigger context, put them all together somehow.
-
-Fix appendix: markov chains. We need to add one more image to atleast illustrate it.
 
 In stable diffusion paper, explain the figure 2.
 
+In stable diffusion paper, verify this statement:
+"In Stable Diffusion, the authors used the text encoder from CLIP. % TODO: Verify, read the paper."
 
+In diffusion models, redo the UNet backbone. We need more professional stuff.
 
+======================================================
+In Stable diffusion we have multiple previous works, which includes:
+
+Maybe explain CLIP more?
+Maybe explain ViT (Vision Transformer)?
+Maybe explain Word2Vec?
+Maybe explain ResNet?
+======================================================
 
 Explain in VQ-GAN paper how they researchers converted conditional information, such as depth map, semantic masks, text, and so on, to tokens. How did images converted to tokens?
 
