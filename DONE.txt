@@ -11,3 +11,5 @@ Add Stable Diffusion architecture image
 Add markov chain in appendix
 
 Add 'Classifier-free diffusion guidance' in stable diffusion
+
+Added perceptual loss subsection in appendix, added reference to it in VQGAN
