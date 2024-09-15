@@ -110,4 +110,9 @@ In Stable Diffusion, the authors used the text encoder from CLIP. % TODO: Verify
 
 \subsection{Training}
 
-Stable diffusion uses two-stage approach, called classifier-free guidance (see \ref{subsec:classifier_free_diffusion_guidance}) which was discuessed before. 
+Stable diffusion uses two-stage approach, called classifier-free guidance (see \ref{subsec:classifier_free_diffusion_guidance}) which was discuessed before. In the paper the authors made simplified loss objective:
+
+\begin{equation}
+    L_{\text{DM}} = \mathcal{E}_{x, \epsilon \sim \mathcal{N} (0, 1), t} [ \Vert \epsilon - \epsilon_\theta(x_t, t) \Vert _2^2 ]
+
+\end{equation}

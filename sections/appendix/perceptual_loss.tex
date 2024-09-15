@@ -16,11 +16,11 @@ An example of when perceptual loss becomes useful is when we measure difference 
 
 
 \begin{lstlisting}[language=Python, caption={Example of perceptual loss implementation. Typically we don't compare the lower layers, since they contain pixel level features, and not semantics.}]
-def perceptual_loss(generated_image, target_image, feature_extractor, layers):
+def perceptual_loss(generated_img, target_img, feature_extractor, layers):
     loss = 0
     for layer in layers:
-        generated_features = feature_extractor(generated_image, layer)
-        target_features = feature_extractor(target_image, layer)
+        generated_features = feature_extractor(generated_img, layer)
+        target_features = feature_extractor(target_img, layer)
         loss += torch.mean((generated_features - target_features) ** 2)
     return loss
 \end{lstlisting}
