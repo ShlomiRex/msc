@@ -73,9 +73,19 @@ How the model is able to denoise latent space but also consider the conditional 
 
 \label{subsec:classifier_free_diffusion_guidance}
 
-Conditioning a generative model can be done in many ways. How can we let our model understand our text prompt? Or condition on another image? One way is to train a model to learn a joint distribution of the training data and the conditioning signal $p(x,c)$ and then sample from the joint distribution. This, however, requires the training of a model for each seperate conditioning signal.
+Conditioning a generative model can be achieved through various methods. How can we let our model understand our text prompt? Or condition on another image? One way is to train a model to learn a joint distribution of the training data and the conditioning signal $p(x,c)$ and then sample from the joint distribution. This, however, requires the training of a model for each separate conditioning signal.
 
-Another approach is called \textbf{classifier guidance} \cite{openai_diffusion_beats_gans} which involves the training of a seperate model to condition the output. The latest and most successful approach is called \textbf{classifier-free guidance} \cite{classifier_free_guidance}, in which, instead of training two networks, one conditional network and an unconditional network, we train a single network and during training, with some probability, we set the conditioning signal to zero. This way the network becomes a mix of conditined and unconditioned network, and we can take the conditioned and unconditioned output and combine them with weight that indicates how much we want the network to pay attention to the conditioning signal.
+Another approach is called \textbf{classifier guidance} \cite{openai_diffusion_beats_gans} which involves the training of a separate model to condition the output. The latest and most successful approach is called \textbf{classifier-free guidance} \cite{classifier_free_guidance}, in which, instead of training two networks, one conditional network and an unconditional network, we train a single network and during training, with some probability, we set the conditioning signal to zero. This way the network becomes a mix of conditioned and unconditioned network, and we can take the conditioned and unconditioned output and combine them with weight that indicates how much we want the network to pay attention to the conditioning signal. In other words, we control the weight of the conditioning signal during training 
+
+To summorize, in contrast to classifier guidance, classifier-free guidance streamlines the training process and lowers computational costs by utilizing a single model instead of training two separate models.
+
+\begin{lstlisting}[language=Python, caption={Classifier-free guidance (CFG) in Stable Diffusion. The CFG scale is the weight of the conditioning signal.}, label={lst:cfg_stable_diffusion}]
+if do_cfg:
+    output_cond, output_uncond = model_output.chunk(2)
+    model_output = cfg_scale * (output_cond - output_uncond) + output_uncond
+\end{lstlisting}
+
+In listing \ref{lst:cfg_stable_diffusion} the code snippet is taken from \href{https://github.com/hkproj/pytorch-stable-diffusion/blob/e0cb06de011787cdf13eed7b4287ad8410491149/sd/pipeline.py#L131C1-L132C1}{a re-implementation of Stable Diffusion}, but the official implementation of Stable Diffusion is \href{https://github.com/CompVis/stable-diffusion/blob/21f890f9da3cfbeaba8e2ac3c425ee9e998d5229/ldm/models/diffusion/ddim.py#L178C1-L179C1}{very similar}.
 
 
 
@@ -88,21 +98,89 @@ Another approach is called \textbf{classifier guidance} \cite{openai_diffusion_b
 
 \label{subsec:clip}
 
-CLIP (Contrastive Language Image Pre-training) \cite{openai_clip} is a model that learns visual concepts from text supervision. The CLIP model (which is a pre-trained network) dataset is an image-text pairs (in the paper its 400 million image, text pairs). The model builds associations between images and text prompts. 
+In Stable Diffusion, the authors used CLIP as the text encoder for the conditional information of text prompts.
+
+CLIP (Contrastive Language Image Pre-training) \cite{openai_clip} is a model developed by OpenAI that learns visual concepts from text supervision. The model builds associations between images and text prompts. 
+
+This is why the researchers use the \textbf{CLIPTokenizer} which is part of the CLIP model. This tokenizer converts text prompts to a sequence of tokens which are then used in the latent space of the stable diffusion model. They use the embeddings of this pre-trained model.
 
 \begin{figure}
     \centering
     \includegraphics[width=1\textwidth]{images/diffusion_models/stable_diffusion/clip.png}
-    \caption{(1) Contrastive pre-training stage of a CLIP model \cite{openai_clip}. The $I_1, ..., I_N$ are the images, and $T_1, ..., T_N$ are the text prompts. The output is a matrix of similarity scores between the images and the text prompts. (2) and (3) after the model is pre-trained its used as a zero-shot image classifier.}
+    \caption{(1) Contrastive pre-training stage of a CLIP model \cite{openai_clip} (training stage). The $I_1, ..., I_N$ are the images, and $T_1, ..., T_N$ are the text prompts. The output is a matrix of similarity scores between the images and the text prompts. (2) and (3) after the model is pre-trained its used as a zero-shot image classifier (the model can classify images without needing to be explicitly trained on specific classes).}
     \label{fig:openai_clip}
 \end{figure}
 
-In figure \ref{fig:openai_clip}, intuitively, the main diagonal of the matrix should all be matching '1' (maximum score), and all other cells $\forall i,t \in \{1, ..., N\}, i \neq t, I_i \cdot T_t$ should be '0' (minimal score) since the model learns to associate each prompt with its corresponding image.
+In figure \ref{fig:openai_clip}, the diagonal of the similarity matrix ideally contains the highest scores for matching image-text pairs (idealy '1'), while the off-diagonal entries should have lower similarity scores (idealy '0'), indicating mismatches between images and texts.
 
-The network implementation of CLIP is made up of an image encoder, which is typically a vision transformer \cite{vision_transformer} or a ResNet \cite{resnet} model, while the text encoder is a text transformer \cite{transformer} or continous bag of words \cite{cbow_word2vec} (more commonly known as Word2Vec model by Google, 2013).
+The network implementation of CLIP is made up of an image encoder, which is typically a vision transformer (ViT) \cite{vision_transformer} or sometimes less commonly a ResNet \cite{resnet} model, while the text encoder is a text transformer \cite{transformer} or continous bag of words \cite{cbow_word2vec} (more commonly known as Word2Vec model by Google, 2013).
 
-In Stable Diffusion, the authors used the text encoder from CLIP. % TODO: Verify, read the paper.
+The CLIP model is trained using a contrastive objective, where the goal is to minimize the cosine distance between embeddings of matching image-text pairs (diagonal) and maximize the distance for non-matching pairs (off diagonal).
 
+
+
+
+
+
+\subsection{Cross-attention}
+
+Cross-attention is used in Stable Diffusion for multi-modal conditioning, it guides the model to output images based on conditional information. Although this information can be multi-modal (images, text, segmentation masks), the cross-attention mechanism is able to deal with them all.
+
+Cross-attention, introduced in the Transformer paper \cite{transformer}, allows one set of inputs (query vectors) to attend (focus) on another set of inputs (the key vectors) and extract information from it. This is particularly useful in tasks where we want to condition one type of data on another, such as in image-text models (e.g. Stable Diffusion) where text guides the generation of images.
+
+To understand cross-attention lets first understand \textbf{self-attention}:
+
+In self-attention, the same set of data elements provides the queries, keys, and values. The mechanism computes attention scores based on how each element in the input interacts with other elements in the same sequence. This is widely used in transformers to capture relationships between tokens in a sequence. The formula for self-attention is given in the transformer paper \cite{transformer}.
+
+\begin{equation}
+    \text{Attention}(Q, K, V) = \text{softmax} \left( \frac{QK^T}{\sqrt{d_k}} \right) V
+    \label{eq:self_attention}
+\end{equation}
+
+In equation \ref{eq:self_attention} we first do a cross-product of $Q$ and $K$ matrices, this gives us a matrix of attention scores for each pair of query vector and the key vector. We then divide the matrix by the square root of the dimension of the key vectors, this operation is done to normalize the large magnitude of the dot product, which stabilizes the gradients and the training. We then apply the softmax function, which converts the vector to a probability distribution between 0 and 1, which gives probability to tokens in the sequence. Finally, we multiply (dot product) the softmax output with the value vectors, which gives us the output of the self-attention.
+
+\textbf{Cross-attention} is based on multiple self-attention heads (or blocks), and the input ($K$, $Q$, $V$) derive from the same input sequence. Cross-attention in comparison, each matrix comes from different source of sequence. For example, $Q$ could be an image embeddings (the VAE image encoder of stable diffusion), and $K$ and $V$ could represent a text prompt which gives attention to the image. This is the reason the researchers used cross-attention and not self-attention in the stable diffusion model, because of the multi-modal conditioning.
+
+\begin{equation}
+    \begin{aligned}
+        \text{head}_i = \text{Attention}(QW_i^Q, KW_i^K, VW_i^V)  \\
+        \text{MultiHead}(Q, K, V) = \text{Concat}(\text{head}_1, ..., \text{head}_h)W^O
+    \end{aligned}
+    \label{eq:cross_attention}
+\end{equation}
+
+Formula \ref{eq:cross_attention} describes a single self-attention head. Cross-attention is a concatenation of multiple self-attention heads, each with its own set of weights $W_i^Q$, $W_i^K$, $W_i^V$. The output of the cross-attention is the concatenation of the outputs of each head, and dot product with the output weights matrix $W^O$.
+
+
+
+\begin{lstlisting}[language=Python, caption={Cross-attention snippet.}, label={lst:cross_attention_stable_diffusion}]
+class CrossAttention(nn.Module):
+def __init__(self, n_heads, d_embed, d_cross, 
+        in_proj_bias=True, out_proj_bias=True):
+
+    super().__init__()
+    self.q_proj   = nn.Linear(d_embed, d_embed, bias=in_proj_bias)
+    self.k_proj   = nn.Linear(d_cross, d_embed, bias=in_proj_bias)
+    self.v_proj   = nn.Linear(d_cross, d_embed, bias=in_proj_bias)
+    self.out_proj = nn.Linear(d_embed, d_embed, bias=out_proj_bias)
+    self.n_heads = n_heads
+    self.d_head = d_embed // n_heads
+
+def forward(self, x, y):
+    ...
+
+    weight = q @ k.transpose(-1, -2)
+    weight /= math.sqrt(self.d_head)
+    weight = F.softmax(weight, dim=-1)
+    output = weight @ v
+
+    output = output.transpose(1, 2).contiguous()
+    output = output.view(input_shape)
+    output = self.out_proj(output)
+    return output
+\end{lstlisting}
+
+In listing \ref{lst:cross_attention_stable_diffusion} the code snippet is taken from \href{https://github.com/hkproj/pytorch-stable-diffusion/blob/e0cb06de011787cdf13eed7b4287ad8410491149/sd/attention.py#L100C1-L110C28}{a re-implementation of Stable Diffusion}, the official implementation of Stable Diffusion has \href{https://github.com/CompVis/stable-diffusion/blob/21f890f9da3cfbeaba8e2ac3c425ee9e998d5229/ldm/modules/attention.py#L152}{very complex cross-attention code}.
 
 
 
