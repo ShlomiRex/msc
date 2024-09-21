@@ -8,8 +8,7 @@ We previously talked about GANs, VAEs, and their variants (VQ-VAE, VQ-GAN). Diff
 
 A diffusion model consists of two main components: an encoder which takes a data sample $x$ and maps it through a series of intermediate latent variables $z_1, ..., z_T$, and a decoder which reverses this process, until it creates a sample image. The mappings are stochastic rather than discrete (the transformation between the latent variables involve some randomness).
 
-% TODO: Explain LDMs
-In the next section, we will take a closer look at DDPMs, which is subclass of DMs. Another class of DMs is called Latent Diffusion Models (LDMs) \cite{ldm} which are based on autoencoders compressing the image space to latent space for more efficient computation.
+In the next section, we will take a closer look at DDPMs, which is subclass of DMs. Another class of DMs is called Latent Diffusion Models (LDMs) \cite{stable_diffusion} which are based on autoencoders compressing the image space to latent space for more efficient computation.
 
 
 \subsection{DDPMs}
@@ -47,6 +46,48 @@ where $q(x_{1:T} | x_0)$ is some inference distribution over the latent variable
     \includegraphics[width=1\textwidth]{images/diffusion_models/ddpm_process.png}
     \caption{A graph representing the forward ($q(x_t | x_{t-1})$) and reverse ($p_\theta(x_{t-1} | x_t)$) diffusion process in DDPMs \cite{ddpm}. The next step (either in forward or reverse diffusion) depends conditionally on the previous steps ($p_\theta (x_{t-1} | x_t)$ is the reverse step, and forward step is $q(x_t | x_{t-1})$).}
     \label{fig:ddpm_process}
+\end{figure}
+
+
+
+
+
+
+\begin{figure}[h]
+    \centering
+    \begin{minipage}{0.10\textwidth}  % Divide the width by 7 for 7 images
+        \centering
+        \includegraphics[width=\textwidth]{images/diffusion_models/noise_to_image_gif/0.png}
+    \end{minipage}
+    \begin{minipage}{0.10\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/diffusion_models/noise_to_image_gif/1.png}
+    \end{minipage}
+    \begin{minipage}{0.10\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/diffusion_models/noise_to_image_gif/2.png}
+    \end{minipage}
+    \begin{minipage}{0.10\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/diffusion_models/noise_to_image_gif/3.png}
+    \end{minipage}
+    \begin{minipage}{0.10\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/diffusion_models/noise_to_image_gif/4.png}
+    \end{minipage}
+    \begin{minipage}{0.10\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/diffusion_models/noise_to_image_gif/5.png}
+    \end{minipage}
+    \begin{minipage}{0.10\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/diffusion_models/noise_to_image_gif/6.png}
+    \end{minipage}
+    \begin{minipage}{0.10\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/diffusion_models/noise_to_image_gif/7.png}
+    \end{minipage}
+    \caption{Progressive decoding of noise latents to an image in DDPMs \cite{ddpm}. Images taken from \href{https://scholar.harvard.edu/binxuw/classes/machine-learning-scratch/materials/stable-diffusion-scratch}{harvard university}.}
 \end{figure}
 
 

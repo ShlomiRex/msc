@@ -31,6 +31,7 @@ A 2021 paper released by OpenAI \cite{openai_diffusion_beats_gans} shows that di
 
 
 \subsection{U-Net backbone}
+\label{subsec:stable_diffusion_u_net_backbone}
 
 U-Net (first introduced in 2015) \cite{unet} is a convolutional neural network architecture that is commonly used in diffusion models, particularly in stable diffusion models and its variants. U-Net is used as a backbone for denoising the latent representations. The U-Net architecture is a symmetric encoder-decoder network with skip connections between the encoder and decoder. The skip connections help the network to learn better, the downsampling process of the encoder removes abstract features in the data, and so skip connections allow the model to skip these downsampling blocks and preserve high-level features. In the original DDPM paper \cite{ddpm} the authors didn't explicitly used U-Net, however they used CNN with residual blocks, which is similar in structure and intent to U-Net. 
 
@@ -43,6 +44,38 @@ U-Net (first introduced in 2015) \cite{unet} is a convolutional neural network a
 
 In figure \ref{fig:unet_architecture} the U-Net is shaped like a 'U' - notice that the layers downsample the input one after the other. Then, after we get to the desired depth, we start upsampling the input until we get output with the same dimensions as the input. The blue arrows are the convolutional layers with kernel size 3x3 and ReLU activation function. The max-pooling are the downsampling layers, and the upsampling layers are the deconvolutional layers.
 
+In addition, the UNet backbone contains \textbf{timestep embeddings}. The scalar timestep (which can be in the range $[0, T]$, where $T$ is the total number of diffusion steps) is first projected into a sinusoidal embedding, similar to the way positional encodings are used in transformers. The timestep embeddings are used to let the model know which step its in the diffusion process currently, this way it knows if its in the beginning of the diffusion or at the late stage, which is essential for removing noise.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.25\textwidth]{images/diffusion_models/stable_diffusion/positional_encodings.png}
+    \caption{Sinusoidal positional embeddings used in a transformer model \cite{understanding_deep_learning_book_2024}. It is similar to the timestep embeddings used in stable diffusion U-Net backbone. The X axis is the position of the input sequence (or timestep). The Y axis is the embeddings dimensions. The pattern is sinusodial, lighter regions indicate lower value, darker regions indicate higher values. Its important to note that each column in the X axis is a unique encodings, which helps distinguish the position / timestep of the input sequence.}
+\end{figure}
+
+\begin{lstlisting}[language=Python, caption={Timestep embeddings of Stable Diffusion pipeline. We convert the timestep to sinusoidal vector embedding.}, label={lst:timestep_embeddings_stable_diffusion}]
+def get_time_embedding(timestep):
+    # Shape: (160,)
+    freqs = torch.pow(10000, 
+        -torch.arange(start=0, end=160, dtype=torch.float32) / 160) 
+    # Shape: (1, 160)
+    x = torch.tensor([timestep], 
+        dtype=torch.float32)[:, None] * freqs[None]
+    # Shape: (1, 160 * 2)
+    return torch.cat([torch.cos(x), torch.sin(x)], dim=-1)
+\end{lstlisting}
+
+The general formula for timestep embeddings is given in equation \ref{eq:timestep_embeddings}. The code snippet in listing \ref{lst:timestep_embeddings_stable_diffusion} is taken from \href{https://github.com/hkproj/pytorch-stable-diffusion/blob/e0cb06de011787cdf13eed7b4287ad8410491149/sd/pipeline.py#L164}{a re-implementation of Stable Diffusion}.
+
+\begin{equation}
+    \text{Enc}_i(t) =
+    \begin{cases}
+        \sin\left(\frac{t}{10000^{\frac{2i}{d}}}\right) & \text{if } i \text{ is even} \\
+        \cos\left(\frac{t}{10000^{\frac{2i}{d}}}\right) & \text{if } i \text{ is odd}
+    \end{cases}
+    \label{eq:timestep_embeddings}
+\end{equation}
+
+
 
 
 
@@ -51,7 +84,9 @@ In figure \ref{fig:unet_architecture} the U-Net is shaped like a 'U' - notice th
 
 \subsection{Architecture}
 
-The stable diffusion model, which is a latent diffusion model, consists of: variational autoencoder which compresses the input images into regularized latent space, a U-Net backbone which denoises the output from forward diffusion backwards to obtain a latent representation, a variational autoencoder decoder which converts the latent representation back to the image space, and an optional classifier-free guidance mechanism which allows the model to be conditioned on text prompts or other images, which is domain-specific encoder. The high level architecture is shown in figure \ref{fig:stable_diffusion_architecture}.
+The stable diffusion model, which is a latent diffusion model (LDM), consists of: variational autoencoder which compresses the input images into regularized latent space as an image encoder, a U-Net backbone which denoises the output from forward diffusion backwards to obtain a latent representation (it predicts the noise added in each step), a variational autoencoder decoder which converts the latent representation back to the image space, and an optional classifier-free guidance mechanism which allows the model to be conditioned on text prompts or other images, which is domain-specific encoder. The high level architecture is shown in figure \ref{fig:stable_diffusion_architecture}.
+
+The most popular conditioning mechanism is text prompts. For text, we use text encoder (tokenizer) which converts the text words to vectors / embeddings (tokens). In Stable Diffusion paper, the authors used a \href{https://github.com/CompVis/latent-diffusion/blob/a506df5756472e2ebaf9078affdde2c4f1502cd4/ldm/modules/encoders/modules.py#L138}{frozen CLIPTokenizer}, which is a pre-trained tokenizer trained on specific vocabulary and special tokens (beginning of sentence, end of sentence, padding, mask tokens and more). Although in the source code you will find other text encoders as well, such as BERT \cite{bert}.
 
 \begin{figure}
     \centering
@@ -62,6 +97,7 @@ The stable diffusion model, which is a latent diffusion model, consists of: vari
 
 How the model is able to denoise latent space but also consider the conditional information? The authors used \textbf{cross-attention} mechanism. The cross-attention which was introduced in the transformers paper \cite{transformer}, is a mechanism that allows the model to focus on different parts of the input sequence. In the stable diffusion model, the cross-attention mechanism is used to focus on the latent space and the conditioning signal (text prompt or another image). 
 
+The U-Net architecture, which serves as the noise prediction network, incorporates timestep embeddings as an essential input (see \ref{subsec:stable_diffusion_u_net_backbone}). These timestep embeddings, combined with residual blocks, allow the U-Net to predict the noise at each timestep of the diffusion process. This prediction is not only dependent on the specific timestep but also conditioned on the given conditional signal. 
 
 
 
@@ -69,13 +105,17 @@ How the model is able to denoise latent space but also consider the conditional 
 
 
 
-\subsection{Classifier-free diffusion guidance}
+
+
+
+
+\subsection{Classifier-free diffusion guidance (CFG)}
 
 \label{subsec:classifier_free_diffusion_guidance}
 
 Conditioning a generative model can be achieved through various methods. How can we let our model understand our text prompt? Or condition on another image? One way is to train a model to learn a joint distribution of the training data and the conditioning signal $p(x,c)$ and then sample from the joint distribution. This, however, requires the training of a model for each separate conditioning signal.
 
-Another approach is called \textbf{classifier guidance} \cite{openai_diffusion_beats_gans} which involves the training of a separate model to condition the output. The latest and most successful approach is called \textbf{classifier-free guidance} \cite{classifier_free_guidance}, in which, instead of training two networks, one conditional network and an unconditional network, we train a single network and during training, with some probability, we set the conditioning signal to zero. This way the network becomes a mix of conditioned and unconditioned network, and we can take the conditioned and unconditioned output and combine them with weight that indicates how much we want the network to pay attention to the conditioning signal. In other words, we control the weight of the conditioning signal during training 
+Another approach is called \textbf{classifier guidance} \cite{openai_diffusion_beats_gans} which involves the training of a separate model to condition the output. The latest and most successful approach is called \textbf{classifier-free guidance} \cite{classifier_free_guidance} (CFG), in which, instead of training two networks, one conditional network and an unconditional network, we train a single network and during training, with some probability, we set the conditioning signal to zero. This way the network becomes a mix of conditioned and unconditioned network, and we can take the conditioned and unconditioned output and combine them with weight that indicates how much we want the network to pay attention to the conditioning signal. In other words, we control the weight of the conditioning signal during training 
 
 To summorize, in contrast to classifier guidance, classifier-free guidance streamlines the training process and lowers computational costs by utilizing a single model instead of training two separate models.
 
@@ -86,6 +126,15 @@ if do_cfg:
 \end{lstlisting}
 
 In listing \ref{lst:cfg_stable_diffusion} the code snippet is taken from \href{https://github.com/hkproj/pytorch-stable-diffusion/blob/e0cb06de011787cdf13eed7b4287ad8410491149/sd/pipeline.py#L131C1-L132C1}{a re-implementation of Stable Diffusion}, but the official implementation of Stable Diffusion is \href{https://github.com/CompVis/stable-diffusion/blob/21f890f9da3cfbeaba8e2ac3c425ee9e998d5229/ldm/models/diffusion/ddim.py#L178C1-L179C1}{very similar}.
+
+
+
+
+
+
+
+
+
 
 
 
@@ -115,7 +164,15 @@ In figure \ref{fig:openai_clip}, the diagonal of the similarity matrix ideally c
 
 The network implementation of CLIP is made up of an image encoder, which is typically a vision transformer (ViT) \cite{vision_transformer} or sometimes less commonly a ResNet \cite{resnet} model, while the text encoder is a text transformer \cite{transformer} or continous bag of words \cite{cbow_word2vec} (more commonly known as Word2Vec model by Google, 2013).
 
-The CLIP model is trained using a contrastive objective, where the goal is to minimize the cosine distance between embeddings of matching image-text pairs (diagonal) and maximize the distance for non-matching pairs (off diagonal).
+The CLIP model is trained using a contrastive objective, where the goal is to minimize the cosine distance between embeddings of matching image-text pairs (diagonal) and maximize the distance for non-matching pairs (off diagonal). Just like in word2vec, the training process also needs to include negative examples of images and captions that don't match, and the model needs to assign them low similarity scores.
+
+
+
+
+
+
+
+
 
 
 
@@ -192,6 +249,12 @@ In listing \ref{lst:cross_attention_stable_diffusion} the code snippet is taken 
 
 
 
+
+
+
+
+
+
 \subsection{DDIM Sampler}
 
 \begin{figure}
@@ -251,6 +314,11 @@ Now in order to adapt to the reverse diffusion process (which is the entire goal
 
 
 
+
+
+
+
+
 \subsection{Training}
 
 Stable diffusion uses two-stage approach, called classifier-free guidance (see \ref{subsec:classifier_free_diffusion_guidance}) which was discuessed before. In the paper the authors made simplified loss objective:
@@ -258,3 +326,63 @@ Stable diffusion uses two-stage approach, called classifier-free guidance (see \
 \[
     L_{\text{DM}} = \mathbb{E}_{x, \epsilon \sim \mathcal{N} (0, 1), t} [ \Vert \epsilon - \epsilon_\theta(x_t, t) \Vert _2^2 ]
 \]
+
+
+
+
+
+
+
+
+
+\subsection{Experiments}
+
+The researchers conducted several experiments with different LDM downsampling factors, and compared the results with other state-of-the-art models (DALL-E, VQGAN, StyleGAN, ProjectedGAN, CogView, GLIDE, and others).
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/diffusion_models/stable_diffusion/experiments_1.png}
+    \caption{Evaluation metrics (FID, Precision, Recall) of unconditional image synthesis between LDM (Stable Diffusion) and other models, across 4 datasets (CelebA-HQ, FFHQ, LSUN-Churches, LSUN-Bedrooms). We clearly see that LDM outperforms most of the state-of-the-art models, across multiple metrics and datasets. $\dagger$ refers to the DDIM sampler steps (500 top-left, 200 top-right, 200 bottom-left, 200 bottom-right).}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/diffusion_models/stable_diffusion/experiments_2.png}
+    \caption{Evaluation of text-conditioned image synthesis on MS-COCO dataset. LDM with 250-DDIM steps is on par with the most recent diffusion and autoregressive methods, \textbf{while using significantly less parameters} (1.45 billion).}
+\end{figure}
+
+For text-to-image tasks, the researchers trained a 1.45B parameters model conditioned on language prompts on LAION-400M dataset. The model uses \textbf{BERT-Tokenizer} \footnote{Its important to note that the researchers used the BERT text tokenizer in the paper, however, in the \href{https://github.com/CompVis/latent-diffusion}{offical released implementation of Stable Diffusion} they used CLIP tokenizer. The reason is that in the Imagen paper \cite{imagen}, the researchers found out that using larger language models had more impact on generated image quality than larger image generation components. This fact is shown in figure \ref{fig:imagen_clip_score_bigger_llm}.} \cite{bert} and implement $\tau_\theta$ (the domain-specific conditional encoder) as a transformer.
+
+For semantic layouts, the model is trained to synthesis images based on semantic layouts from the OpenImages dataset and finetune on COCO dataset (see figure \ref{fig:stable_diffusion_experiments_semantic_layouts}).
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/diffusion_models/stable_diffusion/experiments_3.png}
+    \caption{Image synthesis conditioned on layouts. The model is trained on OpenImages dataset and then finetuned on COCO dataset.}
+    \label{fig:stable_diffusion_experiments_semantic_layouts}
+\end{figure}
+
+% \begin{figure}
+%     \centering
+%     \includegraphics[width=0.5\textwidth]{images/diffusion_models/stable_diffusion/imagen_clip_score_bigger_llm_encoder.png}
+%     \caption{Imagen paper \cite{imagen} shows that using larger language models as the text encoder (as conditioning mechanism) has more impact on generated image quality than larger image generation components. This is why in Stable Diffusion, the implementation uses CLIP tokenizer instead of BERT tokenizer (which was used in the paper, originally).}
+%     \label{fig:imagen_clip_score_bigger_llm}
+% \end{figure}
+
+
+
+\begin{figure}[h]
+    \centering
+    \begin{subfigure}[b]{0.4\textwidth}
+        \centering
+        \includegraphics[width=1\textwidth]{images/diffusion_models/stable_diffusion/imagen_clip_score_bigger_llm_encoder.png}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.7\textwidth}
+        \centering
+        \includegraphics[width=1\textwidth]{images/diffusion_models/stable_diffusion/imagen_clip_score_bigger_llm_encoder2.png}
+    \end{subfigure}
+    \caption{Imagen paper \cite{imagen} shows that using larger language models as the text encoder (as conditioning mechanism) has more impact on generated image quality than larger image generation components. This is why in Stable Diffusion, the implementation uses CLIP tokenizer instead of BERT tokenizer (which was used in the paper, originally).}
+    \label{fig:imagen_clip_score_bigger_llm}
+\end{figure}
+
