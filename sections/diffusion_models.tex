@@ -44,7 +44,7 @@ where $q(x_{1:T} | x_0)$ is some inference distribution over the latent variable
 \begin{figure}
     \centering
     \includegraphics[width=1\textwidth]{images/diffusion_models/ddpm_process.png}
-    \caption{A graph representing the forward ($q(x_t | x_{t-1})$) and reverse ($p_\theta(x_{t-1} | x_t)$) diffusion process in DDPMs \cite{ddpm}. The next step (either in forward or reverse diffusion) depends conditionally on the previous steps ($p_\theta (x_{t-1} | x_t)$ is the reverse step, and forward step is $q(x_t | x_{t-1})$).}
+    \caption{A graph representing the forward ($q(x_t | x_{t-1})$) and reverse ($p_\theta(x_{t-1} | x_t)$) diffusion process in DDPMs \cite{ddpm}. The next step (either in forward or reverse diffusion) depends conditionally on the previous steps.}
     \label{fig:ddpm_process}
 \end{figure}
 
@@ -104,10 +104,25 @@ In the paper \cite{ddpm} the authors used linear scheduler, however OpenAI relea
     \label{fig:linear_cosine_scheduler}
 \end{figure}
 
+A variance schedule is simply a function that defines the variance at each given timestep during the forward diffusion process. At each timestep, Gaussian noise $\epsilon$ is added to the previous latent variable:
 
+\[
+    x_{t+1} = \sqrt{1 - \beta_t} x_t + \sqrt{\beta_t} \epsilon
+\]
 
+Notice that when $\beta$ increases linearly, the term $\sqrt{1-\beta}$ decreases linearly. 
 
+A noise scheduler is a function: $\beta(t):[1, ..., T] \rightarrow \mathbb{R}$ that determines the amount of noise added at each step. Its a sequence of $\alpha_t$. For example, a \textbf{linear scheduler} is defined as:
 
+\[
+    \beta_t = c \cdot t \text{, where c is constant}
+\]
+
+and a \textbf{consine-beta scheduler} can be defined as:
+
+\[
+    \bar{\alpha}_t = \frac{f(t)}{f(0)} \text{, where } f(t) = \cos^2(\frac{t/T + s}{1+s} \cdot \frac{\pi}{2})
+\]
 
 
 \subsection{Encoder}
@@ -122,7 +137,7 @@ The forward diffusion process maps a data image $x$ through a series of intermed
     \end{aligned}
 \end{equation}
 
-At each step $i \in {1, 2, ..., t, t+1, ..., T}$ a noise vector $e_i$ is drawn from a standard normal distribution. This equation adds random noise $e_i$ to the data (image) $x = z_0$ and $\beta$ is a schedule function ($\beta(t):[1, ..., T] \rightarrow \mathbb{R}$) that determines the amount of noise added at each step ($\beta$ is a variance schedule, which can be linear, cosine, quadratic and more). 
+At each step $i \in \{1, 2, ..., t, t+1, ..., T\}$ a noise vector $\epsilon_i$ is drawn from a standard normal distribution. This equation adds random noise $\epsilon_i$ to the image $x = z_0$ and $\beta$ is a schedule function ($\beta(t):[1, ..., T] \rightarrow \mathbb{R}$) that determines the amount of noise added at each step ($\beta$ is a variance schedule, which can be linear, cosine, quadratic and more). 
 
 A more formal notation for the forward process is:
 
@@ -135,7 +150,7 @@ A more formal notation for the forward process is:
 
 In the above formula we can see that to define the next timestep $x_t$ and to get a noisier image, we define it as gaussian / normal distribution where the mean is $\sqrt{1-\beta_t} x_{t-1}$ and variance $\beta_t \mathbf{I}$. The $\beta$ parameter is the noise scheduler (how much noise we add at each step). This process is known as Markov Chain, since the next step depends only on the previous step (see appendix \ref{appendix:markov_chains}).
 
-An interesting point the authors made is that its possible to sample $x_t$ from any arbitrary timestep $t$, given the original image $x_0$ (without calculating all the intermediate steps):
+An interesting point the authors made is that \textbf{its possible to sample $x_t$ from any arbitrary timestep $t$}, given the original image $x_0$ (without calculating all the intermediate steps):
 
 \begin{equation}
     \begin{aligned}
@@ -151,8 +166,26 @@ Since $\alpha$ depends on $\beta$ and $\beta$ is a noise scheduler (fixed), ther
 
 Each diffusion model has slightly different implementation in its network, and this encoder formulation generalizes the encoder process. We will take a closer look on the encoder/decoder network in the Stable Diffusion paper \cite{stable_diffusion} in the next section \ref{sec:stable_diffusion} and its code implementation.
 
+After plugging in $\alpha = 1 - \beta$ in the encoder and the \textbf{reparametrization trick} ($\mathcal{N} (\mu, \sigma^2) = \mu + \sigma \cdot \epsilon \text{, where } \epsilon \sim \mathcal{N}(0, 1) $) we get:
 
+\begin{align*}
+    q(x_t | x_{t-1}) &= \mathcal{N} \left( x_t; \sqrt{1-\beta_t} x_{t-1}, \beta_t \mathbf{I} \right) \\
+    &= \sqrt{1-\beta_t} x_{t-1} + \sqrt{\beta_t} \epsilon_t \\
+    &= \sqrt{\alpha_t} x_{t-1} + \sqrt{1 - \alpha_t} \epsilon \\
+    &= \sqrt{\alpha_t \alpha_{t-1}} x_{t-2} + \sqrt{1 - \alpha_t \alpha_{t-1}} \epsilon \\
+    &= \sqrt{\alpha_t \alpha_{t-1} \alpha_{t-2}} x_{t-3} + \sqrt{1 - \alpha_t \alpha_{t-1} \alpha_{t-2}} \epsilon \\
+    &= \sqrt{\alpha_t \alpha_{t-1} \cdots \alpha_1 \alpha_0} x_0 + \sqrt{1 - \alpha_t \alpha_{t-1} \cdots \alpha_1 \alpha_0} \epsilon \\
+    &= \boxed{ \sqrt{\bar{\alpha}} x_0 + \sqrt{1 - \bar{\alpha}} \epsilon }
+\end{align*}
 
+as a result we get:
+
+\begin{equation}
+    q(x_t | x_0) = \mathcal{N} (x_t; \sqrt{\bar{\alpha_t}} x_0, (1-\bar{\alpha_t}) \mathbf{I})
+    \label{eq:forward_diffusion_single_step}
+\end{equation}
+
+Equation \ref{eq:forward_diffusion_single_step} describes how in a single step we can get a noisier image $x_t$ from the original image $x_0$ without calculating all the intermediate steps. This is a very useful property of latent diffusion models.
 
 
 
@@ -186,13 +219,53 @@ The OpenAI team released a paper titled "Improved denoising diffusion probabilis
 
 \subsection{Loss function}
 
-The loss function of DDPMs is typically the ELBO loss function (negative log-likelihood \ref{eq:elbo}):
+We seek to train the model to predict the noise $\epsilon_i$ added at each timestep. We could start with a simple loss function (negative log likelihood):
 
-\begin{equation*}
-    \mathbb{E}[-\log p_\theta (x_0)] \leq \mathbb{E}_q[-\log \frac{p_\theta(x_{0:T})}{q(x_{1:T}|x_0)}] = \mathcal{L}
-\end{equation*}
+\[ -\log (p_\theta (x_0)) \]
+
+but thats a problem, the probability of $x_0$ depends on all timesteps $x_0, x_1, ..., x_T$. As a solution, loss function of DDPMs is typically the variational lower bound of this objective:
+
+\[
+    -\log (p_\theta(x_0)) \leq -\log (p_\theta(x_0)) + D_{KL} (q(x_{1:T} | x_0)) \vert \vert p_\theta(x_{1:T} | x_0)
+\]
+
+We can rewrite the KL-divergence as \footnote{Thanks in part for the math explanation to \href{https://www.youtube.com/watch?v=HoKDTa5jHvg}{a youtube video that explained the math in the paper}.}:
+
+\begin{align*}
+    D_{KL} (q(x_{1:T} | x_0)) \vert \vert p_\theta(x_{1:T} | x_0) &= \log(\frac{q(x_{1:T} | x_0)}{p_\theta(x_{1:T} | x_0)}) \\
+    &= \log(\frac{q(x_{1:T} | x_0)}{ \frac{p_\theta(x_0 | x_{1:T}) p_\theta(x_{1:T})}{p_\theta(x_0)} }) \\
+    &= \log(\frac{q(x_{1:T} | x_0)}{ \frac{p_\theta(x_0, x_{1:T})}{p_\theta(x_0)} }) \\
+    &= \log(\frac{q(x_{1:T} | x_0)}{ \frac{p_\theta(x_{0:T})}{p_\theta(x_0)} }) \\
+    &= \log(\frac{q(x_{1:T} | x_0)}{ p_\theta(x_{0:T}) }) + \log(p_\theta(x_0))
+\end{align*}
+
+By reformulating the KL-divergence we arrive at the following loss objective (the terms $-\log(p_\theta(x_0))$ and $\log(p_\theta(x_0))$ cancel each other out):
+
+\begin{align*}
+    -\log (p_\theta(x_0)) &\leq -\log (p_\theta(x_0)) + \log (\frac{ q(x_{1:T} | x_0) }{ p_\theta (x_{0:T}) }) + \log(p_\theta(x_0)) \\
+    &= \log (\frac{ q(x_{1:T} | x_0) }{ p_\theta (x_{0:T}) }) \\
+\end{align*}
+
+we finally get the variational lower bound (ELBO):
+
+\[
+\begin{tikzcd}
+    -\log(p_\theta(x_0)) \leq \log(\frac{q(x_{1:T} | x_0)}{p_\theta(x_{0:T})})
+    \arrow[d, ""] \\
+    \boxed{\mathcal{L} = \mathbb{E}[-\log p_\theta (x_0)] \leq \mathbb{E}_q[-\log (\frac{p_\theta(x_{0:T})}{q(x_{1:T}|x_0)})]}
+\end{tikzcd}
+\]
 
 The left term is the negative log likielihood. The upper bound is the tractable ELBO loss function. The dominator $q(x_{1:T}|x_0)$ is the forward diffusion process (adds noise) and the numerator $p_\theta(x_{0:T})$ is the model's joint distribution over latent steps $x_1, ..., x_T$ which is the reverse process. The ratio of these two terms is the ELBO loss function, when this ratio reaches 1 it indicates that the model can undo the forward process. We also don't write $q_\theta$ because the forward process is not learned, only the reverse process is leanred.
+
+We can simplify the training objective of DDPMs as simply noise predictor (a lot more math is involved in the paper, so we simplify it here. Refer to the paper for more details):
+
+\begin{equation}
+    \boxed{\mathcal{L}_\text{simple} (\theta) = \mathbb{E}_{t,x_0, \epsilon} \left[ \left| \left| \epsilon - \epsilon_\theta (x_t, t) \right| \right|^2 \right]}
+    \label{eq:ddpm_loss}
+\end{equation}
+
+where $\epsilon_\theta (x_t, t)$ is the noise predicted by the model, given timestep $t$ and noisy input $x_t$.
 
 Like we discussed before, diffusion models are latent variable models in the form of $p_\theta (x_0) := \int p_\theta(x_{0:T}) d\mathbf{x}_{1:T}$ which is intractable. Which is why we use the ELBO loss function to approximate the likelihood of the data (see appendix \ref{appendix:elbo}).
 
