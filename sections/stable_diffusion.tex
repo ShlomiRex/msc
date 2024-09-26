@@ -115,9 +115,29 @@ The U-Net architecture, which serves as the noise prediction network, incorporat
 
 \label{subsec:classifier_free_diffusion_guidance}
 
-Conditioning a generative model can be achieved through various methods. How can we let our model understand our text prompt? Or condition on another image? One way is to train a model to learn a joint distribution of the training data and the conditioning signal $p(x,c)$ and then sample from the joint distribution. This, however, requires the training of a model for each separate conditioning signal.
+So far we have focused on modeling just the data distribution $p(x)$. However, we are often also interested in learning conditional distribution $p(x|y)$, which would enable us to explicitly control the data we generate through conditioning information $y$.
 
-Another approach is called \textbf{classifier guidance} \cite{openai_diffusion_beats_gans} which involves the training of a separate model to condition the output. The latest and most successful approach is called \textbf{classifier-free guidance} \cite{classifier_free_guidance} (CFG), in which, instead of training two networks, one conditional network and an unconditional network, we train a single network and during training, with some probability, we set the conditioning signal to zero. This way the network becomes a mix of conditioned and unconditioned network, and we can take the conditioned and unconditioned output and combine them with weight that indicates how much we want the network to pay attention to the conditioning signal. In other words, we control the weight of the conditioning signal during training 
+We can add conditioning information alongside the timestep information, at each iteration:
+
+\[
+p(x_{0:T}) = p(x_T) \prod_{t=1}^{T} p_\theta (x_{t-1} | x_{t, y})
+\]
+
+When training a diffusion model to generate images based on specific conditional information, there's a risk that the model might not fully consider or even ignore these conditions, using this vanilla formulation. To address this, a technique called "guidance" is used. Guidance allows us to explicitly control how much influence the conditions have on the generated images, but this can sometimes lead to less variety in the results. In other words, we use weight to control how much the model should pay attention to the conditioning signal.
+
+Conditioning a generative model can be achieved through various methods. One method called \textbf{classifier guidance} \cite{openai_diffusion_beats_gans} \cite{score_based_generative_modeling} \cite{openai_diffusion_beats_gans}, which involves training a separate model to condition the output, and is based on \textbf{score-based diffusion models} \cite{score_based_generative_modeling} (which is out of the scope of this paper). In short, classifier guidance formulation is given as:
+
+\[
+\nabla \log p(x_t | y) = \underbrace{\nabla \log p(x_t)}_{\text{unconditional score}} + \underbrace{\gamma \nabla \log p(y | x_t)}_{\text{adversarial gradient}}
+\]
+
+where $\gamma$ is a hyperparameter that controls the strength of the conditioning signal in classifier guidance method.
+
+Another guidance approach, which is the latest and most successful approach, is called \textbf{classifier-free guidance} \cite{classifier_free_guidance} (CFG), in which, instead of training two networks, one conditional network and an unconditional network, we train a single network and during training, with some probability, we set the conditioning signal to zero. This way the network becomes a mix of conditioned and unconditioned network, and we can take the conditioned and unconditioned output and combine them with weight that indicates how much we want the network to pay attention to the conditioning signal. In other words, we control the weight of the conditioning signal during training. The formulation for classifier-free guidance is given by:
+
+\[
+\nabla \log p(x_t | y) = \underbrace{\gamma \nabla \log p(x_t | y)}_{\text{conditional score}} + \underbrace{(1 - \gamma) \nabla \log p(x_t)}_{\text{unconditional score}}
+\]
 
 To summorize, in contrast to classifier guidance, classifier-free guidance streamlines the training process and lowers computational costs by utilizing a single model instead of training two separate models.
 
@@ -127,7 +147,7 @@ if do_cfg:
     model_output = cfg_scale * (output_cond - output_uncond) + output_uncond
 \end{lstlisting}
 
-In listing \ref{lst:cfg_stable_diffusion} the code snippet is taken from \href{https://github.com/hkproj/pytorch-stable-diffusion/blob/e0cb06de011787cdf13eed7b4287ad8410491149/sd/pipeline.py#L131C1-L132C1}{a re-implementation of Stable Diffusion}, but the official implementation of Stable Diffusion is \href{https://github.com/CompVis/stable-diffusion/blob/21f890f9da3cfbeaba8e2ac3c425ee9e998d5229/ldm/models/diffusion/ddim.py#L178C1-L179C1}{very similar}.
+In listing \ref{lst:cfg_stable_diffusion} the code snippet is taken from \href{https://github.com/hkproj/pytorch-stable-diffusion/blob/e0cb06de011787cdf13eed7b4287ad8410491149/sd/pipeline.py#L135C1-L136C1}{a re-implementation of Stable Diffusion}, but the official implementation of Stable Diffusion is \href{https://github.com/CompVis/stable-diffusion/blob/21f890f9da3cfbeaba8e2ac3c425ee9e998d5229/ldm/models/diffusion/ddim.py#L178C1-L179C1}{very similar}.
 
 
 
@@ -266,7 +286,7 @@ In listing \ref{lst:cross_attention_stable_diffusion} the code snippet is taken 
     \label{fig:ddim_non_markov_process}
 \end{figure}
 
-DDIM (Denoising Diffusion Implicit Models) (intoduced in a 2020 paper by Stanford) \cite{ddim} is a sampling method for diffusion models that offers improvements over the traditional DDPM (Denoising Diffusion Probabilistic Models) \cite{ddpm} approach. Unlike DDPM, which relies on a fixed noise schedule, DDIM introduces a more flexible noise schedule that allows for varying degrees of noise at different diffusion steps. This flexibility can lead to higher-quality and more diverse generated samples. Additionally, DDIM employs a more efficient sampling process, which can result in faster inference times and potentially better results.
+DDIM (Denoising Diffusion Implicit Models) (intoduced in a 2020 paper by Stanford) \cite{ddim} is a sampling method for diffusion models that offers improvements over the traditional DDPM (Denoising Diffusion Probabilistic Models) \cite{ddpm} approach. Unlike DDPM, which relies on a fixed noise schedule, DDIM introduces a more flexible noise schedule that allows for varying degrees of noise at different diffusion steps. This flexibility can lead to higher-quality and more diverse generated samples. Additionally, DDIM employs a more efficient sampling process, which can result in faster inference times.
 
 In DDPM, images are generated by starting from pure noise and denoising it step-by-step through a Markovian chain (appendix \ref{appendix:markov_chains}). Each step adds a bit of noise to maintain probabilistic reversibility. This process is slow (10x to 50x times slower \cite{ddim}) and often requires hundreds to thousands (1000 steps in the case of Stable Diffusion \cite{stable_diffusion}) of denoising steps to generate a high-quality image. DDIM modifies the denoising process by introducing a \textbf{non-Markovian deterministic sampler} (figure \ref{fig:ddim_non_markov_process}). Instead of stochastically adding noise at each step, DDIM removes noise in a direct and controlled manner, skipping unnecessary steps and resulting in a deterministic path through the latent space.
 
@@ -280,23 +300,23 @@ To achieve this the researchers introduced a new family of forward process:
 
 where $\sigma$ is a vector of indexes (of the steps): $\sigma \in \mathbb{R}^T_{\geq 0}$. The magnitude of $\sigma$ controls how stochastic the forward process is; when $\sigma \rightarrow 0$, we reach an extreme case where as long as we observe $x_0$ and $x_t$ for some $t$, then $x_{t-1}$ become known and fixed.
 
-The distribution of $x_t$ is defined given $x_{t-1}$ and $x_0$ - the process is not longer markovian (this equation is derived from Bayes' rule, its also proven that this is also Gaussian distribution):
+% The distribution of $x_t$ is defined given $x_{t-1}$ and $x_0$ - the process is not longer markovian (this equation is derived from Bayes' rule, its also proven that this is also Gaussian distribution):
 
-\begin{equation*}
-    q_\sigma (x_t | x_{t-1}, x_0) = \frac{q_\sigma (x_{t-1} | x_t, x_0) q_\sigma (x_t | x_0)}{q_\sigma (x_{t-1} | x_0)}
-\end{equation*}
+% \begin{equation*}
+%     q_\sigma (x_t | x_{t-1}, x_0) = \frac{q_\sigma (x_{t-1} | x_t, x_0) q_\sigma (x_t | x_0)}{q_\sigma (x_{t-1} | x_0)}
+% \end{equation*}
 
-Now in order to adapt to the reverse diffusion process (which is the entire goal of this paper, to skip intermediate steps of the sampling process), we define this process on the subset $\{ x_{\tau_1}, ..., x_{\tau_S} \}$:
+% Now in order to adapt to the reverse diffusion process (which is the entire goal of this paper, to skip intermediate steps of the sampling process), we define this process on the subset $\{ x_{\tau_1}, ..., x_{\tau_S} \}$:
 
-\begin{equation}
-    p_\theta (x_{0:T}) := p_\theta (x_T) \prod_{i=1}^{S} p_\theta^{(\tau_i)} (x_{\tau_{i-1}} | x_{\tau_i}) \times \prod_{t \in \bar{\tau}} p_\theta^{(t)} (x_0 | x_t)
-    \label{eq:ddim_reverse_diffusion}
-\end{equation}
+% \begin{equation}
+%     p_\theta (x_{0:T}) := p_\theta (x_T) \prod_{i=1}^{S} p_\theta^{(\tau_i)} (x_{\tau_{i-1}} | x_{\tau_i}) \times \prod_{t \in \bar{\tau}} p_\theta^{(t)} (x_0 | x_t)
+%     \label{eq:ddim_reverse_diffusion}
+% \end{equation}
 
 \begin{figure}
     \centering
     \includegraphics[width=0.8\textwidth]{images/diffusion_models/stable_diffusion/ddim_sampling_process.png}
-    \caption{Reverse diffusion process of the DDIM sampler \cite{ddim} for accelerated generation of images. Here we see that $x_3$ depends only on $x_1$ (and not $x_2$) and $x_0$. This process can be generalized to all subsets of steps (eq. \ref{eq:ddim_reverse_diffusion}).}
+    \caption{Reverse diffusion process of the DDIM sampler \cite{ddim} for accelerated generation of images. Here we see that $x_3$ depends only on $x_1$ (and not $x_2$) and $x_0$. This process can be generalized to all subsets of steps.}
     \label{fig:ddim_sampling_process}
 \end{figure}
 
@@ -305,6 +325,21 @@ Now in order to adapt to the reverse diffusion process (which is the entire goal
     \includegraphics[width=0.8\textwidth]{images/diffusion_models/stable_diffusion/ddim_sample_quality.png}
     \caption{The researchers showed that using this non-Markovian process gives almost the same sample quality (in FID metric eq. \ref{eq:fid_score}, lower is better) as regular DDPM but much less computational cost (since we skip all the latent steps). In the figure, the researchers conducted experiments on CIFAR10 and CelebA datasets, with 10,20,50,100,1000 steps. The stochasticity of the model is controlled by $\eta$. When $\eta = 0$ (blue) the model is deterministic (DDIM process), and when $\eta = 1$ (orange) the model is stochastic (DDPM process).}
 \end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/diffusion_models/stable_diffusion/guided_conditioning.png}
+    \caption{Guided and unguided conditioning on landscapes dataset. Unguided sampling can lead to incoherent global structures.}
+\end{figure}
+
+To summorize, in the DDIM paper \cite{ddim} the main contributions are:
+
+\begin{itemize}
+    \item \textbf{Non-markovian diffusion process:} they introduced a new family of forward processes that are non-Markovian, which allows for a more efficient reverse process.
+    \item \textbf{Implicit probabilistic model:} DDIM is an implicit probabilistic model, meaning that it does not directly model the joint distribution of the data but rather models the conditional distribution of the data given the noise. This approach allows for efficient inference and faster sampling.
+    \item \textbf{Training objective:} DDIM uses the same training objective as DDPM, no modifications needed. This is a huge benefit, because DDIM sampling can be used in any diffusion model.
+    \item \textbf{Sampling process:} the sampling process in DDIM involves sampling from the prior distribution and then iteratively sampling from the conditional distributions. This process is faster than traditional diffusion models because it does not require simulating the entire Markov chain.
+\end{itemize}
 
 
 
@@ -323,11 +358,30 @@ Now in order to adapt to the reverse diffusion process (which is the entire goal
 
 \subsection{Training}
 
-Stable diffusion uses two-stage approach, called classifier-free guidance (see \ref{subsec:classifier_free_diffusion_guidance}) which was discuessed before. In the paper the authors made simplified loss objective:
+Stable diffusion uses two-stage approach, called classifier-free guidance (see section \ref{subsec:classifier_free_diffusion_guidance}) which was discuessed before. In the paper the authors made simplified loss objective, which is to predict the noise removal process at each step:
 
 \[
     L_{\text{DM}} = \mathbb{E}_{x, \epsilon \sim \mathcal{N} (0, 1), t} [ \Vert \epsilon - \epsilon_\theta(x_t, t) \Vert _2^2 ]
 \]
+
+this loss function is similar to the loss function of DDPM (eqaution \ref{eq:ddpm_loss}).
+
+
+
+
+
+
+
+
+
+
+
+
+
+\subsection{Training autoencoders}
+
+... appendix E.2 (Implementation details) in the paper
+
 
 
 
@@ -355,14 +409,14 @@ The researchers conducted several experiments with different LDM downsampling fa
 
 For text-to-image tasks, the researchers trained a 1.45B parameters model conditioned on language prompts on LAION-400M dataset. The model uses \textbf{BERT-Tokenizer} \footnote{Its important to note that the researchers used the BERT text tokenizer in the paper, however, in the \href{https://github.com/CompVis/latent-diffusion}{offical released implementation of Stable Diffusion} they used CLIP tokenizer. The reason is that in the Imagen paper \cite{imagen}, the researchers found out that using larger language models had more impact on generated image quality than larger image generation components. This fact is shown in figure \ref{fig:imagen_clip_score_bigger_llm}.} \cite{bert} and implement $\tau_\theta$ (the domain-specific conditional encoder) as a transformer.
 
-For semantic layouts, the model is trained to synthesis images based on semantic layouts from the OpenImages dataset and finetune on COCO dataset (see figure \ref{fig:stable_diffusion_experiments_semantic_layouts}).
-
 \begin{figure}
     \centering
     \includegraphics[width=0.8\textwidth]{images/diffusion_models/stable_diffusion/experiments_3.png}
     \caption{Image synthesis conditioned on layouts. The model is trained on OpenImages dataset and then finetuned on COCO dataset.}
     \label{fig:stable_diffusion_experiments_semantic_layouts}
 \end{figure}
+
+For semantic layouts, the model is trained to synthesis images based on semantic layouts from the OpenImages dataset and finetune on COCO dataset (see figure \ref{fig:stable_diffusion_experiments_semantic_layouts}).
 
 % \begin{figure}
 %     \centering
@@ -388,3 +442,8 @@ For semantic layouts, the model is trained to synthesis images based on semantic
     \label{fig:imagen_clip_score_bigger_llm}
 \end{figure}
 
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/diffusion_models/stable_diffusion/table_8.png}
+    \caption{Comparison between VQGAN, DALL-E, and LDM with different amounts of downsampling blocks ($f$), codebook size $|z|$ (or latent representation $z = \varepsilon (x)$ if not VQ-regularized). The less downsampling blocks, the better for LDM in all metrics, however we trade off computation time.}
+\end{figure}
