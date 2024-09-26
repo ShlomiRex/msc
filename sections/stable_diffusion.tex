@@ -93,7 +93,7 @@ The most popular conditioning mechanism is text prompts. For text, we use text e
 \begin{figure}
     \centering
     \includegraphics[width=0.75\textwidth]{images/diffusion_models/stable_diffusion/architecture.png}
-    \caption{Stable diffusion architecture \cite{stable_diffusion}. The 'switch' in the diagram is used for different applications of conditional information. In the case of text, they use cross-attention. If the conditional information is another image, they use concatenation. It based on spatial information (text and class guidance doesn't have any, and inpainting masks and images do have).}
+    \caption{Stable diffusion architecture \cite{stable_diffusion}. The 'switch' in the diagram is used for different applications of conditional information. In the case of text, they use cross-attention. If the conditional information is spatial (such as images, layouts, semantic masks), they use concatenation.}
     \label{fig:stable_diffusion_architecture}
 \end{figure}
 
@@ -361,7 +361,7 @@ To summorize, in the DDIM paper \cite{ddim} the main contributions are:
 Stable diffusion uses two-stage approach, called classifier-free guidance (see section \ref{subsec:classifier_free_diffusion_guidance}) which was discuessed before. In the paper the authors made simplified loss objective, which is to predict the noise removal process at each step:
 
 \[
-    L_{\text{DM}} = \mathbb{E}_{x, \epsilon \sim \mathcal{N} (0, 1), t} [ \Vert \epsilon - \epsilon_\theta(x_t, t) \Vert _2^2 ]
+    L_{\text{DM}} = \mathbb{E}_{x, \epsilon \sim \mathcal{N} (0, 1), t} \left[ \Vert \epsilon - \epsilon_\theta(x_t, t) \Vert _2^2 \right]
 \]
 
 this loss function is similar to the loss function of DDPM (eqaution \ref{eq:ddpm_loss}).
@@ -378,14 +378,52 @@ this loss function is similar to the loss function of DDPM (eqaution \ref{eq:ddp
 
 
 
-\subsection{Training autoencoders}
+\subsection{Implementation of $\tau_\theta$ transformer for conditional LDMs}
 
-... appendix E.2 (Implementation details) in the paper
+The researchers provded high level overview of the implementation of the conditional encoder for text $\tau_\theta$, consisted of $N$ transformer blocks:
+
+\begin{align*}
+    &\zeta \leftarrow \text{TokEmb}(y) + \text{PosEmb}(y) \\
+    &\text{for } i = 1, \ldots, N : \\
+        &\hspace{1cm} \zeta_1 \leftarrow \text{LayerNorm}(\zeta) \\
+        &\hspace{1cm} \zeta_2 \leftarrow \text{MultiHeadSelfAttention}(\zeta_1) + \zeta \\
+        &\hspace{1cm} \zeta_3 \leftarrow \text{LayerNorm}(\zeta_2) \\
+        &\hspace{1cm} \zeta \leftarrow \text{MLP}(\zeta_3) + \zeta_2 \\
+    &\zeta \leftarrow \text{LayerNorm}(\zeta)
+\end{align*}
+
+where $\zeta := \tau_\theta(y)$ is the unmasked transformer output (the transformer processes the tokenized version of $y$), TokEmb is the token embeddings, PosEmb is the positional embeddings, LayerNorm is the layer normalization, MultiHeadSelfAttention is the self-attention mechanism, and MLP is the multi-layer perceptron. The $\zeta$ is the output of the transformer encoder, which is then used in the cross-attention mechanism of the stable diffusion model.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.4\textwidth]{images/diffusion_models/stable_diffusion/transformer_block.png}
+    \caption{Architecture of transformer block, where $n_h$ denotes the number of attention heads and $d$ the dimensionality per head.}
+\end{figure}
 
 
 
 
 
+
+
+\subsection{Details on Autoencoders Models}
+
+In the paper, the researchers trained all their autoencoder models (as the image encoder $\varepsilon$, and image decoder $\mathcal{D}$) in adversarial manner (adversarial loss) \cite{vqgan}, such that patch-based discriminator $D_\psi$ is optimized to differentiate original images from reconstructed images $\mathcal{D} (\varepsilon (x))$.
+
+The researchers used two methods for regularization on the latent space:
+
+\begin{itemize}
+    \item \textbf{KL-divergence regularization:} similar to variational autoencoders, where the latent space is encoded as a distribution over the data, the KL regularization objective pushes the latent space to be close to a standard normal distribution.
+    \item \textbf{VQ regularization:} as we saw in VQ-GAN and VQ-VAE (sections \ref{sec:vqgan} and \ref{sec:vqvae}), the vector quantization regularization forces the latent space to be discrete, which can help the model to learn better by using a codebook $\mathcal{Z}$.
+\end{itemize}
+
+They used these regularization in small amount, in KL regularization, they factorized the KL term by a factor of $\sim 10^{-6}$, and in the case of VQ regularization, they used a big codebook (high dimensionality). Its done to obtain high-fidelity reconstructions.
+
+The full loss objective to train the autoencoder model $(\varepsilon, \mathcal{D})$ is given by:
+
+\begin{equation*}
+    L_{\text{Autoencoder}} = \min_{\varepsilon, \mathcal{D}} \max_{\psi} \left( L_{\text{rec}} (x, \mathcal{D} (\varepsilon (x))) - L_{\text{adv}} (\mathcal{D} \varepsilon (x)) + \log \mathcal{D}_\psi (x) + L_{\text{reg}} (x; \varepsilon, \mathcal{D}) \right)
+\end{equation*}
 
 
 
