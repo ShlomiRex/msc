@@ -171,7 +171,7 @@ In listing \ref{lst:cfg_stable_diffusion} the code snippet is taken from \href{h
 
 In Stable Diffusion, the authors used CLIP as the text encoder for the conditional information of text prompts.
 
-CLIP (Contrastive Language Image Pre-training) \cite{openai_clip} is a model developed by OpenAI that learns visual concepts from text supervision. The model builds associations between images and text prompts. 
+CLIP (Contrastive Language Image Pre-training) \cite{openai_clip} is a model developed by OpenAI that learns visual concepts from text supervision. The model builds associations between images and text prompts. Often this association is called 'text-image alignment', or 'image-text alignment'. It models how well a generated image corresponds to its associated text description.
 
 This is why the researchers use the \textbf{CLIPTokenizer} which is part of the CLIP model. This tokenizer converts text prompts to a sequence of tokens which are then used in the latent space of the stable diffusion model. They use the embeddings of this pre-trained model.
 
