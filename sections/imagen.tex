@@ -1,8 +1,18 @@
 \section{Imagen}
 
-Imagen \cite{imagen} is a text-to-image diffusion model that builds on the power of large transformer language models \cite{transformer} (LLMs) to generate high-fidelity images. The combination of diffusion (section \ref{subsec:diffusion_models}) and LLMs have shown remarkable outputs. One of the main observation in the paper that the researchers discovered is that a \textbf{large frozen LLM has bigger impact on the fidelity of generated images than increasing the amount of parameters in the image diffusion model}. Another contribution in the paper is the introduction of new benchmark called \textbf{DrawBench} to evaluate text-to-image models such as DALL-E \cite{dalle}, VQ-GAN+CLIP \cite{vqgan_clip}, latent diffusion models \cite{stable_diffusion}, GLIDE \cite{glide}, and DALLE-E 2 \cite{dalle_2}.
+Imagen \cite{imagen} is a text-to-image diffusion model that builds on the power of large transformer language models \cite{transformer} (LLMs) to generate high-fidelity images. The combination of diffusion (section \ref{subsec:diffusion_models}) and LLMs have shown remarkable outputs. One of the main observation in the paper that the researchers discovered is that a \textbf{large frozen LLM has bigger impact on the fidelity of generated images than increasing the amount of parameters in the image diffusion model}. Another contribution in the paper is the introduction of new benchmark called \textbf{DrawBench} to evaluate text-to-image models such as DALL-E \cite{dalle}, VQ-GAN+CLIP \cite{vqgan_clip}, latent diffusion models \cite{stable_diffusion}, GLIDE \cite{glide}, and DALL-E 2 \cite{dalle_2}.
 
 The researchers achieved a new state-of-the-art COCO FID score of 7.27, and human raters prefer Imagen in terms of image-text alignment with reference images. On DrawBench the researchers found Imagen outperforms state-of-the-art DALL-E 2 model in human evaluation on text-to-image task. But most importantly, the use of large pre-trained frozen language models was found to be instrumental to both image fidelity and image-text alignment.
+
+There are five main contributions in the paper:
+
+\begin{enumerate}
+    \item \textbf{Effectivness of large frozen text encoders}: large frozen language models that were trained only on text data have a significant impact on the fidelity of generated images compared to increasing the parameters of the diffusion image model. Scaling the language model is easy, since unlabeled text data is abundant and available on the internet.
+    \item \textbf{Dynamic thresholding}: is a new sampling technique that improves image fidelity and text-image alignment, which improves upon static thresholding. We will take a look at this in more detail in the following sections (section \ref{subsec:imagen_diffusion_guidance_weight}).
+    \item \textbf{Effective U-Net}: a new U-Net architecture that is simpler and more memory efficient.
+    \item \textbf{COCO FID score of 7.27}: imagen achieved a new state-of-the-art COCO FID score of 7.27, which outperforms all other previous works.
+    \item \textbf{DrawBench}: a new evaluation benchmark for text-to-image task. Imagen outperforms all other works, including DALL-E 2 \cite{dalle_2} on this benchmark.
+\end{enumerate}
 
 
 
@@ -32,7 +42,8 @@ The architecture of T5 consists of an encoder-decoder transformer model, closly 
     \caption{The unsupervised training objectives of T5 model. \textless M\textgreater\ denotes shared mask token (the same mask token is used to represent all masked positions in the input). \textless X\textgreater, \textless Y\textgreater, and \textless Z\textgreater\ denote sentiel tokens (with unique token IDs, they mark specific masked positions that the model should reconstruct).}
 \end{figure}
 
-
+% TODO: Complete
+\textbf{Architecture}: the architecture of T5 consists of ............
 
 
 
@@ -65,6 +76,7 @@ Freezing these models \footnote{When we freeze models we generally mean that som
 
 
 \subsection{Diffusion guidance weight}
+\label{subsec:imagen_diffusion_guidance_weight}
 
 As described before (section \ref{subsec:classifier_free_diffusion_guidance}), there are two methods to increase sample quality with the tradeoff of diversity:
 
@@ -83,14 +95,13 @@ More formally, in CFG, sampling is performed weighting the conditional and uncon
 
 where $\epsilon_\theta$ is the noise prediction with the learned parameters $\theta$, $w$ is the \textbf{guidance weight} (conditional weight), $c$ is the condition, and $z_t$ is the latent variable at timestep $t$.
 
-The researchers conducted experiments and found that increasing the guidance weight improves image-text alignment but reduces image fidelity, producing unnatural images. Its caused by \textbf{train-test mismatch}: looking at equation \ref{eq:classifier_free_guidance} if we set $w$ to 1, then the model won't be trained on unconditional samples. This causes the model to generate outputs that exceed the noise prediction (in the paper they refer to this as "x-prediction") in the normalized range of [-1, 1]. And when iteratively applying the model to its own outputs at each step, errors caused by this mismatch accumulate, which causes unnatural outputs.
+The researchers conducted experiments and found that increasing the guidance weight improves image-text alignment but reduces image fidelity, producing unnatural images. Its caused by \textbf{train-test mismatch}: looking at equation \ref{eq:classifier_free_guidance} if we set $w$ to 1, then we disable classifier-free guidance, and then the model won't be trained on unconditional samples (only on conditional signals). This causes the model to generate outputs that exceed the noise prediction (in the paper they refer to this as "x-prediction") in the normalized range of [-1, 1]. And when iteratively applying the model to its own outputs at each step, errors caused by this mismatch accumulate, which causes unnatural artifacts in output images. When we set $w>1$ then it improves the model's image-text alignment, but damanges image fidelity by over-relying on conditional information.
 
 For this reason they investigated static thresholding and dynamic thresholding.
 
 \textbf{Static thresholding} is a method of applying the clipping operation to force the x-prediction output to fit to the normalized range of [-1, 1]. However, static thresholding still result in over-saturated and less detailed images as the guidance weight approaches 1.
 
-% TODO: I dont really understand dynamic thresholding, need to read more about it.
-\textbf{Dynamic thresholding} is a new method developed by the researchers. Instead of clipping the x-prediction to the normalized range, dynamic thresholding sets a threshold $s$ based on the distribution of absolute pixel values in the current x-prediction, allowing the threshold to adapt to the specific output of the model at that moment. In other words, if the pixel values are saturated (close to the [-1, 1] range), dynamic thresholding pushes them inwards by thresholding in the range [-$s$, $s$] and then dividing by $s$.
+\textbf{Dynamic thresholding} is a new sampling technique developed by the researchers. Instead of clipping the x-prediction to the normalized range, dynamic thresholding sets a threshold $s$ based on the distribution of absolute pixel values in the current x-prediction, allowing the threshold to adapt to the specific output of the model at that moment. In other words, if the pixel values are saturated (close to the [-1, 1] range), dynamic thresholding pushes them inwards by thresholding in the range [-$s$, $s$] and then dividing by $s$.
 
 \begin{figure}
     \centering
@@ -110,6 +121,61 @@ The implementation of static and dynamic thresholding is shown in figure \ref{fi
 
 
 
+\subsection{Cascaded diffusion models (CDMs)}
+
+Cascaded diffusion models method was introduced in a 2022 paper \cite{cascaded_diffusion_models} by Google Research. However this concept is not new, and it was first introduced in a 2021 paper \cite{sr3} by the same team (Google Research). We will dive deeper into SR3 in section \ref{subsec:imagen_sr3}.
+
+A cascaded diffusion model is compromised of a pipeline of multiple diffusion models that generate images of increasing resolution, progressively upsample the image and add higher resolution details. The 2022 paper \cite{cascaded_diffusion_models} outperformed VQ-VAE 2 \cite{vqvae2} and BigGAN-deep \cite{biggan_deep} in FID metric on ImageNet dataset.
+
+\textbf{Image and text conditioning in one model}: ...................
+
+\textbf{Conditioning augmentation} is a critical part of the paper \cite{cascaded_diffusion_models}. The researchers introduced this technique for super-resolution models, which allows to generate higher quality images with higher FID scores, compared to cascaded DDPMs without conditioning augmentation. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\subsection{Super-resolution via Repeated Refinment (SR3)}
+
+\label{subsec:imagen_sr3}
+
+In a 2021 paper \cite{sr3}, they introduced a brand new concept: the use of conditional diffusion models to upsample (super-resolution) images in cascading manner. Super-Resolution via Repeated Refinment (SR3) uses modified U-Net architecure in order to achieve the super-resolution task. Imagen builds upon this concept.
+
+Cascading models allows one to independently train a few small models rather than a single large model. SR3 model upsamples 64x64 images to 256x256 and then to 1024x1024. 
+
+A low-resolution image input is upsampled to target resolution by using \textbf{bicubic interpolation}. Bicubic interpolation is an image resizing technique used to upscale or downscale images by considering the intensity of surrounding pixels. It's a method that produces smoother and higher-quality results than simpler methods like nearest-neighbor (NN) or bilinear interpolation.
+
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{|l|m{8cm}|}
+        \hline
+        \textbf{Prior to Super Resolution} & \textbf{Limitations} \\ \hline
+        Autoregressive Models           & Computationally expensive; Limited resolution \\ \hline
+        Variational Autoencoder         & Sub-optimal sample quality \\ \hline
+        Generative Adversarial Network  & Difficult to optimize; Requires additional functions to prevent instability \\ \hline
+    \end{tabular}
+    \caption{Related works to super-resolution in SR3 and their limitations.}
+\end{table}
+
+
+
+
+
+
+
+
+
+
 
 \subsection{Architecture}
 
@@ -118,6 +184,8 @@ An overview of Imagen architecture is shown in figure \ref{fig:imagen_architectu
 It consists of a T5-XXL (T5-Extra Extra Large) text encoder, which maps text prompts (as conditioning signal) to embeddings. The T5-XXL model has 11 billion parameters, and its the largest version of the T5 model.
 
 Then these embeddings are then fed into a 64x64 image diffusion model (the output image resolution is 64x64). These 64x64 images are then fed to a 256x256 super-resolution diffusion model (that increases the resolution from 64x64 to 256x256). And finally, a final 1024x1024 super-resolution diffusion model is used to again increase the resolution of the final image. All the diffusion models are conditioned on the same text embeddings.
+
+The researchers conducted experiments with frozen large language models such as BERT \cite{bert}, T5 \cite{t5_model}, and CLIP \cite{openai_clip} and found that humans prefer T5-XXL over CLIP.
 
 "\textbf{Cascaded diffusion models}" is the term for chaining multiple super-resolution (diffusion) models together. The state-of-the-art GLIDE \cite{glide} model also uses cascaded diffusion models.
 
