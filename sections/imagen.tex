@@ -26,13 +26,19 @@ There are five main contributions in the paper:
 
 
 
+
+
+
+
+
+
 \subsection{Text-to-Text Transfer Transformer (T5)}
 
 \textbf{T}ext-\textbf{t}o-\textbf{T}ext \textbf{T}ransfer \textbf{T}ransformer (T5) \cite{t5_model} is a model that was introduced by Google Research that treats tasks as a text-to-text problems. For example, for summorization tasks we could prompt the LLM: "Please summorize the following: ...", for translation tasks we could prompt the LLM: "Translate from English to French the word 'You'", as well as for text classification, question answering, conversations, and other tasks. In short, this knowledge can be viewed as developing a 'general-purpose' model that can understand text.  Instead of explicitly training the model to learn words or text, such as in the case of \textbf{word vectors} \cite{cbow_word2vec}, a more common practice is to \textbf{pre-train} \cite{bert} the model on data-rich task in an unsupervised manner. The model T5 is open-source and was trained on large corpura of textual data. The base version of the model (T5-base) consists of 220 million parameters, while the largest version of the model (T5-XXL) consists of 11 billion parameters. In the context of Imagen, the Imagen model uses a frozen version of T5-XXL model to encode conditional text prompts.
 
 This pre-training approach causes the model to develop general-purpose abilities that are then used in downstream tasks (translation, summorization, conversation and more). Unsupervised pre-training is appealing because unlabeled text data is abundant and available on the Internet. For example, the Common Crawl project \cite{common_crawl_project} is a non-profit organization that crawls the internet and provides free access to its achived datasets to the publlic. A lot of research has been done on the training of models on large scale dataset, and the consensus is that the larger the dataset, the better the model performs \cite{radford2019language} \cite{jozefowicz2016exploring} \cite{hestness2017deep}. The T5 models were trained on the "Colossal Clean Crawled Corpus" (C4) dataset, which consists of 750GB of English text data scraped from the web.
 
-The architecture of T5 consists of an encoder-decoder transformer model, closly follows the implementation in the paper that introduced the transformer model \cite{transformer}. It first maps an input token sequence to embeddings, which are passed to the encoder. The encoder consists of stacked blocks, each with a \textbf{self-attention layer} (section \ref{subsec:cross_attention}) followed by a feed-forward network (simple fully connected layer). Layer normalization (appendix \ref{appendix:layer_normalization}) is applied before each component, using a simplified version without additive bias \footnote{Layer normalization rescales and shifts the activations of a layer by rescaling values (e.g. between 0 and 1) and by additive bias. Removing the additive bias means the model won't apply the extra shift; it only rescales the activations without any other adjustments.}. Residual connections and dropout are applied throughout. The decoder mirrors the encoder but includes an additional attention layer to attend to encoder outputs and uses autoregressive self-attention to focus on past outputs. The final decoder output passes through a dense layer with shared weights from the input embeddings. 
+\textbf{Architecture}: the architecture of T5 consists of an encoder-decoder transformer model, closly follows the implementation in the paper that introduced the transformer model \cite{transformer}. Both the encoder and decoder are built from stacked layers of multi-headed self-attention (section \ref{subsec:cross_attention}) and feed-forward networks. The encoder takes in the input text and maps it to a sequence of embeddings. Layer normalization (appendix \ref{appendix:layer_normalization}) is applied before each component, using a simplified version without additive bias \footnote{Layer normalization rescales and shifts the activations of a layer by rescaling values (e.g. between 0 and 1) and by additive bias. Removing the additive bias means the model won't apply the extra shift; it only rescales the activations without any other adjustments.}. Residual connections and dropout are applied throughout. The decoder mirrors the encoder but includes an additional attention layer to attend to encoder outputs and uses autoregressive self-attention to focus on past outputs. The final decoder output passes through a dense layer with shared weights from the input embeddings.
 
 \textbf{The training objective} of T5 model is called \textbf{span corruption}, which is stronger version of \textbf{masked language modeling}. Given a sentence, some words and some contigous words are masked (in masked language modeling, only single words are masked), and the model should predict those words. For example: "Thank you for inviting me to your party last week", where the masked words are "for inviting" and "last". And the model should predict those words in the following sentence: "Thank you [MASKED] me to your party [MASKED] week". The model should learn to reconstruct the missing text. The actual loss function is to choose the correct words by similarity in the embeddings space, which is where cross-entropy is commonly used for.
 
@@ -42,8 +48,8 @@ The architecture of T5 consists of an encoder-decoder transformer model, closly 
     \caption{The unsupervised training objectives of T5 model. \textless M\textgreater\ denotes shared mask token (the same mask token is used to represent all masked positions in the input). \textless X\textgreater, \textless Y\textgreater, and \textless Z\textgreater\ denote sentiel tokens (with unique token IDs, they mark specific masked positions that the model should reconstruct).}
 \end{figure}
 
-% TODO: Complete
-\textbf{Architecture}: the architecture of T5 consists of ............
+
+
 
 
 
@@ -58,7 +64,7 @@ The architecture of T5 consists of an encoder-decoder transformer model, closly 
 
 \subsection{Pretrained text encoders}
 
-In the paper, the researchers explored some of the biggest and most advanced text encoders: \textbf{T5-XXL} \cite{t5_model}, \textbf{GPT} \cite{gpt} \cite{mingpt} \cite{gpt_another}, and \textbf{BERT} \cite{bert}. These large language models (LLMs) are trained exclusively on text datasets, which are substantially larger compared to image-text pair datasets (as used in models like CLIP). Additionally, these models serve as significantly larger text encoders than those designed to handle image-text pairs alone.
+In the paper, the researchers explored some of the biggest and most advanced text encoders: \textbf{T5-XXL} \cite{t5_model}, \textbf{GPT} \cite{gpt} \cite{mingpt} \cite{gpt_another}, and \textbf{BERT} \cite{bert}. These large language models (LLMs) are trained exclusively on text datasets, which are substantially larger compared to image-text pair datasets (as used in models like \textbf{CLIP}). Additionally, these models serve as significantly larger text encoders than those designed to handle image-text pairs alone.
 
 Freezing these models \footnote{When we freeze models we generally mean that some (or all) of the parameters of the model are not changed during training. How? When a layer is frozen during training, no gradient updates will occur for this layer. Gradients will still flow from frozen layer to non-frozen layer, it doesn't skip the backpropogation. It just passes the gradients from the next layer to the previous layer.} (pre-training) provides significant advantage over training them: less memory and computation consumption during training (of the text-to-image model). They also found that scaling the text encoder size improves the quality of the generated images.
 
@@ -121,15 +127,32 @@ The implementation of static and dynamic thresholding is shown in figure \ref{fi
 
 
 
+
+
+
+
+
+
+
+
 \subsection{Cascaded diffusion models (CDMs)}
 
 Cascaded diffusion models method was introduced in a 2022 paper \cite{cascaded_diffusion_models} by Google Research. However this concept is not new, and it was first introduced in a 2021 paper \cite{sr3} by the same team (Google Research). We will dive deeper into SR3 in section \ref{subsec:imagen_sr3}.
 
 A cascaded diffusion model is compromised of a pipeline of multiple diffusion models that generate images of increasing resolution, progressively upsample the image and add higher resolution details. The 2022 paper \cite{cascaded_diffusion_models} outperformed VQ-VAE 2 \cite{vqvae2} and BigGAN-deep \cite{biggan_deep} in FID metric on ImageNet dataset.
 
-\textbf{Image and text conditioning in one model}: ...................
+Lower resolution image conditioning involves combining a lower-resolution image with the model's input (conditioning signal) at each timestep of the reverse diffusion process. This is done by first upscaling the low-resolution image (\textbf{bicubic upsampling} \footnote{Bicubic interpolation is a method for resizing images that uses the closest 4x4 pixels grid to estimate new values, resulting in smoother transitions (compared to nearest-neighbor or bilinear interpolation) and fewer visual artifacts than simpler techniques.}) to match the desired resolution and then \textbf{concatenating} it channel-wise with the noisy image (Gaussian noise) at each diffusion step. 
 
-\textbf{Conditioning augmentation} is a critical part of the paper \cite{cascaded_diffusion_models}. The researchers introduced this technique for super-resolution models, which allows to generate higher quality images with higher FID scores, compared to cascaded DDPMs without conditioning augmentation. 
+The 2022 paper \cite{cascaded_diffusion_models} uses the same architecture as SR3 paper \cite{sr3}.
+
+CDMs consists of a base diffusion model that is only input is the conditioning signal (such as class label in the case of the 2022 paper \cite{cascaded_diffusion_models} or no conditioning at all in the case of the SR3 paper \cite{sr3}), and the intermediate stages are super-resolution diffusion models with input of the previous stage's output image and also the conditioning signal, and output a higher-resolution image as a result.
+
+A big strength of CDMs is the ability to train and fine tune each model individually, and then freezing their parameters. 
+
+\textbf{Conditioning augmentation} is the main and critical part of the paper \cite{cascaded_diffusion_models}. The researchers introduced this technique for super-resolution models, which allows to generate higher quality images with higher FID scores, compared to cascaded DDPMs without conditioning augmentation.
+
+
+
 
 
 
@@ -152,7 +175,11 @@ In a 2021 paper \cite{sr3}, they introduced a brand new concept: the use of cond
 
 Cascading models allows one to independently train a few small models rather than a single large model. SR3 model upsamples 64x64 images to 256x256 and then to 1024x1024. 
 
-A low-resolution image input is upsampled to target resolution by using \textbf{bicubic interpolation}. Bicubic interpolation is an image resizing technique used to upscale or downscale images by considering the intensity of surrounding pixels. It's a method that produces smoother and higher-quality results than simpler methods like nearest-neighbor (NN) or bilinear interpolation.
+SR3 achieves close to a 50\% fool rate \footnote{A 50\% fool rate means humans can't distinguish between a generated face image and an image of a real face.} on 16x16 $\rightarrow$ 128x128 faces, outperforming the previous state-of-the-art GAN models (FSRGAN and PULSE).
+
+\textbf{The archirecture of SR3} is similar to the U-Net found in DDPM but with some modifications to the U-Net: they replaced the original DDPM residual blocks with residual blocks from BigGAN \cite{biggan_deep}, rescaled skip connections by $\frac{1}{\sqrt{2}}$, increased the number of residual blocks, and increased the number of the channel multipliers \footnote{Channel multipliers in a U-Net are the scaling factors used to adjust the number of feature channels at different U-Net layers. In other words, they increased the depth of the features at the cost of decreasing resolution at the convolution layers (down convolution, up convolution layers)} at different resolutions. The researchers also up-sample the input image $x$ to target resolution using bicubic interpolation.
+
+In other words, they first apply bicubic interpolation to the image which scales the image $x$ to the target resolution, and only then apply the cascaded diffusion models. This way the model learns to denoise the noisy image $x$ after the upscaling (which results in noisy image after the upscaling). This noisy image $x$ (after upscaling) is given as input and can be thought as pure noise in regular DDPM. The model then learns to denoise the noisy image and generate a high-resolution image, which adds high-frequency details.
 
 
 \begin{table}[h!]
@@ -166,6 +193,23 @@ A low-resolution image input is upsampled to target resolution by using \textbf{
     \end{tabular}
     \caption{Related works to super-resolution in SR3 and their limitations.}
 \end{table}
+
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.75\textwidth]{images/imagen/sr3_architecture.png}
+    \caption{A super-resolution model in SR3 for 16x16 $\rightarrow$ 128x128 image generation. Its a U-Net with skip connections, where $x$ is the input image (from previous model), which is upscaled to the target resolution using bicubic interpolation, and then its concatenated with the noise $y$.}
+    \label{fig:sr3_architecture}
+\end{figure}
+
+In figure \ref{fig:sr3_architecture} we see overview of super-resolution model of the SR3 paper. The super-resolution model is a single small model that upscales the image in the intermediate stages. In contrast, we call the first diffusion model in the cascading chain as the \textbf{base model}, which has conditioning signal only as input. Like in the original paper DDPM \cite{ddpm} the base model starts from pure Gaussian noise image and slowly denoises it to get an image. Unlike the base model, the \textbf{super-resolution model} also takes as input the output of the base model (or previous super-resolution model) with the addition of the conditional signal. In this figure, we don't see the conditioning signal. In the case of text prompts, its injected at the attention blocks of each model (base and super-resolution models). See the stable diffusion architecture (K,V,W cross-attention blocks) \ref{fig:stable_diffusion_architecture}.
+
+
+
+
+
+
+
 
 
 
