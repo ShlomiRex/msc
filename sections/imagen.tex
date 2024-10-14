@@ -101,7 +101,7 @@ More formally, in CFG, sampling is performed weighting the conditional and uncon
 
 where $\epsilon_\theta$ is the noise prediction with the learned parameters $\theta$, $w$ is the \textbf{guidance weight} (conditional weight), $c$ is the condition, and $z_t$ is the latent variable at timestep $t$.
 
-The researchers conducted experiments and found that increasing the guidance weight improves image-text alignment but reduces image fidelity, producing unnatural images. Its caused by \textbf{train-test mismatch}: looking at equation \ref{eq:classifier_free_guidance} if we set $w$ to 1, then we disable classifier-free guidance, and then the model won't be trained on unconditional samples (only on conditional signals). This causes the model to generate outputs that exceed the noise prediction (in the paper they refer to this as "x-prediction") in the normalized range of [-1, 1]. And when iteratively applying the model to its own outputs at each step, errors caused by this mismatch accumulate, which causes unnatural artifacts in output images. When we set $w>1$ then it improves the model's image-text alignment, but damanges image fidelity by over-relying on conditional information.
+When $w=1$ the classifier-free guidance is disabled, and when $w>1$ it strengthens it. Imagen depends on this for effective text conditioning. The researchers conducted experiments and found that increasing the guidance weight improves image-text alignment but reduces image fidelity, producing unnatural images. Its caused by \textbf{train-test mismatch}: looking at equation \ref{eq:classifier_free_guidance} if we set $w$ to 1, then we disable classifier-free guidance, and then the model won't be trained on unconditional samples (only on conditional signals). This causes the model to generate outputs that exceed the noise prediction (in the paper they refer to this as "x-prediction") in the normalized range of [-1, 1]. And when iteratively applying the model to its own outputs at each step, errors caused by this mismatch accumulate, which causes unnatural artifacts in output images. When we set $w>1$ then it improves the model's image-text alignment, but damanges image fidelity by over-relying on conditional information.
 
 For this reason they investigated static thresholding and dynamic thresholding.
 
@@ -113,44 +113,17 @@ For this reason they investigated static thresholding and dynamic thresholding.
     \centering
     \includegraphics[width=0.75\textwidth]{images/imagen/static_dynamic_thresholding.png}
     \caption{Static (left) and dynamic (right) thresholding code implementation.}
-    \label{fig:dynamic_thresholding}
+    \label{fig:imagen_dynamic_thresholding}
 \end{figure}
 
-The implementation of static and dynamic thresholding is shown in figure \ref{fig:dynamic_thresholding}.
+\begin{figure}
+    \centering
+    \includegraphics[width=0.4\textwidth]{images/imagen/static_vs_dynamic_thresholding.png}
+    \caption{Static vs dynamic thresholding. Dynamic thresholding produces samples with more photorealism and image-text alignment over static thresholding.}
+    \label{fig:imagen_static_vs_dynamic_thresholding}
+\end{figure}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\subsection{Cascaded diffusion models (CDMs)}
-
-Cascaded diffusion models method was introduced in a 2022 paper \cite{cascaded_diffusion_models} by Google Research. However this concept is not new, and it was first introduced in a 2021 paper \cite{sr3} by the same team (Google Research). We will dive deeper into SR3 in section \ref{subsec:imagen_sr3}.
-
-A cascaded diffusion model is compromised of a pipeline of multiple diffusion models that generate images of increasing resolution, progressively upsample the image and add higher resolution details. The 2022 paper \cite{cascaded_diffusion_models} outperformed VQ-VAE 2 \cite{vqvae2} and BigGAN-deep \cite{biggan_deep} in FID metric on ImageNet dataset.
-
-Lower resolution image conditioning involves combining a lower-resolution image with the model's input (conditioning signal) at each timestep of the reverse diffusion process. This is done by first upscaling the low-resolution image (\textbf{bicubic upsampling} \footnote{Bicubic interpolation is a method for resizing images that uses the closest 4x4 pixels grid to estimate new values, resulting in smoother transitions (compared to nearest-neighbor or bilinear interpolation) and fewer visual artifacts than simpler techniques.}) to match the desired resolution and then \textbf{concatenating} it channel-wise with the noisy image (Gaussian noise) at each diffusion step. 
-
-The 2022 paper \cite{cascaded_diffusion_models} uses the same architecture as SR3 paper \cite{sr3}.
-
-CDMs consists of a base diffusion model that is only input is the conditioning signal (such as class label in the case of the 2022 paper \cite{cascaded_diffusion_models} or no conditioning at all in the case of the SR3 paper \cite{sr3}), and the intermediate stages are super-resolution diffusion models with input of the previous stage's output image and also the conditioning signal, and output a higher-resolution image as a result.
-
-A big strength of CDMs is the ability to train and fine tune each model individually, and then freezing their parameters. 
-
-\textbf{Conditioning augmentation} is the main and critical part of the paper \cite{cascaded_diffusion_models}. The researchers introduced this technique for super-resolution models, which allows to generate higher quality images with higher FID scores, compared to cascaded DDPMs without conditioning augmentation.
-
+The implementation of static and dynamic thresholding is shown in figure \ref{fig:imagen_dynamic_thresholding}. The impact of dynamic thresholding is shown in figure \ref{fig:imagen_static_vs_dynamic_thresholding} where dynamic thresholding is shown to have more impact on FID as CLIP score increases.
 
 
 
@@ -171,16 +144,13 @@ A big strength of CDMs is the ability to train and fine tune each model individu
 
 \label{subsec:imagen_sr3}
 
-In a 2021 paper \cite{sr3}, they introduced a brand new concept: the use of conditional diffusion models to upsample (super-resolution) images in cascading manner. Super-Resolution via Repeated Refinment (SR3) uses modified U-Net architecure in order to achieve the super-resolution task. Imagen builds upon this concept.
+In a 2021 paper \cite{sr3}, the Google Research team introduced a brand new concept: the use of diffusion models to upsample (super-resolution) images in iterative manner. Super-Resolution via Repeated Refinment (SR3) uses modified U-Net architecure in order to achieve the super-resolution task. Imagen builds upon this concept. The SR3 model upsamples 64x64 images to 256x256 and then to 1024x1024 via iterative refinement.
 
-Cascading models allows one to independently train a few small models rather than a single large model. SR3 model upsamples 64x64 images to 256x256 and then to 1024x1024. 
+SR3 achieves close to a 50\% fool rate (47\%) \footnote{A 50\% fool rate means humans can't distinguish between a generated face image and an image of a real face.} on 16x16 $\rightarrow$ 128x128 faces, outperforming the previous state-of-the-art GAN models (FSRGAN and PULSE).
 
-SR3 achieves close to a 50\% fool rate \footnote{A 50\% fool rate means humans can't distinguish between a generated face image and an image of a real face.} on 16x16 $\rightarrow$ 128x128 faces, outperforming the previous state-of-the-art GAN models (FSRGAN and PULSE).
+\textbf{Iterative refinment}: The input of the SR3 model is a low resolution image $x_{low}$, then the model applies \textbf{bicubic interpolation} \footnote{Bicubic interpolation is a method for resizing images that uses the closest 4x4 pixels grid to estimate new values, resulting in smoother transitions (compared to nearest-neighbor or bilinear interpolation) and fewer visual artifacts.} to upscale the image to the target resolution to get a higher-resolution image $x$ (however this creates artficats, large pixels), and then concatenates $x$ with a pure Gaussian noise $y_t \sim \mathcal{N} (0, I)$ channel-wise (see figure \ref{fig:sr3_architecture}). Then the U-Net iteratively refines the image $(x, y_t)$ by denoising. The output of a single refinement step is $y_{t-1}$. Then in the next refinement step, $x$ (which is unchanged) is concatenated with $y_{t-1}$ and the process is repeated until we reach $y_0$. The final output is a high-resolution image $y_0$. Note that both $x$ (after the upsampling), $y_t$ and the model's output are all the same resolution.
 
-\textbf{The archirecture of SR3} is similar to the U-Net found in DDPM but with some modifications to the U-Net: they replaced the original DDPM residual blocks with residual blocks from BigGAN \cite{biggan_deep}, rescaled skip connections by $\frac{1}{\sqrt{2}}$, increased the number of residual blocks, and increased the number of the channel multipliers \footnote{Channel multipliers in a U-Net are the scaling factors used to adjust the number of feature channels at different U-Net layers. In other words, they increased the depth of the features at the cost of decreasing resolution at the convolution layers (down convolution, up convolution layers)} at different resolutions. The researchers also up-sample the input image $x$ to target resolution using bicubic interpolation.
-
-In other words, they first apply bicubic interpolation to the image which scales the image $x$ to the target resolution, and only then apply the cascaded diffusion models. This way the model learns to denoise the noisy image $x$ after the upscaling (which results in noisy image after the upscaling). This noisy image $x$ (after upscaling) is given as input and can be thought as pure noise in regular DDPM. The model then learns to denoise the noisy image and generate a high-resolution image, which adds high-frequency details.
-
+\textbf{The archirecture of SR3} is similar to the U-Net found in DDPM but with some modifications to the U-Net: they replaced the original DDPM residual blocks with residual blocks from BigGAN \cite{biggan_deep}, rescaled skip connections by $\frac{1}{\sqrt{2}}$, increased the number of residual blocks, and increased the number of the channel multipliers \footnote{Channel multipliers in a U-Net are the scaling factors used to adjust the number of feature channels at different U-Net layers. In other words, they increased the depth of the features at the cost of decreasing resolution at the convolution layers (down convolution, up convolution layers)} at different resolutions.
 
 \begin{table}[h!]
     \centering
@@ -202,7 +172,55 @@ In other words, they first apply bicubic interpolation to the image which scales
     \label{fig:sr3_architecture}
 \end{figure}
 
-In figure \ref{fig:sr3_architecture} we see overview of super-resolution model of the SR3 paper. The super-resolution model is a single small model that upscales the image in the intermediate stages. In contrast, we call the first diffusion model in the cascading chain as the \textbf{base model}, which has conditioning signal only as input. Like in the original paper DDPM \cite{ddpm} the base model starts from pure Gaussian noise image and slowly denoises it to get an image. Unlike the base model, the \textbf{super-resolution model} also takes as input the output of the base model (or previous super-resolution model) with the addition of the conditional signal. In this figure, we don't see the conditioning signal. In the case of text prompts, its injected at the attention blocks of each model (base and super-resolution models). See the stable diffusion architecture (K,V,W cross-attention blocks) \ref{fig:stable_diffusion_architecture}.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\subsection{Cascaded diffusion models (CDMs)}
+
+Cascaded diffusion models method was introduced in a 2022 paper \cite{cascaded_diffusion_models} also by Google Research. The Google Research team builds upon the SR3 paper \cite{sr3} and introduces a new method for super-resolution called Cascaded Diffusion Models (CDMs). The paper introduced class-conditioned ImageNet image generation with cascading models.
+
+A cascaded diffusion model is compromised of a pipeline of multiple super-resolution diffusion models that generate images of increasing resolution, progressively upsample the image and add higher resolution details. The 2022 paper \cite{cascaded_diffusion_models} outperformed VQ-VAE 2 \cite{vqvae2} and BigGAN-deep \cite{biggan_deep} in FID metric on ImageNet dataset.
+
+The 2022 paper \cite{cascaded_diffusion_models} uses the same architecture as SR3 paper \cite{sr3}. A base diffusion model generates data at a low resolution, followed by a sequence of SR3 super-resolution diffusion models that gradually increase the resolution of the generated images until we reach the target resolution.
+
+A big strength of CDMs is the ability to train and fine tune each model individually, and then freezing their parameters.
+
+\textbf{Conditioning augmentation} is the main and critical part of the paper \cite{cascaded_diffusion_models}. The researchers introduced this technique for super-resolution models, which allows to generate higher quality images with higher FID scores, compared to cascaded DDPMs without conditioning augmentation. The low-resolution base model may not be of sufficiently high quality in comparison to the original images in the training stage\footnote{While the super-resolution models in CDM are trained on original images from the dataset, during generation they need to perform super-resolution on the images generated by a low-resolution base model, which may not be of sufficiently high quality in comparison to the original images.}. This leads to \textbf{train-test mismatch} for the super-resolution models. Conditioning augmentation involves using data augmentation techniques on the low-resolution input image for each super-resolution model in a cascaded pipeline. In this process, augmentations such as Gaussian noise and Gaussian blur are applied to the input. This helps prevent each super-resolution model from overfitting to the low-resolution input, ultimately improving the quality of the higher-resolution outputs in the CDM.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.75\textwidth]{images/imagen/cdm_architecture.png}
+    \caption{Cascaded diffusion models (CDMs) architecture proposed in the 2022 paper \cite{cascaded_diffusion_models}. Notice the model is conditioned on class ID (label).}
+    \label{fig:imagen_cdm_architecture}
+\end{figure}
+
+Imagen, compared to SR3 \cite{sr3} and 2022 paper \cite{cascaded_diffusion_models} is a text-to-image diffusion model. SR3 wasn't designed for text conditioning and the 2022 paper \cite{cascaded_diffusion_models} was trained on class labels. See figure \ref{fig:imagen_cdm_architecture} for an overview of CDMs architecture proposed in the paper.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -225,15 +243,32 @@ In figure \ref{fig:sr3_architecture} we see overview of super-resolution model o
 
 An overview of Imagen architecture is shown in figure \ref{fig:imagen_architecture}.
 
-It consists of a T5-XXL (T5-Extra Extra Large) text encoder, which maps text prompts (as conditioning signal) to embeddings. The T5-XXL model has 11 billion parameters, and its the largest version of the T5 model.
-
-Then these embeddings are then fed into a 64x64 image diffusion model (the output image resolution is 64x64). These 64x64 images are then fed to a 256x256 super-resolution diffusion model (that increases the resolution from 64x64 to 256x256). And finally, a final 1024x1024 super-resolution diffusion model is used to again increase the resolution of the final image. All the diffusion models are conditioned on the same text embeddings.
-
 The researchers conducted experiments with frozen large language models such as BERT \cite{bert}, T5 \cite{t5_model}, and CLIP \cite{openai_clip} and found that humans prefer T5-XXL over CLIP.
 
-"\textbf{Cascaded diffusion models}" is the term for chaining multiple super-resolution (diffusion) models together. The state-of-the-art GLIDE \cite{glide} model also uses cascaded diffusion models.
+The text encoder consists of a T5-XXL (T5-Extra Extra Large) text encoder, which maps text prompts (as conditioning signal) to embeddings. The T5-XXL model has 11 billion parameters, and its the largest version of the T5 model. All the diffusion models are conditioned on the same text embeddings.
 
-Similar to Stable Diffusion (LDMs), Imagen also uses classifier-free guidance \cite{classifier_free_guidance} (section \ref{subsec:classifier_free_diffusion_guidance}).
+\textbf{Base model}: the base model is 64x64 text-to-image diffusion model. The network is conditioned on text embeddings (via cross-attention and Layer Normalization layers), aswell as with diffusion timestep embeddings, similar to the class embeddings in the 2022 paper \cite{cascaded_diffusion_models}. 
+
+\textbf{Super-resolution models}: they used modified U-Net based on Improved DDPM paper \cite{openai_improved_ddpm} by OpenAI, specifically for the super-resolution models, since they deal with higher-dimensional data. By improving the U-Net they achieved 2-3x faster inference and convergence speed; they call this variant "Efficient U-Net". For the 256x256 $\rightarrow$ 1024x1024 super-resolution model, they removed self-attention layers but keep the cross-attention layers.
+
+\textbf{Efficient U-Net}: is a new U-Net architectural variant for super-resolution models. Its more memory efficient and 2-3x faster in training and inference time. There are several modifications to the U-Net architecture:
+
+\begin{enumerate}
+    \item \textbf{Residual blocks}: adding more residual blocks for lower resolutions, since lower-resolution images typically have more channels. They used 8 residual blocks at lower-resolution compared to typical 2-3 residual blocks used in standard U-Net.
+    \item \textbf{Scaling the skip connections} by $\frac{1}{\sqrt{2}}$, similar to SR3 \cite{sr3}, significantly improves convergence speed.
+    \item \textbf{Reversing order of downsampling and upsampling blocks}: In a standard U-Net, in in the downsampling block, downsampling occurs after the convolution layers, and in the upsampling block, upsampling is done before the convolutions. They reverse this order for both blocks which significantly improves the forward pass without performance degradation.
+\end{enumerate}
+
+The efficient U-Net architecture for 64x64 $\rightarrow$ 256x256 is shown in figure \ref{fig:imagen_efficient_unet}.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.25\textwidth]{images/imagen/efficient_unet.png}
+    \caption{Efficient U-Net architecture for 64x64 $\rightarrow$ 256x256 super-resolution diffusion model, proposed in Imagen \cite{imagen}.}
+    \label{fig:imagen_efficient_unet}
+\end{figure}
+
+Similar to Stable Diffusion / Latent Diffusion Models (LDMs), Imagen also uses classifier-free guidance \cite{classifier_free_guidance} (section \ref{subsec:classifier_free_diffusion_guidance}). Imagen depends critically on classifier-free guidance for effective text conditioning.
 
 \begin{figure}
     \centering
@@ -242,10 +277,81 @@ Similar to Stable Diffusion (LDMs), Imagen also uses classifier-free guidance \c
     \label{fig:imagen_architecture}
 \end{figure}
 
-Imagen depends critically on classifier-free guidance \ref{subsec:classifier_free_diffusion_guidance} for effective text conditioning.
+\textbf{Noise conditioning}: Imagen corrupts the 64x64 image with Gaussian noise. The amount of noise is random at training but arbitrary at inference time. They control the amount of corruption with \textit{aug\_level}, and the super-resolution model is conditioned on the augmentation level.
+
+\textbf{Number of parameters}: the base model (64x64 text-to-image synthesis) has 2 billion parameters. The 64x64 $\rightarrow$ 256x256 super-resolution model has 600 million parameters, and the 256x256 $\rightarrow$ 1024x1024 super-resolution model has 400 million parameters.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.75\textwidth]{images/imagen/encoder_vs_unet_size_impact.png}
+    \caption{Scaling the encoder size is more impactful than scaling the U-Net size.}
+    \label{fig:imagen_scaling_encoder_more_impactful_than_unet_scaling}
+\end{figure}
+
+\textbf{Scaling text encoder size is more important than U-Net size}: the researchers found that scaling text encoder (T5-XXL for example) is significantly more impactful than increasing U-Net size. See figure \ref{fig:imagen_scaling_encoder_more_impactful_than_unet_scaling} for reference. The size of the T5-XXL text encoder is 4.6 billion parameters.
 
 
 
 
 
 
+
+
+
+
+
+
+
+
+
+
+\subsection{DrawBench}
+
+The COCO dataset \cite{coco_dataset} is a standard benchmark for evaluating text-to-image models. The standard performance metrics used are FID \cite{fid_score} which measure image fidelity (but is not fully aligned with perceptual quality \cite{perceptual_quality}), and CLIP score \cite{openai_clip} which measures image-text alignment (but is bad at counting objects in an image).
+
+Due to these limitations, the researchers created new bnechmark called \textbf{DrawBench} that uses human evaluation to assess image quality by asking the question "Which image is more photorealistic (looks more real)?" and text-image alignment by asking the question "Does the caption accurately describe the above image?". For both cases they used 200 randomly chosen image-caption pairs from COCO dataset.
+
+DrawBench has 11 categories of prompts which test different capabilities of models such as ability to render different colors, number of objects, spatial relations, text in the scene, and more. The prompts include long captions, rare words, and misspelled prompts.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\subsection{Results}
+
+\begin{figure}[t!]
+    \centering
+    \begin{subfigure}{0.4\textwidth}
+        \includegraphics[width=0.6\linewidth]{images/imagen/imagen_coco_zeroshot.png}
+        \caption{Although Imagen was not explicitly trained on MS-COCO dataset, it outperforms all other models on COCO FID score, achieving 7.27 FID.}
+        \label{fig:imagen_coco_zeroshot}
+    \end{subfigure}
+    \begin{subfigure}{0.4\textwidth}
+        \includegraphics[width=0.6\linewidth]{images/imagen/imagen_coco_human_eval.png}
+        \caption{Human evaluation on 256x256 COCO. Imagen splits to two categories: no filters, and human filters. Imagen struggles a little bit with photorealistic people.}
+        \label{fig:imagen_coco_human_eval}
+    \end{subfigure}
+    \caption{Results of Imagen on COCO dataset.}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.75\textwidth]{images/imagen/alignment_fidelity_imagen_vs_models.png}
+    \caption{Imagen beats all other models (DALL-E 2 \cite{dalle_2}, GLIDE \cite{glide}, VQGAN+CLIP \cite{vqgan_clip} and Latent Diffusion (Stable Diffusion) \cite{stable_diffusion} (section \ref{sec:stable_diffusion})) in terms of image-text alignment and image fidelity.}
+    \label{fig:imagen_alignment_fidelity_vs_other_models}
+\end{figure}
+
+In figure \ref{fig:imagen_coco_zeroshot} we can see that although Imagen was not trained on the MS-COCO dataset, it still outperforms state-of-the-art models such as DALL-E 2 \cite{dalle_2} and achieves the best MS-COCO FID score of 7.27 in zero-shot setting.
+
+In figure \ref{fig:imagen_coco_human_eval} we can see that Imagen achieves a respectable 43.9\% fool rate on 256x256 COCO human faces, indicating limited ability of Imagen to generate photorealistic people.
+
+In figure \ref{fig:imagen_alignment_fidelity_vs_other_models} we can see that Imagen outperforms all other state-of-the-art models in terms of image fidelity and text-image alignment.
