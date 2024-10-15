@@ -279,7 +279,7 @@ Similar to Stable Diffusion / Latent Diffusion Models (LDMs), Imagen also uses c
 
 \textbf{Noise conditioning}: Imagen corrupts the 64x64 image with Gaussian noise. The amount of noise is random at training but arbitrary at inference time. They control the amount of corruption with \textit{aug\_level}, and the super-resolution model is conditioned on the augmentation level.
 
-\textbf{Number of parameters}: the base model (64x64 text-to-image synthesis) has 2 billion parameters. The 64x64 $\rightarrow$ 256x256 super-resolution model has 600 million parameters, and the 256x256 $\rightarrow$ 1024x1024 super-resolution model has 400 million parameters.
+\textbf{Number of parameters}: the base model (64x64 text-to-image synthesis) has 2 billion parameters. The 64x64 $\rightarrow$ 256x256 super-resolution model has 600 million parameters, and the 256x256 $\rightarrow$ 1024x1024 super-resolution model has 400 million parameters. The size of the T5-XXL text encoder is 4.6 billion parameters.
 
 \begin{figure}
     \centering
@@ -288,7 +288,7 @@ Similar to Stable Diffusion / Latent Diffusion Models (LDMs), Imagen also uses c
     \label{fig:imagen_scaling_encoder_more_impactful_than_unet_scaling}
 \end{figure}
 
-\textbf{Scaling text encoder size is more important than U-Net size}: the researchers found that scaling text encoder (T5-XXL for example) is significantly more impactful than increasing U-Net size. See figure \ref{fig:imagen_scaling_encoder_more_impactful_than_unet_scaling} for reference. The size of the T5-XXL text encoder is 4.6 billion parameters.
+\textbf{Scaling text encoder size is more important than U-Net size}: the researchers found that scaling text encoder (T5-XXL for example) is significantly more impactful than increasing U-Net size. See figure \ref{fig:imagen_scaling_encoder_more_impactful_than_unet_scaling} for reference.
 
 
 
@@ -311,7 +311,14 @@ The COCO dataset \cite{coco_dataset} is a standard benchmark for evaluating text
 
 Due to these limitations, the researchers created new bnechmark called \textbf{DrawBench} that uses human evaluation to assess image quality by asking the question "Which image is more photorealistic (looks more real)?" and text-image alignment by asking the question "Does the caption accurately describe the above image?". For both cases they used 200 randomly chosen image-caption pairs from COCO dataset.
 
-DrawBench has 11 categories of prompts which test different capabilities of models such as ability to render different colors, number of objects, spatial relations, text in the scene, and more. The prompts include long captions, rare words, and misspelled prompts.
+\begin{figure}
+    \centering
+    \includegraphics[width=0.75\textwidth]{images/imagen/drawbench_categories.png}
+    \caption{Descriptions and examples of the 11 categories in DrawBench.}
+    \label{fig:imagen_drawbench_categories}
+\end{figure}
+
+DrawBench has 11 categories of prompts which test different capabilities of models such as ability to render different colors, number of objects, spatial relations, text in the scene, and more. The prompts include long captions, rare words, and misspelled prompts. See figure \ref{fig:imagen_drawbench_categories} for examples of the categories and examples.
 
 
 
@@ -331,11 +338,13 @@ DrawBench has 11 categories of prompts which test different capabilities of mode
 \begin{figure}[t!]
     \centering
     \begin{subfigure}{0.4\textwidth}
+        \centering
         \includegraphics[width=0.6\linewidth]{images/imagen/imagen_coco_zeroshot.png}
         \caption{Although Imagen was not explicitly trained on MS-COCO dataset, it outperforms all other models on COCO FID score, achieving 7.27 FID.}
         \label{fig:imagen_coco_zeroshot}
     \end{subfigure}
     \begin{subfigure}{0.4\textwidth}
+        \centering
         \includegraphics[width=0.6\linewidth]{images/imagen/imagen_coco_human_eval.png}
         \caption{Human evaluation on 256x256 COCO. Imagen splits to two categories: no filters, and human filters. Imagen struggles a little bit with photorealistic people.}
         \label{fig:imagen_coco_human_eval}

@@ -1,0 +1,14 @@
+\section{Video Synthesis}
+\label{sec:video_synthesis}
+
+Video synthesis is a complex task. One can think of video generation as a sequence of image generation tasks. 
+
+Formally a video is a sequence of images (or frames) that are shown in fast fashion, usually 24 frames per second. Therefor to create a video of 5 seconds, you'll need 120 frames or images at the minimum. Additional complexity is the addition of the time dimension, which is not present in image generation tasks. The video should be coherent in time, meaning that the frames should be related to each other and should follow a logical sequence. Objects should not appear out of nowhere, there should be smooth transition of motion and correct spatial relationships between objects. Because of this, and other problems that we'll explore later, video synthesis is a very challenging task and very computationally expensive.
+
+There are a lot of techniques and models for video generation and they can be divided into multiple categories:
+
+\begin{itemize}
+    \item \textbf{GAN based models}: such in the case of \cite{chu2020learning} the authors propose 
+\end{itemize}
+
+Although there are multiple techniques for video generation, we'll focus mostly on models that are based on already pre-trained image generators, such as GANs and Latent Diffusion Models (LDMs).
