@@ -28,3 +28,8 @@ Also, you need to explain in the paper what it means that the researchers had to
 * Explain cross-attention layers?
 * What are residual blocks?
 ======================================
+
+After explaining the Imagen ResNetBlock, DBlock, UBlock, explain before that: GroupNorm, swish, Conv blocks (convolution).
+
+
+In video synthesis answer the question: what is spatio-temporal convolutional?

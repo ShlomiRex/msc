@@ -1,0 +1,96 @@
+\subsection{Common neural network blocks}
+\label{appendix:blocks}
+
+
+\begin{figure*}
+    \centering
+    \includegraphics[width=0.75\textwidth]{images/appendix/blocks/norm.png}
+    \caption{Visual comparison on mode of operations of \texttt{BatchNorm}, \texttt{LayerNorm}, \texttt{InstanceNorm}, \texttt{GroupNorm} where $N$ is the batch size, $C$ is the number of channels, $H,W$ is the height and width of the input. Image taken from "Group normalization" 2018 paper \cite{wu2018group}.}
+    \label{fig:appendix_blocks_norm}
+\end{figure*}
+
+
+
+
+
+\subsection*{ResBlock}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\textwidth]{images/appendix/blocks/resnet.png}
+    \caption{Residual block architecture in the ResNet paper \cite{resnet}.}
+    \label{fig:appendix_blocks_residual_block}
+\end{figure}
+
+Residual blocks (\texttt{ResBlock}) are skip-connection blocks that were introduced in the ResNet (Residual Network) paper \cite{resnet}. They are used to mitigate the \textbf{exploding/vanishing gradient problem} in very deep neural networks. A residual block allows the network to \textbf{skip layers} by adding identity shortcut connection (the input is added directly to the output of a few stacked layers). The main idea is that instead of learning the full mappings from input to output, the residual block only needs to learn a residual mapping (the difference between the input and output). Mathematically, residual mappings can be written as:
+
+\begin{equation*}
+    y = \mathcal{F} (x) + x
+\end{equation*}
+
+where $x$ is the input to the block, $\mathcal{F}$ is the residual function, and $y$ is the output of the block.
+
+More importantly, if a layer doesn't need to transform the input, the skip connection allows the network to learn an identity mapping, making it easier to optimize the model. Easier flow of gradients also mitigate the problem of vanishing/exploding gradients, where the gradients become too small or too large as they are backpropagated through the network, as we add more and more stacked layers.
+
+The architecture of a residual block is shown in figure \ref{fig:appendix_blocks_residual_block}. They are more commonly references as 'skip-connection' blocks.
+
+
+
+
+
+
+
+
+\subsection*{LayerNorm}
+
+\texttt{LayerNorm} block is a normalization block that normalizes the input, which may be useful for stabilizing and accelerating the training process. It's introduced in a 2016 paper \cite{layernorm}. See figure \ref{appendix_blocks_norm} for a visual demonstration.
+
+\texttt{LayerNorm} normalizes the input across the feature channels, rather than across the batch (as in \texttt{BatchNorm} block). See figure \ref{fig:appendix_blocks_norm} for a visual comparison where \texttt{LayerNorm}, \texttt{BatchNorm} operates on each channel of the input.
+
+It is defined as:
+
+\begin{equation*}
+    \text{LayerNorm}(x) = \frac{x - \mu}{\sqrt{\sigma^2 + \epsilon}} \cdot \gamma + \beta
+\end{equation*}
+
+where $\mu = \mathbb{E}(x)$ is the mean of the input, $\sigma = \text{Var} (x)$ is the variance of the input, $\epsilon$ is a small constant to avoid division by zero, and $\gamma, \beta$ are learnable parameters. The $\gamma$ and $\beta$ parameters scale and shift the normalized input.
+
+Because \texttt{LayerNorm} doesn't rely on batch size, it can be applied even in batch size of 1.
+
+
+
+
+
+
+
+
+\subsection*{BatchNorm}
+
+Like \texttt{LayerNorm}, \texttt{BatchNorm} is a normalization block that speeds up training, decreases the importance of initial weights, and regularizes the model. It was introduced in a 2015 paper \cite{batchnorm}. A great YouTube video explaining why batch normalization speeds up the training process (by not overshooting in the learning rate) is available at \href{https://www.youtube.com/watch?v=DtEq44FTPM4}{this link}. See figure \ref{appendix_blocks_norm} for a visual demonstration.
+
+Let $\mu_B$ be the mean of the mini-batch, and $\sigma^2_B$ be the variance of the mini-batch, and $m$ be the number of samples in the mini-batch. The operation of \texttt{BatchNorm} is defined as:
+
+\begin{equation*}
+    \text{BatchNorm}(x) = \frac{x - \mu_B}{\sqrt{\sigma^2_B + \epsilon}} \cdot \gamma + \beta
+\end{equation*}
+
+where $\gamma, \beta$ are learnable parameters, and $\epsilon$ is a small constant to avoid division by zero. The $\gamma$ and $\beta$ parameters scale and shift the normalized input.
+
+
+
+
+
+
+
+
+\subsection*{GroupNorm}
+
+Similar to \texttt{LayerNorm} and \texttt{BatchNorm}, \texttt{GroupNorm} is a normalization block that normalizes the input but across the feature channels. It was introduced in a 2018 paper \cite{wu2018group}. \texttt{GroupNorm} strikes a balance between \texttt{LayerNorm} and \texttt{BatchNorm}, where it normalizes the input across the feature channel but not all of it, it normalizes groups of input features, hence the name. See figure \ref{appendix_blocks_norm} for a visual demonstration.
+
+Similar to \texttt{LayerNorm}, the operation of \texttt{GroupNorm} is defined as:
+
+\begin{equation*}
+    \text{GroupNorm}(x) = \frac{x - \mu}{\sqrt{\sigma^2 + \epsilon}} \cdot \gamma + \beta
+\end{equation*}
+
+where $\mu = \mathbb{E}(x)$ is the mean of the input, $\sigma = \text{Var} (x)$ is the variance of the input, $\epsilon$ is a small constant to avoid division by zero, and $\gamma, \beta$ are learnable parameters. The $\gamma$ and $\beta$ parameters scale and shift the normalized input.

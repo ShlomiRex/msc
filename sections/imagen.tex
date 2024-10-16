@@ -1,4 +1,5 @@
 \section{Imagen}
+\label{sec:imagen}
 
 Imagen \cite{imagen} is a text-to-image diffusion model that builds on the power of large transformer language models \cite{transformer} (LLMs) to generate high-fidelity images. The combination of diffusion (section \ref{subsec:diffusion_models}) and LLMs have shown remarkable outputs. One of the main observation in the paper that the researchers discovered is that a \textbf{large frozen LLM has bigger impact on the fidelity of generated images than increasing the amount of parameters in the image diffusion model}. Another contribution in the paper is the introduction of new benchmark called \textbf{DrawBench} to evaluate text-to-image models such as DALL-E \cite{dalle}, VQ-GAN+CLIP \cite{vqgan_clip}, latent diffusion models \cite{stable_diffusion}, GLIDE \cite{glide}, and DALL-E 2 \cite{dalle_2}.
 
@@ -7,7 +8,7 @@ The researchers achieved a new state-of-the-art COCO FID score of 7.27, and huma
 There are five main contributions in the paper:
 
 \begin{enumerate}
-    \item \textbf{Effectivness of large frozen text encoders}: large frozen language models that were trained only on text data have a significant impact on the fidelity of generated images compared to increasing the parameters of the diffusion image model. Scaling the language model is easy, since unlabeled text data is abundant and available on the internet.
+    \item \textbf{Effectiveness of large frozen text encoders}: large frozen language models that were trained only on text data have a significant impact on the fidelity of generated images compared to increasing the parameters of the diffusion image model. Scaling the language model is easy, since unlabeled text data is abundant and available on the internet.
     \item \textbf{Dynamic thresholding}: is a new sampling technique that improves image fidelity and text-image alignment, which improves upon static thresholding. We will take a look at this in more detail in the following sections (section \ref{subsec:imagen_diffusion_guidance_weight}).
     \item \textbf{Effective U-Net}: a new U-Net architecture that is simpler and more memory efficient.
     \item \textbf{COCO FID score of 7.27}: imagen achieved a new state-of-the-art COCO FID score of 7.27, which outperforms all other previous works.

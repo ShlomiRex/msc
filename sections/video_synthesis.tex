@@ -1,14 +1,32 @@
 \section{Video Synthesis}
 \label{sec:video_synthesis}
 
-Video synthesis is a complex task. One can think of video generation as a sequence of image generation tasks. 
+Video synthesis is a complex task. One can think of video generation as a sequence of image generation tasks. Formally, a video is a sequence of images (or frames) that are shown in fast fashion, usually 24 frames per second (at the minimum, to get smooth video). Therefor to create a video of 5 seconds, you'll need 120 frames or images at the minimum. Additional complexity is the addition of the \textbf{time dimension}, which is not present in image generation tasks. The video should be \textbf{coherent} in time, meaning that the frames should be related to each other and should follow a logical sequence. Objects should not appear out of nowhere, there should be \textbf{smooth transition of motion} and correct \textbf{spatial relationships} between objects. Because of this, and other problems that we'll explore later, video synthesis is a very challenging task and very computationally expensive.
 
-Formally a video is a sequence of images (or frames) that are shown in fast fashion, usually 24 frames per second. Therefor to create a video of 5 seconds, you'll need 120 frames or images at the minimum. Additional complexity is the addition of the time dimension, which is not present in image generation tasks. The video should be coherent in time, meaning that the frames should be related to each other and should follow a logical sequence. Objects should not appear out of nowhere, there should be smooth transition of motion and correct spatial relationships between objects. Because of this, and other problems that we'll explore later, video synthesis is a very challenging task and very computationally expensive.
-
-There are a lot of techniques and models for video generation and they can be divided into multiple categories:
+There are a lot of techniques and models for video generation, and they can be divided into multiple categories:
 
 \begin{itemize}
+    \item \textbf{Frame prediction}: ...
     \item \textbf{GAN based models}: such in the case of \cite{chu2020learning} the authors propose 
 \end{itemize}
 
 Although there are multiple techniques for video generation, we'll focus mostly on models that are based on already pre-trained image generators, such as GANs and Latent Diffusion Models (LDMs).
+
+There are multiple questions to be asked:
+
+\begin{enumerate}
+    \item How to generate long videos while maintaining high temporal cohesion?
+    \item How to generate videos with high resolution, with limited computational resources?
+    \item How to train video generation models with abundant, unlabeled video data, such as YouTube? Are there any open datasets for video generation?
+    \item How to generate videos from text, or other modalities? Is it possible to edit generated videos so it fits our artistic needs?
+\end{enumerate}
+
+
+
+
+\subsection{Previous works}
+
+In \cite{vondrick2016generating} (2016) the researchers proposed to use of the large amounts of unlabeled video in order to learn scene dynamics and motion, and capture temporal signals. They proposed a model with \textbf{spatio-temporal convolutional} architecture, and they extend GANs to video generation. Their work is commonly referred to as "VideoGAN". They successfully created a video of 1 second long, the model explicitly models the foreground separately from the background, which allows the network to learn which objects are in motion, and which don't.
+
+In the case of \cite{video_generation_from_text}, where the goal is to generate video from text, they proposed a hybrid model that uses a conditional variational autoencoder (VAE) and a generative adversarial network (GAN). The VAE model will output a 'gist' which is a sketch (intermediate step), how the video will take form (colors, object layout) and the GAN model will apply a set of image filter kernels based on the input text to get an encoded text-gist feature vector and the framework predicts future frames.
+
