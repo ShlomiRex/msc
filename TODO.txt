@@ -4,12 +4,10 @@ In stable diffusion paper, explain the figure 2.
 In stable diffusion paper, verify this statement:
 "In Stable Diffusion, the authors used the text encoder from CLIP. % TODO: Verify, read the paper."
 
-In diffusion models, redo the UNet backbone. We need more professional stuff.
 
 ======================================================
 In Stable diffusion we have multiple previous works, which includes:
 
-Maybe explain CLIP more?
 Maybe explain ViT (Vision Transformer)?
 Maybe explain Word2Vec?
 Maybe explain ResNet?
@@ -23,13 +21,7 @@ Also, you need to explain in the paper what it means that the researchers had to
 
 
 
-======================================
-* Explain layer normalization in cross-attention layers
-* Explain cross-attention layers?
-* What are residual blocks?
-======================================
 
-After explaining the Imagen ResNetBlock, DBlock, UBlock, explain before that: GroupNorm, swish, Conv blocks (convolution).
-
+Explain cross-attention layers?
 
 In video synthesis answer the question: what is spatio-temporal convolutional?

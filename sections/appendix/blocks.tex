@@ -39,11 +39,11 @@ The architecture of a residual block is shown in figure \ref{fig:appendix_blocks
 
 
 
-
+\subsubsection{Normalization layers}
 
 \subsection*{LayerNorm}
 
-\texttt{LayerNorm} block is a normalization block that normalizes the input, which may be useful for stabilizing and accelerating the training process. It's introduced in a 2016 paper \cite{layernorm}. See figure \ref{appendix_blocks_norm} for a visual demonstration.
+\texttt{LayerNorm} block is a normalization block that normalizes the input, which may be useful for stabilizing and accelerating the training process. It's introduced in a 2016 paper \cite{layernorm}. See figure \ref{fig:appendix_blocks_norm} for a visual demonstration.
 
 \texttt{LayerNorm} normalizes the input across the feature channels, rather than across the batch (as in \texttt{BatchNorm} block). See figure \ref{fig:appendix_blocks_norm} for a visual comparison where \texttt{LayerNorm}, \texttt{BatchNorm} operates on each channel of the input.
 
@@ -66,7 +66,7 @@ Because \texttt{LayerNorm} doesn't rely on batch size, it can be applied even in
 
 \subsection*{BatchNorm}
 
-Like \texttt{LayerNorm}, \texttt{BatchNorm} is a normalization block that speeds up training, decreases the importance of initial weights, and regularizes the model. It was introduced in a 2015 paper \cite{batchnorm}. A great YouTube video explaining why batch normalization speeds up the training process (by not overshooting in the learning rate) is available at \href{https://www.youtube.com/watch?v=DtEq44FTPM4}{this link}. See figure \ref{appendix_blocks_norm} for a visual demonstration.
+Like \texttt{LayerNorm}, \texttt{BatchNorm} is a normalization block that speeds up training, decreases the importance of initial weights, and regularizes the model. It was introduced in a 2015 paper \cite{batchnorm}. A great YouTube video explaining why batch normalization speeds up the training process (by not overshooting in the learning rate) is available at \href{https://www.youtube.com/watch?v=DtEq44FTPM4}{this link}. See figure \ref{fig:appendix_blocks_norm} for a visual demonstration.
 
 Let $\mu_B$ be the mean of the mini-batch, and $\sigma^2_B$ be the variance of the mini-batch, and $m$ be the number of samples in the mini-batch. The operation of \texttt{BatchNorm} is defined as:
 
@@ -85,7 +85,7 @@ where $\gamma, \beta$ are learnable parameters, and $\epsilon$ is a small consta
 
 \subsection*{GroupNorm}
 
-Similar to \texttt{LayerNorm} and \texttt{BatchNorm}, \texttt{GroupNorm} is a normalization block that normalizes the input but across the feature channels. It was introduced in a 2018 paper \cite{wu2018group}. \texttt{GroupNorm} strikes a balance between \texttt{LayerNorm} and \texttt{BatchNorm}, where it normalizes the input across the feature channel but not all of it, it normalizes groups of input features, hence the name. See figure \ref{appendix_blocks_norm} for a visual demonstration.
+Similar to \texttt{LayerNorm} and \texttt{BatchNorm}, \texttt{GroupNorm} is a normalization block that normalizes the input but across the feature channels. It was introduced in a 2018 paper \cite{wu2018group}. \texttt{GroupNorm} strikes a balance between \texttt{LayerNorm} and \texttt{BatchNorm}, where it normalizes the input across the feature channel but not all of it, it normalizes groups of input features, hence the name. See figure \ref{fig:appendix_blocks_norm} for a visual demonstration.
 
 Similar to \texttt{LayerNorm}, the operation of \texttt{GroupNorm} is defined as:
 
@@ -94,3 +94,45 @@ Similar to \texttt{LayerNorm}, the operation of \texttt{GroupNorm} is defined as
 \end{equation*}
 
 where $\mu = \mathbb{E}(x)$ is the mean of the input, $\sigma = \text{Var} (x)$ is the variance of the input, $\epsilon$ is a small constant to avoid division by zero, and $\gamma, \beta$ are learnable parameters. The $\gamma$ and $\beta$ parameters scale and shift the normalized input.
+
+
+
+
+
+
+% TODO: Complete, its in GPT architecture.
+\subsection{Multi-layer perception (MLP)}
+
+...
+
+
+
+
+
+
+
+
+% TODO: Complete, also in GPT architecture.
+\subsection{Multi-head self-attention}
+
+...
+
+
+
+
+
+
+% TODO: Complete for video synthesis
+\subsection{3D Convolutions}
+\label{appendix:blocks_3dconv}
+
+...
+
+
+
+
+% TODO: Complete, in VideoGPT
+\subsection{Axial attention}
+\label{appendix:blocks_axial_attention}
+
+Axial attention, as described in VideoGPT, ...

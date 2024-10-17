@@ -378,16 +378,6 @@
   year={2022}
 }
 
-% LDM Video Synthesis: Video-LDM
-% Citations: 266
-@inproceedings{blattmann2023align,
-  title={Align your latents: High-resolution video synthesis with latent diffusion models},
-  author={Blattmann, Andreas and Rombach, Robin and Ling, Huan and Dockhorn, Tim and Kim, Seung Wook and Fidler, Sanja and Kreis, Karsten},
-  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
-  pages={22563--22575},
-  year={2023}
-}
-
 % Video synthesis
 % Citations: 223
 @inproceedings{video_generation_from_text,
@@ -1137,7 +1127,7 @@
 
 % VideoGAN: Video generation with GAN
 % Citations: 1773
-@article{vondrick2016generating,
+@article{video_gan,
   title={Generating videos with scene dynamics},
   author={Vondrick, Carl and Pirsiavash, Hamed and Torralba, Antonio},
   journal={Advances in neural information processing systems},
@@ -1153,4 +1143,129 @@
   booktitle={Proceedings of the European conference on computer vision (ECCV)},
   pages={3--19},
   year={2018}
+}
+
+% Video generation survey
+% Citations: 5
+@article{long_video_survey,
+  title={A survey on long video generation: Challenges, methods, and prospects},
+  author={Li, Chengxuan and Huang, Di and Lu, Zeyu and Xiao, Yang and Pei, Qingqi and Bai, Lei},
+  journal={arXiv preprint arXiv:2403.16407},
+  year={2024}
+}
+
+% Sequence generation with RNN, 2013, old
+% Citations: 5446
+@article{graves2013generating,
+  title={Generating sequences with recurrent neural networks},
+  author={Graves, Alex},
+  journal={arXiv preprint arXiv:1308.0850},
+  year={2013}
+}
+
+% Nuwa-xl video generation, 2023
+% Citations: 70
+@article{yin2023nuwa,
+  title={Nuwa-xl: Diffusion over diffusion for extremely long video generation},
+  author={Yin, Shengming and Wu, Chenfei and Yang, Huan and Wang, Jianfeng and Wang, Xiaodong and Ni, Minheng and Yang, Zhengyuan and Li, Linjie and Liu, Shuguang and Yang, Fan and others},
+  journal={arXiv preprint arXiv:2303.12346},
+  year={2023}
+}
+
+% 2012: Uses 3D VQGAN to generate videos
+% Citations: 177
+@inproceedings{ge2022long,
+  title={Long video generation with time-agnostic vqgan and time-sensitive transformer},
+  author={Ge, Songwei and Hayes, Thomas and Yang, Harry and Yin, Xi and Pang, Guan and Jacobs, David and Huang, Jia-Bin and Parikh, Devi},
+  booktitle={European Conference on Computer Vision},
+  pages={102--118},
+  year={2022},
+  organization={Springer}
+}
+
+% VideoGPT
+% Citations: 373
+@article{videogpt,
+  title={Videogpt: Video generation using vq-vae and transformers},
+  author={Yan, Wilson and Zhang, Yunzhi and Abbeel, Pieter and Srinivas, Aravind},
+  journal={arXiv preprint arXiv:2104.10157},
+  year={2021}
+}
+
+% 2022: low-resolution video generation then using super-resolution
+% Citations: 92
+@article{brooks2022generating,
+  title={Generating long videos of dynamic scenes},
+  author={Brooks, Tim and Hellsten, Janne and Aittala, Miika and Wang, Ting-Chun and Aila, Timo and Lehtinen, Jaakko and Liu, Ming-Yu and Efros, Alexei and Karras, Tero},
+  journal={Advances in Neural Information Processing Systems},
+  volume={35},
+  pages={31769--31781},
+  year={2022}
+}
+
+% StyleGAN3
+% Citations: 1578
+@article{stylegan3,
+  title={Alias-free generative adversarial networks},
+  author={Karras, Tero and Aittala, Miika and Laine, Samuli and H{\"a}rk{\"o}nen, Erik and Hellsten, Janne and Lehtinen, Jaakko and Aila, Timo},
+  journal={Advances in neural information processing systems},
+  volume={34},
+  pages={852--863},
+  year={2021}
+}
+
+% CogVideo
+% Citations: 348
+@article{cogvideo,
+  title={Cogvideo: Large-scale pretraining for text-to-video generation via transformers},
+  author={Hong, Wenyi and Ding, Ming and Zheng, Wendi and Liu, Xinghan and Tang, Jie},
+  journal={arXiv preprint arXiv:2205.15868},
+  year={2022}
+}
+
+% Compressing videos to 3D latent space
+% Citations: 44
+@inproceedings{zeng2024make,
+  title={Make pixels dance: High-dynamic video generation},
+  author={Zeng, Yan and Wei, Guoqiang and Zheng, Jiani and Zou, Jiaxin and Wei, Yang and Zhang, Yuchen and Li, Hang},
+  booktitle={Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition},
+  pages={8850--8860},
+  year={2024}
+}
+
+% Compressing videos to 3D latent space
+% Citations: 30
+@article{gu2023reuse,
+  title={Reuse and diffuse: Iterative denoising for text-to-video generation},
+  author={Gu, Jiaxi and Wang, Shicong and Zhao, Haoyu and Lu, Tianyi and Zhang, Xing and Wu, Zuxuan and Xu, Songcen and Zhang, Wei and Jiang, Yu-Gang and Xu, Hang},
+  journal={arXiv preprint arXiv:2309.03549},
+  year={2023}
+}
+
+% 2023: Projected Latent Video Diffusion Model (PVDM)
+% Citations: 128
+@inproceedings{pvdm,
+  title={Video probabilistic diffusion models in projected latent space},
+  author={Yu, Sihyun and Sohn, Kihyuk and Kim, Subin and Shin, Jinwoo},
+  booktitle={Proceedings of the IEEE/CVF conference on computer vision and pattern recognition},
+  pages={18456--18466},
+  year={2023}
+}
+
+% 2022: Nuwa-infinity: convert video frames to patches with positional data
+% Citations: 32
+@article{nuwa_infinity,
+  title={Nuwa-infinity: Autoregressive over autoregressive generation for infinite visual synthesis},
+  author={Wu, Chenfei and Liang, Jian and Hu, Xiaowei and Gan, Zhe and Wang, Jianfeng and Wang, Lijuan and Liu, Zicheng and Fang, Yuejian and Duan, Nan},
+  journal={arXiv preprint arXiv:2207.09814},
+  year={2022}
+}
+
+% Transframer: Convert video frames into latent tokens with VQGAN
+% Citations: 35
+@article{transframer,
+  title={Transframer: Arbitrary frame prediction with generative models},
+  author={Nash, Charlie and Carreira, Joao and Walker, Jacob and Barr, Iain and Jaegle, Andrew and Malinowski, Mateusz and Battaglia, Peter},
+  journal={arXiv preprint arXiv:2203.09494},
+  year={2022}
 }
