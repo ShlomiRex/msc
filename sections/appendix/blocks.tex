@@ -1,13 +1,16 @@
-\subsection{Neural network blocks}
+\subsection{Common neural network blocks}
 \label{appendix:blocks}
 
 
-\begin{figure*}
-    \centering
-    \includegraphics[width=0.75\textwidth]{images/appendix/blocks/norm.png}
-    \caption{Visual comparison on mode of operations of \texttt{BatchNorm}, \texttt{LayerNorm}, \texttt{InstanceNorm}, \texttt{GroupNorm} where $N$ is the batch size, $C$ is the number of channels, $H,W$ is the height and width of the input. Image taken from "Group normalization" 2018 paper \cite{wu2018group}.}
-    \label{fig:appendix_blocks_norm}
-\end{figure*}
+
+\subsection*{Multi-layer perception (MLP)}
+
+Multi-layer perception (MLP) is a basic feed forward neural network architecture in which the input is passed through multiple layers of linear transformations (fully connected layers) and non-linear activation functions.
+
+In short, we can think of MLP as a simple fully connected layers (sometimes called 'dense layer').
+
+
+
 
 
 
@@ -41,6 +44,13 @@ The architecture of a residual block is shown in figure \ref{fig:appendix_blocks
 
 \subsubsection{Normalization layers}
 \label{appendix:blocks_norm}
+
+\begin{figure*}
+    \centering
+    \includegraphics[width=0.75\textwidth]{images/appendix/blocks/norm.png}
+    \caption{Visual comparison on mode of operations of \texttt{BatchNorm}, \texttt{LayerNorm}, \texttt{InstanceNorm}, \texttt{GroupNorm} where $N$ is the batch size, $C$ is the number of channels, $H,W$ is the height and width of the input. Image taken from "Group normalization" 2018 paper \cite{wu2018group}.}
+    \label{fig:appendix_blocks_norm}
+\end{figure*}
 
 \subsection*{LayerNorm}
 
@@ -101,65 +111,6 @@ where $\mu = \mathbb{E}(x)$ is the mean of the input, $\sigma = \text{Var} (x)$ 
 
 
 
-\subsubsection{Imagen blocks: DBlock, UBlock}
-\label{appendix:imagen}
-
-\begin{figure}
-    \centering
-    \includegraphics[width=0.5\textwidth]{images/appendix/imagen/unet_resnetblock.png}
-    \caption{Imagen efficient U-Net \texttt{ResNetBlock} architecture.}
-    \label{fig:appendix_imagen_resnetblock}
-\end{figure}
-
-In figure \ref{fig:appendix_imagen_resnetblock} we can see the \texttt{ResNetBlock} in use by Imagen (section \ref{sec:imagen}), by both the \texttt{DBlock} (downsampler) and the \texttt{UBlock} (the upsampler). The only input / hyperparameters of the \texttt{ResNetBlock} is the number of channels. The activation function is Swish (equation \ref{eq:appendix_activations_swish}).
-
-\begin{figure*}
-    \centering
-    \begin{subfigure}[b]{0.5\textwidth}   
-        \centering 
-        \includegraphics[width=\textwidth]{images/appendix/imagen/dblock.png}
-        \caption[]%
-        {{\small Imagen efficient U-Net \texttt{DBlock} architecture.}}
-    \end{subfigure}
-    \hfill
-    \begin{subfigure}[b]{0.475\textwidth}
-        \centering
-        \includegraphics[width=\textwidth]{images/appendix/imagen/ublock.png}
-        \caption[]%
-        {{\small Imagen efficient U-Net \texttt{UBlock} architecture.}}
-    \end{subfigure}
-\end{figure*}
-
-
-
-
-% TODO: Complete very important
-\subsubsection{Self-attention, Multi-head attention, Axial attention}
-
-...
-
-
-
-
-
-% TODO: Complete, its in GPT architecture.
-\subsection{Multi-layer perception (MLP)}
-
-...
-
-
-
-
-
-
-
-
-% TODO: Complete, also in GPT architecture.
-\subsection{Multi-head self-attention}
-
-...
-
-
 
 
 
@@ -173,8 +124,3 @@ In figure \ref{fig:appendix_imagen_resnetblock} we can see the \texttt{ResNetBlo
 
 
 
-% TODO: Complete, in VideoGPT
-\subsection{Axial attention}
-\label{appendix:blocks_axial_attention}
-
-Axial attention, as described in VideoGPT, ...

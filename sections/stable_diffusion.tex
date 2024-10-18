@@ -44,7 +44,9 @@ U-Net (first introduced in 2015) \cite{unet} is a convolutional neural network a
 
 In figure \ref{fig:unet_architecture} the U-Net is shaped like a 'U' - notice that the layers downsample the input one after the other. Then, after we get to the desired depth, we start upsampling the input until we get output with the same dimensions as the input. The blue arrows are the convolutional layers with kernel size 3x3 and ReLU activation function. The max-pooling are the downsampling layers, and the upsampling layers are the deconvolutional layers.
 
-In addition, the UNet backbone contains \textbf{timestep embeddings}. The scalar timestep (which can be in the range $[0, T]$, where $T$ is the total number of diffusion steps) is first projected into a sinusoidal embedding, similar to the way positional encodings are used in transformers. The timestep embeddings are used to let the model know which step its in the diffusion process currently, this way it knows if its in the beginning of the diffusion or at the late stage, which is essential for removing noise.
+\subsection{Sinusoidal embeddings}
+
+In addition, the UNet backbone contains \textbf{timestep embeddings}. The scalar timestep (which can be in the range $[0, T]$, where $T$ is the total number of diffusion steps) is first projected into a \textbf{sinusoidal embedding}, similar to the way positional encodings are used in transformers. The timestep embeddings are used to let the model know which step its in the diffusion process currently, this way it knows if its in the beginning of the diffusion or at the late stage, which is essential for removing noise.
 
 \begin{figure}[h]
     \centering
@@ -54,14 +56,12 @@ In addition, the UNet backbone contains \textbf{timestep embeddings}. The scalar
 
 In other words, the U-Net denoises the latent space, and the VAE decoder takes in the denoised latent vectors and generates image based on the latent vectors.
 
-\begin{lstlisting}[language=Python, caption={Timestep embeddings of Stable Diffusion pipeline. We convert the timestep to sinusoidal vector embedding.}, label={lst:timestep_embeddings_stable_diffusion}]
+\begin{lstlisting}[language=Python, breaklines=true, caption={Timestep embeddings of Stable Diffusion pipeline. We convert the timestep to sinusoidal vector embedding.}, label={lst:timestep_embeddings_stable_diffusion}]
 def get_time_embedding(timestep):
     # Shape: (160,)
-    freqs = torch.pow(10000, 
-        -torch.arange(start=0, end=160, dtype=torch.float32) / 160) 
+    freqs = torch.pow(10000, -torch.arange(start=0, end=160, dtype=torch.float32) / 160) 
     # Shape: (1, 160)
-    x = torch.tensor([timestep], 
-        dtype=torch.float32)[:, None] * freqs[None]
+    x = torch.tensor([timestep], dtype=torch.float32)[:, None] * freqs[None]
     # Shape: (1, 160 * 2)
     return torch.cat([torch.cos(x), torch.sin(x)], dim=-1)
 \end{lstlisting}
@@ -204,11 +204,11 @@ The CLIP model is trained using a contrastive objective, where the goal is to mi
 \subsection{Cross-attention}
 \label{subsec:cross_attention}
 
-Cross-attention is used in Stable Diffusion for multi-modal conditioning, it guides the model to output images based on conditional information. Although this information can be multi-modal (images, text, segmentation masks), the cross-attention mechanism is able to deal with them all.
+Cross-attention (appendix \ref{appendix:attention}) is used in Stable Diffusion for \textbf{multi-modal conditioning}, it guides the model to output images based on conditional information. Although this information can be multi-modal embeddings (images, text, segmentation masks), the cross-attention mechanism is able to deal with them all.
 
-Cross-attention, introduced in the Transformer paper \cite{transformer}, allows one set of inputs (query vectors) to attend (focus) on another set of inputs (the key vectors) and extract information from it. This is particularly useful in tasks where we want to condition one type of data on another, such as in image-text models (e.g. Stable Diffusion) where text guides the generation of images.
+Cross-attention, introduced in the Transformer paper \cite{transformer}, allows one set of inputs (query vectors) to attend (focus) on another set of inputs (the key vectors) and extract information from it (the value). This is particularly useful in tasks where we want to condition one type of data on another, such as in image-text models (like Stable Diffusion) where text guides the generation of images.
 
-To understand cross-attention lets first understand \textbf{self-attention}:
+To understand cross-attention lets first understand \textbf{self-attention} (appendix \ref{appendix:attention}):
 
 In self-attention, the same set of data elements provides the queries, keys, and values. The mechanism computes attention scores based on how each element in the input interacts with other elements in the same sequence. This is widely used in transformers to capture relationships between tokens in a sequence. The formula for self-attention is given in the transformer paper \cite{transformer}.
 
@@ -219,21 +219,23 @@ In self-attention, the same set of data elements provides the queries, keys, and
 
 In equation \ref{eq:self_attention} we first do a cross-product of $Q$ and $K$ matrices, this gives us a matrix of attention scores for each pair of query vector and the key vector. We then divide the matrix by the square root of the dimension of the key vectors, this operation is done to normalize the large magnitude of the dot product, which stabilizes the gradients and the training. We then apply the softmax function, which converts the vector to a probability distribution between 0 and 1, which gives probability to tokens in the sequence. Finally, we multiply (dot product) the softmax output with the value vectors, which gives us the output of the self-attention.
 
-\textbf{Cross-attention} is based on multiple self-attention heads (or blocks), and the input ($K$, $Q$, $V$) derive from the same input sequence. Cross-attention in comparison, each matrix comes from different source of sequence. For example, $Q$ could be an image embeddings (the VAE image encoder of stable diffusion), and $K$ and $V$ could represent a text prompt which gives attention to the image. This is the reason the researchers used cross-attention and not self-attention in the stable diffusion model, because of the multi-modal conditioning.
+\textbf{Cross-attention} (appendix \ref{appendix:attention}) is similar to self-attention, but instead of attending to the same sequence, it attends to a different sequence. In our case, conditional embeddings with the latent vector space of the diffusion model. The cross-attention mechanism is used to focus on the latent space (the output of the encoder) and the conditioning signal (text prompt or another image). Although cross-attention can be used in similar fashion to self-attention, its often used in \textbf{multi-head attention} fashion, where multiple self-attention heads are concatenated together to form a cross-attention mechanism.
+
+The researchers used cross-attention mechanism because of the multi-modal conditioning signals with attention to the latent vector.
 
 \begin{equation}
     \begin{aligned}
         \text{head}_i = \text{Attention}(QW_i^Q, KW_i^K, VW_i^V)  \\
         \text{MultiHead}(Q, K, V) = \text{Concat}(\text{head}_1, ..., \text{head}_h)W^O
     \end{aligned}
-    \label{eq:cross_attention}
+    \label{eq:stable_diffusion_multihead_crossattention}
 \end{equation}
 
-Formula \ref{eq:cross_attention} describes a single self-attention head. Cross-attention is a concatenation of multiple self-attention heads, each with its own set of weights $W_i^Q$, $W_i^K$, $W_i^V$. The output of the cross-attention is the concatenation of the outputs of each head, and dot product with the output weights matrix $W^O$.
+Formula \ref{eq:stable_diffusion_multihead_crossattention} describes a single self-attention head. Cross-attention is a concatenation of multiple self-attention heads, each with its own set of weights $W_i^Q$, $W_i^K$, $W_i^V$. The output of the cross-attention is the concatenation of the outputs of each head, and dot product with the output weights matrix $W^O$.
 
 
 
-\begin{lstlisting}[language=Python, caption={Cross-attention PyTorch code snippet. The '@' operation is a dot product.}, label={lst:cross_attention_stable_diffusion}]
+\begin{lstlisting}[language=Python, caption={Cross-attention PyTorch code snippet. The '@' operation is a dot product.}, label={lst:stable_diffusion_cross_attention}]
 class CrossAttention(nn.Module):
 def __init__(self, n_heads, d_embed, d_cross, 
         in_proj_bias=True, out_proj_bias=True):
@@ -260,7 +262,7 @@ def forward(self, x, y):
     return output
 \end{lstlisting}
 
-In listing \ref{lst:cross_attention_stable_diffusion} the code snippet is taken from \href{https://github.com/hkproj/pytorch-stable-diffusion/blob/e0cb06de011787cdf13eed7b4287ad8410491149/sd/attention.py#L100C1-L110C28}{a re-implementation of Stable Diffusion}, the official implementation of Stable Diffusion has \href{https://github.com/CompVis/stable-diffusion/blob/21f890f9da3cfbeaba8e2ac3c425ee9e998d5229/ldm/modules/attention.py#L152}{very complex cross-attention code}.
+In listing \ref{lst:stable_diffusion_cross_attention} the code snippet is taken from \href{https://github.com/hkproj/pytorch-stable-diffusion/blob/e0cb06de011787cdf13eed7b4287ad8410491149/sd/attention.py#L100C1-L110C28}{a re-implementation of Stable Diffusion}, the official implementation of Stable Diffusion has \href{https://github.com/CompVis/stable-diffusion/blob/21f890f9da3cfbeaba8e2ac3c425ee9e998d5229/ldm/modules/attention.py#L152}{very complex cross-attention code}.
 
 
 
