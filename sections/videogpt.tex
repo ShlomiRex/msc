@@ -3,17 +3,16 @@
 \begin{figure}
     \centering
     \includegraphics[width=0.7\textwidth]{images/video_synthesis/videogpt_architecture.png}
-    \caption{VideoGPT architecture.}
+    \caption{VideoGPT architecture. Left: training the VQ-VAE; Right: training the autoregressive transformer model on the latent vectors.}
 \end{figure}
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.5\textwidth]{images/video_synthesis/videogpt_res_atten_block.png}
-    \caption{Residual attention block as described in VideoGPT.}
+    \includegraphics[width=0.6\textwidth]{images/video_synthesis/videogpt_res_atten_block.png}
+    \caption{Residual attention block as described in VideoGPT. The "Norm" layers are \texttt{LayerNorm} blocks (described in appendix \ref{appendix:blocks_norm}).}
     \label{fig:videogpt_res_atten_block}
 \end{figure}
 
-% TODO: Explain 3D convolutions
 VideoGPT \cite{videogpt} uses likelihood based model VQ-VAE and GPT-like transformer model. The encoder of VQ-VAE first downsamples video into discrete latent space using 3D convolutions, and the decoder then reconstructs the video from these latent codes (by using a codebook - see VQ-VAE section \ref{sec:vqvae}). The generated latents are decoded to the original video resolution as the training dataset.
 
 The researchers take inspiration from image and video codecs: JPEG and MPEG for image and video compression. They contain the same spatio-temporal data as the uncompressed video, yet take less resources (by not working in the pixel space).

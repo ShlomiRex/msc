@@ -1,4 +1,4 @@
-\subsection{Common neural network blocks}
+\subsection{Neural network blocks}
 \label{appendix:blocks}
 
 
@@ -40,6 +40,7 @@ The architecture of a residual block is shown in figure \ref{fig:appendix_blocks
 
 
 \subsubsection{Normalization layers}
+\label{appendix:blocks_norm}
 
 \subsection*{LayerNorm}
 
@@ -95,6 +96,47 @@ Similar to \texttt{LayerNorm}, the operation of \texttt{GroupNorm} is defined as
 
 where $\mu = \mathbb{E}(x)$ is the mean of the input, $\sigma = \text{Var} (x)$ is the variance of the input, $\epsilon$ is a small constant to avoid division by zero, and $\gamma, \beta$ are learnable parameters. The $\gamma$ and $\beta$ parameters scale and shift the normalized input.
 
+
+
+
+
+
+\subsubsection{Imagen blocks: DBlock, UBlock}
+\label{appendix:imagen}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\textwidth]{images/appendix/imagen/unet_resnetblock.png}
+    \caption{Imagen efficient U-Net \texttt{ResNetBlock} architecture.}
+    \label{fig:appendix_imagen_resnetblock}
+\end{figure}
+
+In figure \ref{fig:appendix_imagen_resnetblock} we can see the \texttt{ResNetBlock} in use by Imagen (section \ref{sec:imagen}), by both the \texttt{DBlock} (downsampler) and the \texttt{UBlock} (the upsampler). The only input / hyperparameters of the \texttt{ResNetBlock} is the number of channels. The activation function is Swish (equation \ref{eq:appendix_activations_swish}).
+
+\begin{figure*}
+    \centering
+    \begin{subfigure}[b]{0.5\textwidth}   
+        \centering 
+        \includegraphics[width=\textwidth]{images/appendix/imagen/dblock.png}
+        \caption[]%
+        {{\small Imagen efficient U-Net \texttt{DBlock} architecture.}}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.475\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{images/appendix/imagen/ublock.png}
+        \caption[]%
+        {{\small Imagen efficient U-Net \texttt{UBlock} architecture.}}
+    \end{subfigure}
+\end{figure*}
+
+
+
+
+% TODO: Complete very important
+\subsubsection{Self-attention, Multi-head attention, Axial attention}
+
+...
 
 
 

@@ -10,7 +10,6 @@ In Stable diffusion we have multiple previous works, which includes:
 
 Maybe explain ViT (Vision Transformer)?
 Maybe explain Word2Vec?
-Maybe explain ResNet?
 ======================================================
 
 Explain in VQ-GAN paper how they researchers converted conditional information, such as depth map, semantic masks, text, and so on, to tokens. How did images converted to tokens?

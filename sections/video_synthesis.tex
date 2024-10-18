@@ -3,6 +3,9 @@
 
 Video synthesis is a complex task. One can think of video generation as a sequence of image generation tasks. Formally, a video is a sequence of images (or frames) that are shown in fast fashion, usually 24 frames per second (at the minimum, to get smooth video). Therefor to create a video of 5 seconds, you'll need 120 frames or images at the minimum. Additional complexity is the addition of the \textbf{time dimension}, which is not present in image generation tasks. The video should be \textbf{coherent} in time, meaning that the frames should be related to each other and should follow a logical sequence. Objects should not appear out of nowhere, there should be \textbf{smooth transition of motion} and correct \textbf{spatial relationships} between objects. We also have to deal with limited hardware resources, since video generation is extremely computationally expensive.
 
+% TODO: Add timeline of video synthesis models
+% \input{figures/video_synth_models_timeline.tex}
+
 % There are a lot of techniques and models for video generation, and they can be divided into multiple categories:
 
 % \begin{itemize}
@@ -69,7 +72,15 @@ Because video synthesis is still developing to this day and is a complex task, t
 
 In \cite{long_video_survey} they surveyed papers in the field of video generation and propose a definition for 'long' videos to exceed 10 seconds long, assuming frame rate of 10fps, or equivalently 100 frames.
 
+\subsection*{Evaluation metrics}
 
+A common metric used for video generation models is the \textbf{Frechet Video Distance (FVD)} \cite{fvd}, which is an extension of Frechet Inception Distance (FID). FVD compares videos by both spatial and temporal features by using similar process as FID: using a pre-trained 3D ConvNet (i3D), where in FID they use InceptionV3. The i3D network was trained on Kinetics dataset (Kinetics Human Action Video Dataset), and the 3D convolutions capture local and global spatial patterns within the frames. In similar fashion as FID, they compare the distribution of features from generated videos and the FVD is calculated:
+
+\begin{equation*}
+    \text{FVD} = \left| \left| \mu_{\text{real}} - \mu_{\text{fake}} \right| \right|^2_2 + \text{Tr} \left( \Sigma_{\text{real}} + \Sigma_{\text{fake}} - 2 \left( \Sigma_{\text{real}} \Sigma_{\text{fake}} \right)^{1/2} \right)
+\end{equation*}
+
+The lower the FVD score, the better the video generation model is.
 
 
 
