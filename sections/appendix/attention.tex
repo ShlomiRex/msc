@@ -10,6 +10,8 @@ The cross-attention mechanism is explained partly in section \ref{subsec:cross_a
 
 Self-attention allows us to model the weight of different parts of an input sequence. In short, it gives us indication on how much focus to give to different elements in a sequence, which considers realtionships between then.
 
+An application example of self-attention is in Stable Diffusion (section \ref{sec:stable_diffusion}) where self-attention is used between patches of an image to model the relationships between, similar to how convolution models the local relationships of pixels, but in self-attention we model global relationships.
+
 The \textbf{input} to the self-attention block is a sequence (vector) $X \in \mathbb{R}^{n \times d}$ and the \textbf{output} has the same dimension.
 
 Then we apply linear projections: $Q = XW_Q$, $K = XW_K$, $V = XW_V$ where $W_Q, W_K, W_V \in \mathbb{R}^{d \times d}$ are learnable projection matricies (basically they are weight matricies that are learned during training and are assigned random value initially).
@@ -59,6 +61,8 @@ def forward(self, X):
 
 
 
+
+
 \subsubsection{Multi-head attention}
 
 The input matrecies (Q,K,V) derive from the same input sequence. In comparison, in cross-attention, we relate two different sequences. Cross-attention is particularly useful in tasks that requires alignment between different sequences, like in translation tasks, whereas in self-attention and multi-head attention we are looking for relationships within the same sequence, like in sentiment analysis.
@@ -84,9 +88,13 @@ Multi-head attention is a concatenation of multiple self-attention heads, each w
 
 Cross-attention is used to relate two different sequences, between the query and the key-value pairs. The query sequence is used to get the attention weights, which are then applied to the key-value pairs. This is useful in tasks that require alignment between different sequences, like in translation tasks.
 
-Cross-attention is often implemented in multi-head fashion, therefor we can use the same implementation as in multi-head attention, but with different input sequences.
+In cross-attention we first project the input $X$ onto the $Q$ matrix. And in the case of Stable Diffusion (section \ref{sec:stable_diffusion}), we project the text embeddings (or other conditional signal) onto the $Q$ and $V$ matricies. This way the latent vector is conditioned on text. Thats the main difference between self-attention and cross-attention.
 
-Because the math is the same, cross-attention is the same as self-attention but with different input sequences.
+Projection is done like so: $Q = XW_Q$, $K = YW_K$, $V = YW_V$ where $X$ is the input sequence, $Y$ is the sequence we want to relate to, and $W_Q, W_K, W_V \in \mathbb{R}^{d \times d}$ are learnable projection matricies.
+
+Cross-attention is often implemented in multi-head fashion, therefor we can use the same implementation as in multi-head attention.
+
+Because the math is the same, just with different notation, cross-attention is the same as self-attention but with different input sequences.
 
 
 
