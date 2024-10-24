@@ -130,3 +130,4 @@ Lets consider an input of dimension $H \times W \times D$ and kernel of dimensio
 
 Just like 2D convolution, 3D convolution can have stride, padding and dilation. \textbf{Stride} is the number of steps the kernel moves in each dimension, \textbf{padding} is the number of zeros (padding) added to the input to maintain the output size, and \textbf{dilation} is the spacing between kernel elements.
 
+In 2D convolution we have \texttt{in\_channels} and \texttt{out\_channel}, usually for images that are RGB encoded, the \texttt{in\_channels} is 3 (for red, green, blue channels) and the \texttt{out\_channels} represent the number of filters/kernels we want to apply. In 3D convolution, we have similar situation. 
