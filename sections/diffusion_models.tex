@@ -113,12 +113,11 @@ A variance schedule is simply a function that defines the variance at each given
 Notice that when $\beta$ increases linearly, the term $\sqrt{1-\beta}$ decreases linearly. 
 
 A noise scheduler is a function: $\beta(t):[1, ..., T] \rightarrow \mathbb{R}$ that determines the amount of noise added at each step. Its a sequence of $\alpha_t$. For example, a \textbf{linear scheduler} is defined as:
-
 \[
     \beta_t = c \cdot t \text{, where c is constant}
 \]
 
-and a \textbf{consine-beta scheduler} can be defined as:
+and a \textbf{cosine-beta scheduler} can be defined as:
 
 \[
     \bar{\alpha}_t = \frac{f(t)}{f(0)} \text{, where } f(t) = \cos^2(\frac{t/T + s}{1+s} \cdot \frac{\pi}{2})

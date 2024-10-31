@@ -1,3 +1,11 @@
+Next time I meet with my supervisor:
+* Explain Imagen again, the classifier-free guidance, how the dynamic thresholding fixes the train-test mismatch, the SR3 model (iterative refinement) and how the low resolution image is bicubically scaled and concat with noise vector y so that the model learns to reproduce the original image by denoising (the U-Net dimension of input/output is the same), 
+* Explain the transformer architecture / paper
+
+
+
+
+
 
 In stable diffusion paper, explain the figure 2.
 

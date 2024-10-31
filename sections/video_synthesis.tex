@@ -1,6 +1,13 @@
 \section{Video Synthesis}
 \label{sec:video_synthesis}
 
+\begin{figure}
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/video_synthesis/techniques.png}
+    \caption{Overview of video synthesis techniques \cite{long_video_survey}.}
+    \label{fig:video_synthesis_techniques}
+\end{figure}
+
 Video synthesis is a complex task. One can think of video generation as a sequence of image generation tasks. Formally, a video is a sequence of images (or frames) that are shown in fast fashion, usually 24 frames per second (at the minimum, to get smooth video). Therefor to create a video of 5 seconds, you'll need 120 frames or images at the minimum. Additional complexity is the addition of the \textbf{time dimension}, which is not present in image generation tasks. The video should be \textbf{coherent} in time, meaning that the frames should be related to each other and should follow a logical sequence. Objects should not appear out of nowhere, there should be \textbf{smooth transition of motion} and correct \textbf{spatial relationships} between objects. We also have to deal with limited hardware resources, since video generation is extremely computationally expensive.
 
 % TODO: Add timeline of video synthesis models
@@ -22,15 +29,23 @@ Video synthesis can be based on four main models and methods:
     \item \textbf{Mask modeling}: mask modeling in video generation uses the technique of selectively masking parts of video frames during training to enhance the model's ability to learn spatial and temporal dependencies. By hiding portions of the video frames, the model is tasked with predicting and reconstructing the missing parts, forcing it to better understand the underlying structure and motion in the video.
 \end{enumerate}
 
-In the realm of video synthesis there are two paradigms: \textbf{divide and conquer} and \textbf{temporal autoregressive}.
+\begin{figure}
+    \centering
+    \includegraphics[width=1\textwidth]{images/video_synthesis/paradigms.png}
+    \caption{Overview of video synthesis paradigms \cite{long_video_survey}. Divide and conquer is split into hierarchical architecture for keyframe generation and frame filling. Whereas temporal autoregressive paradigm the next frame prediction depends on the previous frame/frames.}
+    \label{fig:video_synthesis_paradigms}
+\end{figure}
+
+In the realm of video synthesis there are two paradigms: \textbf{divide and conquer} and \textbf{temporal autoregressive}. An overview of the paradigms is shown in figure \ref{fig:video_synthesis_paradigms}.
 
 \subsection*{Divide and Conquer}
 
 Divide and conquer paradigm breaks the task of video synthesis into smaller, more manageable tasks. This approach can further by divided into 3 methods of approach:
 
 \begin{enumerate}
-    \item \textbf{Hierarchical architecture} for frame generation: in this approach, the process is split into \textbf{keyframe generation} and \textbf{frame filling}. Keyframes represent the critical moments of the video that establish the narrative, while the frame-filling models ensure smooth transitions between them. Global models focus on generating the main storyline through keyframes, and local models handle finer details, filling the gaps between the keyframes to maintain temporal consistency.
+    \item \textbf{Hierarchical architecture for frame generation}: in this approach, the process is split into \textbf{keyframe generation} and \textbf{frame filling}. Keyframes represent the critical moments of the video that establish the narrative, while the frame-filling models ensure smooth transitions between them. Global models focus on generating the main storyline through keyframes, and local models handle finer details, filling the gaps between the keyframes to maintain temporal consistency.
     \item \textbf{Multi-stage approach for video super-resolution}: \cite{brooks2022generating} suggested generating video by stages, first by creating low-resolution sequences with GAN and then applying super-resolution models to enhance them with StyleGAN3 \cite{stylegan3}.
+    % TODO: Explain the combined process of mask modeling, I don't really understand. Maybe read the paper CogVideo?
     \item \textbf{Integrated keyframe and frame filling with mask modeling} simplifies long video generation by combining keyframe creation and frame filling into a unified process. Mask modeling hides specific parts of the video during training, keyframes and intermediate frames simultaneously, like done in CogVideo \cite{cogvideo}, which simplified mask modeling and combines these models into a single model.
 \end{enumerate}
 
@@ -42,7 +57,7 @@ A significant amount of research has been conducted on temporal autoregressive m
 
 \begin{itemize}
     \item \textbf{Latent space compression}: this method focuses on compressing videos to latent space to optimize computational needs. For example in \cite{zeng2024make} and \cite{gu2023reuse} they explored condensing video data into 3D latent. Compression aims to preserve essential features across dimensions to improve computational efficiency.
-    \item \textbf{Incorporating temporal layers} to refine individual video clips, advancements were made, such as integrating \textbf{temporal layers} (such as attention and convolutional layers) into diffusion models, like in VideoLDM \cite{video_ldm} and \cite{gu2023reuse}. These temporal layers help the model better understand the temporal dynamics of video data.
+    \item \textbf{Incorporating temporal layers} to refine individual video clips. Advancements were made, such as integrating \textbf{temporal layers} (such as attention and convolutional layers) into diffusion models, like in VideoLDM \cite{video_ldm} and \cite{gu2023reuse}. These temporal layers help the model better understand the temporal dynamics of video data.
     \item \textbf{Dual-phase training \& reuse strategies}: dual-training is a training strategy where the model is first trained unconditionally, and then learn to conditionally generate video like in Projected Latent Video Diffusion Model (PVDM) \cite{pvdm}. Given the abundance of unlabeled video data on the web, it's easy to see why this process is attractive. Another method to boost the model's ability to replicate long video sequences is a \textbf{reuse strategy}, which iteratively adds and removes noise during training to simulate natural variability, like in \cite{gu2023reuse}.
 \end{itemize}
 
@@ -74,14 +89,20 @@ In \cite{long_video_survey} they surveyed papers in the field of video generatio
 
 \subsection{Evaluation metrics}
 
+\begin{figure}
+    \centering
+    \includegraphics[width=1\textwidth]{images/video_synthesis/eval_metrics.png}
+    \caption{Evaluation metrics in video generation \cite{long_video_survey}.}
+    \label{fig:video_synthesis_eval_metrics}
+\end{figure}
+
 A common metric used for video generation models is the \textbf{Frechet Video Distance (FVD)} \cite{fvd}, which is an extension of Frechet Inception Distance (FID). FVD compares videos by both spatial and temporal features by using similar process as FID: using a pre-trained 3D ConvNet (i3D), where in FID they use InceptionV3. The i3D network was trained on Kinetics dataset (Kinetics Human Action Video Dataset), and the 3D convolutions capture local and global spatial patterns within the frames. In similar fashion as FID, they compare the distribution of features from generated videos and the FVD is calculated:
 
 \begin{equation*}
     \text{FVD} = \left| \left| \mu_{\text{real}} - \mu_{\text{fake}} \right| \right|^2_2 + \text{Tr} \left( \Sigma_{\text{real}} + \Sigma_{\text{fake}} - 2 \left( \Sigma_{\text{real}} \Sigma_{\text{fake}} \right)^{1/2} \right)
 \end{equation*}
 
-The lower the FVD score, the better the video generation model is.
-
+The lower the FVD score, the better the video generation model is. A more comprehensive list of evaluation metrics is shown in figure \ref{fig:video_synthesis_eval_metrics}.
 
 
 
@@ -102,8 +123,7 @@ In \cite{ge2022long} (2022 by Meta AI) they used a conditional (text or images) 
 
 The OpenAI researchers introduced in a 2020 paper \textbf{Image-GPT (iGPT)} \cite{imagegpt}, in which they tried to explore autoregressive sequence transformer to predict pixels directly, without using CNN prior, only by using the attention mechanism. They pre-trained a transformer on ImageNet and showed that a transformer can learn spatial features (image representation learning). Instead of language tokens, the transformer predicts pixels. The biggest model, called iGPT-XL has 6.8 billion parameters. They also showed that when scaling transformers (more parameters, more pre-training) the architecture quickly closes the gap on contrastive learning of other models that specifically design to this task.
 
-% TODO: Add more context, not sure that the transformer predicts pixels from latent representations. Need to read more the paper.
-\textbf{VideoGPT} \cite{videogpt} (2021), which we will take a closer look in section \ref{sec:videogpt}, uses VQ-VAE to encode video frames into discrete latent representations by using 3D convolutions and self-attention. It also uses a transformer based on the work of Image-GPT to generate video frames from the latent representations.
+\textbf{VideoGPT} \cite{videogpt} (2021), which we will take a closer look in section \ref{sec:videogpt}, uses VQ-VAE to encode video frames into discrete latent representations by using 3D convolutions and self-attention. It also uses a transformer based on the work of Image-GPT to generate video frames from the latent representations. VideoGPT uses the same prior networks as Image-GPT \cite{imagegpt}.
 
 \textbf{Imagen-Video} \cite{imagen_video} (2022) by Google is a text conditional video generation system based on a cascade of video diffusion models (similar to Imagen (section \ref{sec:imagen})). Instead of 2D super-resolution models as we seen in Imagen, they are spatial and temporal video super-resolution models. Similar to Imagen it also uses frozen T5-XXL \cite{t5_model} text encoder (for text embeddings), it consists of 7 sub-models (1 base model, 3 spatial super-resolution models [SSRs], and 3 temporal super-resolution models [TSRs]) to generate videos of high resolution (1280x768) of 24 frames per second for 5.4 seconds. The diffusion model is 11.6 billion parameters (not including the text encoder). The TSR models increase temporal resolution, whereas SSR increase spatial resolution. The researchers build upon the previous work of \textbf{Video U-Net} architecture \cite{video_diffusion_models}.
 
@@ -144,3 +164,9 @@ Compared to 2D ConvNet, 3D ConvNet has the ability to model temporal information
 Figure \ref{fig:c3d_feature_maps} shows the feature maps of the first 3D convolution layer of the C3D model. The 3D convolution helps to capture motion between frames.
 
 In a 2018 paper \cite{tran2018closer} that reviews spatiotemporal convolution (also by Facebook AI), they observed that 2D CNNs applied on individual frames of video remain solid performers in action recognition (the classification of action [like cooking, running, dancing] in image/video). By using residual connections, and by factorizing the 3D convolutional filters into separate spatial and temporal components results in the creation of a new spatiotemporal convolution block called \texttt{R(2+1)D}. The \texttt{R(2+1)D} block is a 2D residual block followed by a 1D temporal convolution. This separation allows the model to represent more complex non-linear functions, and is more easily optimized.
+
+
+\subsection{Optimizations \& Context Reduction}
+
+\textbf{Color reduction}: In \cite{imagegpt} they proposed context reduction: first by downsizing the resolution of the training videos to lower resolution, and more importantly, they created their own 9-bit color palette by K-mean clustering (k=512). That means, each pixel is represented by 9 bits, instead of 256x256x256 (which require 8+8+8=24 bits). This color reduction yields a sequence length three times shorter than the standard (R, G, B) palette.
+

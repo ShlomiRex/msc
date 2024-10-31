@@ -45,13 +45,14 @@ U-Net (first introduced in 2015) \cite{unet} is a convolutional neural network a
 In figure \ref{fig:unet_architecture} the U-Net is shaped like a 'U' - notice that the layers downsample the input one after the other. Then, after we get to the desired depth, we start upsampling the input until we get output with the same dimensions as the input. The blue arrows are the convolutional layers with kernel size 3x3 and ReLU activation function. The max-pooling are the downsampling layers, and the upsampling layers are the deconvolutional layers.
 
 \subsection{Sinusoidal embeddings}
+\label{subsec:sinusoidal_embeddings}
 
 In addition, the UNet backbone contains \textbf{timestep embeddings}. The scalar timestep (which can be in the range $[0, T]$, where $T$ is the total number of diffusion steps) is first projected into a \textbf{sinusoidal embedding}, similar to the way positional encodings are used in transformers. The timestep embeddings are used to let the model know which step its in the diffusion process currently, this way it knows if its in the beginning of the diffusion or at the late stage, which is essential for removing noise.
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.25\textwidth]{images/diffusion_models/stable_diffusion/positional_encodings.png}
-    \caption{Sinusoidal positional embeddings used in a transformer model \cite{understanding_deep_learning_book_2024}. It is similar to the timestep embeddings used in stable diffusion U-Net backbone. The X axis is the position of the input sequence (or timestep). The Y axis is the embeddings dimensions. The pattern is sinusodial, lighter regions indicate lower value, darker regions indicate higher values. Its important to note that each column in the X axis is a unique encodings, which helps distinguish the position / timestep of the input sequence.}
+    \caption{Sinusoidal positional embeddings used in a transformer model \cite{understanding_deep_learning_book_2024}. It is similar to the timestep embeddings used in stable diffusion U-Net backbone. The X axis is the position of the input sequence (or timestep). The Y axis is the embeddings dimensions. The pattern is sinusoidal, lighter regions indicate lower value, darker regions indicate higher values. Its important to note that each column in the X axis is a unique encodings, which helps distinguish the position / timestep of the input sequence.}
 \end{figure}
 
 In other words, the U-Net denoises the latent space, and the VAE decoder takes in the denoised latent vectors and generates image based on the latent vectors.
