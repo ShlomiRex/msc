@@ -1,24 +1,8 @@
-Next time I meet with my supervisor:
-* Explain Imagen again, the classifier-free guidance, how the dynamic thresholding fixes the train-test mismatch, the SR3 model (iterative refinement) and how the low resolution image is bicubically scaled and concat with noise vector y so that the model learns to reproduce the original image by denoising (the U-Net dimension of input/output is the same), 
-* Explain the transformer architecture / paper
-
-
-
+TODO: Remove some of the 'previous works' in Video Synthesis. Its too much. Only keep whatever is best.
 
 
 
 In stable diffusion paper, explain the figure 2.
-
-In stable diffusion paper, verify this statement:
-"In Stable Diffusion, the authors used the text encoder from CLIP. % TODO: Verify, read the paper."
-
-
-======================================================
-In Stable diffusion we have multiple previous works, which includes:
-
-Maybe explain ViT (Vision Transformer)?
-Maybe explain Word2Vec?
-======================================================
 
 Explain in VQ-GAN paper how they researchers converted conditional information, such as depth map, semantic masks, text, and so on, to tokens. How did images converted to tokens?
 
@@ -26,9 +10,3 @@ Maybe the minGPT encoder converted images to tokens automatically?
 
 Also, you need to explain in the paper what it means that the researchers had to train a new VQ-GAN model for each conditional type.
 
-
-
-
-Explain cross-attention layers?
-
-In video synthesis answer the question: what is spatio-temporal convolutional?

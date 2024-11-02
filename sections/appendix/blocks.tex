@@ -118,6 +118,15 @@ where $\mu = \mathbb{E}(x)$ is the mean of the input, $\sigma = \text{Var} (x)$ 
 \subsection{3D Convolutions}
 \label{appendix:blocks_3dconv}
 
+\begin{figure}
+    \centering
+    \includegraphics[width=1\textwidth]{images/appendix/blocks/3d_conv.png}
+    \caption{2D and 3D convolution operations. (a) Applying 2D convolution on image results in an image. (b) Applying 2D convolution on video (multiple frames) also results in an image. (c) Applying 3D convolution on video results in another volume (channel), preserving temporal information. Figure from the 2014 paper \cite{tran2015learning}.}
+    \label{fig:appendix_blocks_3dconv}
+\end{figure}
+
+The 2D and 3D convolution operation is demonstrated in figure \ref{fig:appendix_blocks_3dconv}.
+
 3D convolution is an extension of the 2D convolutions but designed to fit into the 3D space (additional dimension, for video synthesis we can think of the third dimension as the \textbf{time dimension}).
 
 Typically 2D convolutions have width, height dimension, and 3D convolutions have depth dimension which is suited to deal with temporal data, like videos. The 3D convolution kernels are also 3D. The extra dimension doesn't have to be time, in MRI imaging tasks, it can be the depth of the scan.
