@@ -1,6 +1,16 @@
 TODO: Remove some of the 'previous works' in Video Synthesis. Its too much. Only keep whatever is best.
 
+In Video-LDM explain PatchGAN how discriminator works on patches, write it in the appendix
 
+Instead of the second video generator maybe read the paper "CogVideoX: Text-to-Video Diffusion Models with An Expert Transformer" - its much better result
+
+In figure 4 of Video-LDM explain what is the C_s wtf is the speedo-meter in the figure? (resize, conv2d, learned downsampling)
+
+Explain what is "patch-wise temporal discriminator built from 3D convolutions" in Video-LDM, maybe explain PatchGAN?
+
+Vision transformer - it includes patches and stuff maybe summary it?
+
+=========================================================================================================================================================
 
 In stable diffusion paper, explain the figure 2.
 
