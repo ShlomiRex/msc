@@ -38,6 +38,14 @@ Video synthesis can be based on four main models and methods:
 
 In the realm of video synthesis there are two paradigms: \textbf{divide and conquer} and \textbf{temporal autoregressive}. An overview of the paradigms is shown in figure \ref{fig:video_synthesis_paradigms}.
 
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/video_synthesis/generation_technologies.png}
+    \caption{An overview of video generation technologies: \textit{GAN:} based on adversarial loss and uses generator and discriminator; \textit{VAE:} compresses the input data in the encoder to lower dimension latent space and then learns to reconstruct the data in the decoder; \textit{Autoregressive:} frame by frame prediction; \textit{Diffusion:} the model adds noise and learns to remove noise with U-Net.}
+\end{figure}
+
+
 \subsection*{Divide and Conquer}
 
 Divide and conquer paradigm breaks the task of video synthesis into smaller, more manageable tasks. This approach can further by divided into 3 methods of approach:
@@ -110,6 +118,18 @@ The lower the FVD score, the better the video generation model is. A more compre
 
 \subsection{Previous works}
 
+\begin{figure}
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/video_synthesis/previous_works.png}
+    \caption{Video generation models \& papers \cite{zhou2024survey}.}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\textwidth]{images/video_synthesis/timeline.png}
+    \caption{Text-to-Video generators evolutionary timeline, based on foundational algorithms \cite{sun2024sora}.}
+\end{figure}
+
 In \textbf{VideoGAN} \cite{video_gan} (2016) the researchers proposed to use of the large amounts of unlabeled video in order to learn scene dynamics and motion, and capture temporal signals. They proposed a model with \textbf{spatio-temporal convolutional} architecture, and they extend GANs to video generation. They successfully created a video of 1 second long, the model explicitly models the foreground separately from the background, which allows the network to learn which objects are in motion, and which don't. The methodology in this work is autoregressive frame prediction.
 
 In the case of \cite{video_generation_from_text}, where the goal is to generate video from text, they proposed a hybrid model that uses a conditional variational autoencoder (VAE) and a generative adversarial network (GAN). The VAE model will output a 'gist' which is a sketch (intermediate step), how the video will take form (colors, object layout) and the GAN model will apply a set of image filter kernels based on the input text to get an encoded text-gist feature vector and the framework predicts future frames.
@@ -133,7 +153,9 @@ The OpenAI researchers introduced in a 2020 paper \textbf{Image-GPT (iGPT)} \cit
     \caption{Imagen-Video video samples examples.}
 \end{figure}
 
-In \cite{video_diffusion_models} (2022) by Google proposed a diffusion model for video generation, which is an extension of the standard image diffusion architecture, and can be trained by both images and videos. They proposed to use a \textbf{3D U-Net architecture} in a standard diffusion model to extend to the video domain. They changed the 2D convolution to space-only 3D convolution (if $k$ is the kernel size, then we convert $k\times k$ convolution to $1\times k\times k$), and after each spatial attention block they insert temporal attention block that performs a temporal attention on the first axis. They also use relative position embeddings, similar to positional or time embeddings, so the network can distinguish ordering of video frames.
+In \textbf{Video Diffusion Models (VDM)} \cite{video_diffusion_models} (2022) by Google proposed a diffusion model for video generation, which is an extension of the standard image diffusion architecture, and can be trained by both images and videos. They proposed to use a \textbf{3D U-Net architecture} in a standard diffusion model to extend to the video domain. They changed the 2D convolution to space-only 3D convolution (if $k$ is the kernel size, then we convert $k\times k$ convolution to $1\times k\times k$), and after each spatial attention block they insert temporal attention block that performs a temporal attention on the first axis. They also use relative position embeddings, similar to positional or time embeddings, so the network can distinguish ordering of video frames.
+
+\textbf{MagicVideo} (2022) \cite{magic_video} from ByteDance (parent company of TikTok) is a text-to-video model leverage LDM based on 3D U-Net and a directed \textbf{temporal attention} (to capture temporal dependencies across frames), and a pre-trained VAE to map video clips to low-dimension latents to learn the distribution of the latent codes. Its based on keyframe and frame filling paradigm and uses CLIP to encode the text prompt.
 
 \textbf{To summarize}, there is a common consensus among the researchers in the previous works. They agree that in order to generate high-cohesion long videos, we need to model long-range temporal dependence in videos with many more frames. Not only that, but also that base models GANs are difficult to optimize for video generation tasks because of the adversarial loss, unlike the likelihood loss found in every other base model (VAE, diffusion, transformers). And finally, they agree that \textit{"the video domain has not yet witnessed its 'AlexNet moment'"} [quote from \cite{tran2018closer}] (AlexNet \cite{alexnet} was a major breakthrough in 2012 for image classification task which led to the development of imaging domain in deep learning). 
 

@@ -10,6 +10,10 @@ Explain what is "patch-wise temporal discriminator built from 3D convolutions" i
 
 Vision transformer - it includes patches and stuff maybe summary it?
 
+Move Image-Video figure from Video Synthesis section to Imagen-Video section, when I start to work on Imagen-Video.
+
+Explain Temporal Attention Mechanism in video synthesis and appendix. Its temporal layer, like 3D conv. Its used in Video-LDM.
+
 =========================================================================================================================================================
 
 In stable diffusion paper, explain the figure 2.

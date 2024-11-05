@@ -65,10 +65,11 @@ where $\alpha_\phi^i \in [0, 1]$ and is a learnable parameter. If we set $\alpha
 
 where $\tau$ is the diffusion time step, $y$ is the target noise vector. The target is to minimize the difference between predicted noise and ground truth $y$ over all video frames (with mean squared error).
 
-\textbf{Adding temporal layers to the autoencoder's decoder:} the researchers add temporal layers to the decoder of the autoencoder which they found this step to be critical for achieving good results. The reason is that the autoencoder is trained on images and flickering artifacts are present in the generated videos. So the researchers finetune the decoder on video data with a \textbf{patch-wise temporal discriminator built from 3D convolutions}. The encoder, however, remains unchanged.
+\textbf{Adding temporal layers to the autoencoder's decoder:} the researchers add temporal layers to the decoder of the autoencoder which they found this step to be critical for achieving good results. The reason is that the autoencoder is trained on images and flickering artifacts are present in the generated videos. So the researchers fine-tune the decoder on video data with a \textbf{patch-wise temporal discriminator built from 3D convolutions}. The encoder, however, remains unchanged.
 
 \textbf{Temporal binary mask:} generating latents and turning them into video (frame-by-frame prediction - temporal autoregressive) is efficient, but it reaches its limits when generating long duration videos. In order to adapt to longer duration videos, the researchers turned the model as \textit{prediction models} where for each two keyframes, we interpolate between them (divide and conquer). By using binary masks $m_S$ (0 or 1) it indicates the model which frames and the context ($m = 1$) and which frames are to be predicted $m = 0$. The frames are multiplied by the mask and the model learns to predict the missing frames.
 
 \textbf{Higher frame rate:} to achieve high frame rate (high temporal resolution), they predict three interpolated frames between each two keyframes; they call this $T \rightarrow 4T$ interpolation model. Its possible to achieve higher frame rates; its also possible to train $4T \rightarrow 16T$ interpolation model.
 
-\textbf{DDIM Sampling:} in appendix F of the paper they write that they use the sampler from denoising diffusion implicit models (DDIM) \cite{ddim} (section \ref{subsec:ddim_sampler}), where the stochasticity $\eta$ is varied, as well as the guidance scale.
+\textbf{DDIM Sampling:} in appendix F of the paper they write that they use the sampler from denoising diffusion implicit models (DDIM) \cite{ddim} (section \ref{subsec:ddim_sampler}), where the stochastically $\eta$ is varied, as well as the guidance scale.
+
