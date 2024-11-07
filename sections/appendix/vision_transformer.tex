@@ -5,7 +5,9 @@ Vision Transformer \cite{vision_transformer} (ViT) model by Google uses transfor
 
 Traditionally CNNs are used to extract local spatial features from an image. However they often fail to capture long-range dependencies (for example the first pixel and the last pixel in the image are very far apart).
 
-One solution is to use transformers's attention mechanism which enable to capture global context of the image. The Vision Transformer model is composed of two parts: the patch embedding and the transformer encoder.
+One solution is to use transformers's attention mechanism which enable to capture global context of the image (between patches, because of the positional encodings). The Vision Transformer model is composed of two parts: the patch embedding and the transformer encoder.
+
+In their paper, they found that ViT scale more effectively for visual recognition than traditional convolutional networks. The scaling behavior of transformers is better than that of CNNs.
 
 \begin{figure}
     \centering
@@ -19,9 +21,10 @@ One solution is to use transformers's attention mechanism which enable to captur
 
 \textbf{Position embeddings:} In order to let the transformer know the position of each patch spatially, positional embeddings are used: each patch 0, 1, ... is numbered (from top-left to bottom-right, rasterized) and then each position is embedded using sinusoidal position embedding, like we discussed in \ref{subsec:sinusoidal_embeddings}.
 
-\textbf{Combining the embeddings:} The patch embeddings and the positional embeddings are \textbf{summed together (and not concatenated)} to form the input to the encoder.
+\textbf{Combining the embeddings:} The patch embeddings and the positional embeddings are \textbf{summed together} element-wise (\textbf{and not concatenated}, channel-wise) to form the input to the encoder.
 
 \textbf{Transformer encoder:} The patch embeddings + positional embeddings are fed to the transformer encoder. It uses self-attention to weight the importance of each patch embedding in order to capture long-range relationships between patches.
 
 \textbf{Classification head:} An MLP layer is used to classify the image after the encoder.
 
+Overall, ViT uses self-attention to model relationships across all patches in an image, and because of the scalable nature of transformers, it providing an effective alternative to CNNs in vision tasks. Its success has created new ways of using transformers in image and video synthesis model.

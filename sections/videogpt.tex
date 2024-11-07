@@ -3,8 +3,9 @@
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.7\textwidth]{images/video_synthesis/videogpt_architecture.png}
+    \includegraphics[width=0.7\textwidth]{images/video_gpt/architecture.png}
     \caption{VideoGPT architecture. Left: training the VQ-VAE; Right: training the autoregressive transformer model on the latent vectors.}
+    \label{fig:videogpt_architecture}
 \end{figure}
 
 VideoGPT \cite{videogpt} uses likelihood based model VQ-VAE and GPT-like transformer model. The encoder of VQ-VAE first downsamples video into discrete latent space using 3D convolutions, and the decoder then reconstructs the video from these latent codes (by using a codebook - see VQ-VAE section \ref{sec:vqvae}). The generated latents are decoded to the original video resolution as the training dataset.
@@ -27,8 +28,8 @@ The researchers used EMA (exponential moving average which is described in the V
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.75\textwidth]{images/video_synthesis/videogpt_res_atten_block.png}
-    \caption{Residual attention block as described in VideoGPT. The "Norm" layers are \texttt{LayerNorm} blocks (described in appendix \ref{appendix:blocks_norm}).}
+    \includegraphics[width=0.75\textwidth]{images/video_gpt/res_atten_block.png}
+    \caption{Residual attention block as described in VideoGPT. This block is used in the VQ-VAE model. The "Norm" layers are \texttt{LayerNorm} blocks (described in appendix \ref{appendix:blocks_norm}).}
     \label{fig:videogpt_res_atten_block}
 \end{figure}
 
@@ -51,4 +52,26 @@ In particular, the researchers wanted to test how generative pre-training can be
 
 \subsection{Architecture}
 
-They train the VQ-VAE on video data to learn the codebook. The encoder and decoder consists of 3D convolutions (appendix \ref{appendix:blocks_3dconv}) followed by attention residual blocks (figure \ref{fig:videogpt_res_atten_block}). Axial attention \cite{axial_attention} block is described in appendix \ref{appendix:attention}.
+The architecture of VideoGPT is shown in figure \ref{fig:videogpt_architecture}.
+
+\textbf{VQ-VAE:} They train the VQ-VAE on video data to learn the codebook. The encoder and decoder consists of 3D convolutions (appendix \ref{appendix:blocks_3dconv}) followed by attention residual blocks (figure \ref{fig:videogpt_res_atten_block}). Axial attention \cite{axial_attention} block is described in appendix \ref{appendix:attention}. The purpose of the VQ-VAE is to encode the video into discrete latent space. The purpose of the transformer is to autoregressively generate the video from these latents.
+
+\textbf{Transformer:} The right side of figure \ref{fig:videogpt_architecture} shows the training of the autoregressive transformer model on the latent vectors. \textbf{The target is the next latent code (frame) in the video}. So the transformer learns to predict the next frame as a latent code (which is flatten vector, sequence).
+
+
+
+
+\subsection{Video generation}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/video_gpt/video_generation.png}
+    \caption{Video generation process in VideoGPT. The VQ-VAE encodes the video into discrete latents, and the transformer autoregressively generates the video from these latents.}
+    \label{fig:videogpt_video_generation}
+\end{figure}
+
+The model can start to autoregressively generate videos given starting image: the VQ-VAE turns the first image to latent vector, and this vector is then fed to the GPT transformer to generate the next frame. The process is repeated until the desired number of frames is generated.
+
+Another option is to sample latents with the transformer
+
+Multiple video generation examples are shown in figure \ref{fig:videogpt_video_generation}.

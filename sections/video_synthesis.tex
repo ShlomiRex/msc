@@ -112,7 +112,7 @@ A common metric used for video generation models is the \textbf{Frechet Video Di
 
 The lower the FVD score, the better the video generation model is. A more comprehensive list of evaluation metrics is shown in figure \ref{fig:video_synthesis_eval_metrics}.
 
-
+Although its not theoretically an evaluation metric, in the Diffusion Transformer (DiT) paper \cite{diffusion_transformer} the researchers used \textbf{Gflops} (giga floating point operations per second) metric to measure the complexity of the model, instead of traditional parameter count of the model. Higher Gflops means the model is more scalable and complex.
 
 
 
@@ -141,9 +141,9 @@ model that considers the dependencies between patches, and a local token-level a
 
 In \cite{ge2022long} (2022 by Meta AI) they used a conditional (text or images) 3D VQ-GAN with hierarchical transformer architecture to generate long videos (1024 frames or more). They used standard benchmark datasets: UCF-101, Sky Time-lapse and Taichi-HD. They core insight is that using transformers is ideal for capturing long-range temporal dependence.
 
-The OpenAI researchers introduced in a 2020 paper \textbf{Image-GPT (iGPT)} \cite{imagegpt}, in which they tried to explore autoregressive sequence transformer to predict pixels directly, without using CNN prior, only by using the attention mechanism. They pre-trained a transformer on ImageNet and showed that a transformer can learn spatial features (image representation learning). Instead of language tokens, the transformer predicts pixels. The biggest model, called iGPT-XL has 6.8 billion parameters. They also showed that when scaling transformers (more parameters, more pre-training) the architecture quickly closes the gap on contrastive learning of other models that specifically design to this task.
+\textbf{Image-GPT (iGPT):} The OpenAI researchers introduced in a 2020 paper Image-GPT (iGPT) \cite{imagegpt}, in which they tried to explore autoregressive transformer to predict pixels directly, without using CNN prior, only by using the attention mechanism. They pre-trained a transformer on ImageNet and showed that a transformer can learn spatial features (image representation learning). Instead of language tokens, the transformer predicts pixels. The biggest model, called iGPT-XL has 6.8 billion parameters. They also showed that when scaling transformers (more parameters, more pre-training) the architecture quickly closes the gap on contrastive learning of other models that specifically design to this task.
 
-\textbf{VideoGPT} \cite{videogpt} (2021), which we will take a closer look in section \ref{sec:videogpt}, uses VQ-VAE to encode video frames into discrete latent representations by using 3D convolutions and self-attention. It also uses a transformer based on the work of Image-GPT to generate video frames from the latent representations. VideoGPT uses the same prior networks as Image-GPT \cite{imagegpt}.
+\textbf{VideoGPT} \cite{videogpt} (2021), which we will take a closer look in section \ref{sec:videogpt}, uses VQ-VAE to encode video frames into discrete latent representations by using 3D convolutions and self-attention. It also uses a transformer based on the work of \textbf{Image-GPT} \cite{imagegpt} to generate video frames from the latent representations. VideoGPT uses the same prior networks as Image-GPT.
 
 \textbf{Imagen-Video} \cite{imagen_video} (2022) by Google is a text conditional video generation system based on a cascade of video diffusion models (similar to Imagen (section \ref{sec:imagen})). Instead of 2D super-resolution models as we seen in Imagen, they are spatial and temporal video super-resolution models. Similar to Imagen it also uses frozen T5-XXL \cite{t5_model} text encoder (for text embeddings), it consists of 7 sub-models (1 base model, 3 spatial super-resolution models [SSRs], and 3 temporal super-resolution models [TSRs]) to generate videos of high resolution (1280x768) of 24 frames per second for 5.4 seconds. The diffusion model is 11.6 billion parameters (not including the text encoder). The TSR models increase temporal resolution, whereas SSR increase spatial resolution. The researchers build upon the previous work of \textbf{Video U-Net} architecture \cite{video_diffusion_models}.
 
@@ -165,6 +165,10 @@ In \textbf{Video Diffusion Models (VDM)} \cite{video_diffusion_models} (2022) by
 
 
 \subsection{Spatiotemporal feature learning}
+
+One of the first work that tries to capture temporal dynamics is in a form of sequence-to-sequence video captioning \cite{venugopalan2015sequence} (2015). In this paper, the researchers used \textbf{Long Short-Term Memory model (LSTM)} to caption video, which was a popular model for sequence tasks at that time (and also Recurrent Neural Networks [RNN] which was prior work to LSTMs). However LSTM falls short in capturing long-range dependencies, and among other problems (like deep LSTM has training problems because of the exploding/vanishing gradient problem, difficult scaling and more), was quickly replaced by other models.
+
+Since then, 3D convolution (explained below) and vision transformers (appendix \ref{appendix:vision_transformer}) have overtaken LSTM and RNN approaches for local, global attention in vision tasks.
 
 \begin{figure}
     \centering
@@ -188,7 +192,35 @@ Figure \ref{fig:c3d_feature_maps} shows the feature maps of the first 3D convolu
 In a 2018 paper \cite{tran2018closer} that reviews spatiotemporal convolution (also by Facebook AI), they observed that 2D CNNs applied on individual frames of video remain solid performers in action recognition (the classification of action [like cooking, running, dancing] in image/video). By using residual connections, and by factorizing the 3D convolutional filters into separate spatial and temporal components results in the creation of a new spatiotemporal convolution block called \texttt{R(2+1)D}. The \texttt{R(2+1)D} block is a 2D residual block followed by a 1D temporal convolution. This separation allows the model to represent more complex non-linear functions, and is more easily optimized.
 
 
-\subsection{Optimizations \& Context Reduction}
 
-\textbf{Color reduction}: In \cite{imagegpt} they proposed context reduction: first by downsizing the resolution of the training videos to lower resolution, and more importantly, they created their own 9-bit color palette by K-mean clustering (k=512). That means, each pixel is represented by 9 bits, instead of 256x256x256 (which require 8+8+8=24 bits). This color reduction yields a sequence length three times shorter than the standard (R, G, B) palette.
+
+
+
+
+\subsection{Practices \& techniques in vision domain}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\textwidth]{images/video_synthesis/spatial_and_temporal_self_attention.png}
+    \caption{Spatial and temporal self-attention topology graph illustration \cite{plizzari2021spatial}. The model tries to learn 3D skeleton pose over time. \textit{Left:} full-graph of skeleton joins; spatial self-attention (SSA): the model learns the relations between joints (nodes). \textit{Right:} temporal self-attention (TSA); the dynamics of each joint is studied separately along all the frames, each node is independent and correlations between frames are computed between the same body joints along the temporal dimension.}
+    \label{fig:spatial_temporal_self_attention}
+\end{figure}
+
+In this section we explore common practices or techniques used in vision domain, that are applied in image synthesis and video synthesis models.
+
+\textbf{Use of Transformers for Multi-modal outputs:} Transformers have been shown time and time again their capability to scale to very large models. In addition, they excel at sequence-to-sequence tasks, which allows researchers to use them in their vision models and condition on multiple types of data (text, audio, image, layouts, semantic masks, etc). As we advance further into more and more advanced vision models, we see increase in the use of transformers in vision tasks.
+
+\textbf{Patchify:} In Vision Transformer (ViT) \cite{vision_transformer} (appendix \ref{appendix:vision_transformer}) and Diffusion Transformer (DiT) \cite{diffusion_transformer} (appendix \ref{appendix:diffusion_transformer}) both use patch technique to model and represent patches of size $p \times p$ of an image. First the image is divided into patches, then each patch is linearly embedded into a vector, and the position (either absolute, relative or even distance between patches) of the patch is added (element-wise) to the patch embeddings, forming an embedding of patch + position tokens, and then the sequence of tokens is fed into the transformer (in the case of ViT and DiT). 
+
+\textbf{Spatial Self-Attention (SSA):} Self-attention mechanism is often used to capture long-range spatial dependencies in a single frame. Unlike CNNs, which capture only local features, self-attention allows the model to learn the global of an image. Spatial self-attention is used in Vision Transformer (ViT) \cite{vision_transformer} (appendix \ref{appendix:vision_transformer}), for instance.
+
+\textbf{Temporal Self-Attention (TSA):} Self-attention mechanism is also often used to capture temporal dependencies (relationships between frames). For example, it enables the model to understand how each part of the video changes over time, allowing it to learn motion patterns. Video-LDM \cite{video_ldm} (section \ref{sec:videoldm}) for example uses temporal self-attention.
+
+\textbf{Color reduction:} In \cite{imagegpt} they proposed context reduction: first by downsizing the resolution of the training videos to lower resolution, and more importantly, they created their own 9-bit color palette by K-mean clustering (k=512). That means, each pixel is represented by 9 bits, instead of 256x256x256 (which require 8+8+8=24 bits). This color reduction yields a sequence length three times shorter than the standard (R, G, B) palette.
+
+\textbf{Use of compute efficient attention blocks:} Like in the case of Video-GPT they use \textbf{Axial attention} block (appendix \ref{appendix:attention}), which doesn't compute self-attention of the entire image, but only of the rows and columns separately. This reduces the complexity of the attention mechanism.
+
+\textbf{Operating in latent space:} Because video synthesis is compute intensive task, a lot of previous works models operate in latent space, which is compressed lower-dimension space, compared to raw RGB frames. Most of the time, variational autoencoder is used to encode to latent space and the decoder to decode the latent space back to the RGB space.
+
+\textbf{Conditioning:} There are three ways to condition an image/video generation model: \textbf{cross-attention} which we saw in stable diffusion, \textbf{adaptive layer normalization} (like in diffusion transformer) and in transformer-based models, the conditional information is added to the \textbf{input sequence tokens} (like in ViT and DiT) to be fed into the transformer decoder.
 

@@ -45,6 +45,16 @@ The architecture of a residual block is shown in figure \ref{fig:appendix_blocks
 \subsubsection{Normalization layers}
 \label{appendix:blocks_norm}
 
+These layers ensure that the data is normalized in a way that the model can learn better. If we think about optimizing our model on a distribution that looks like very long ellipse, it would be hard for the model to reach minima. But if we normalize the data such that the distribution will fit a circle, then the optimization process will be easier. 
+
+For this topic we use mean $\mu$, variance (standard deviation) $\sigma$:
+
+\[ \mu = \frac{1}{H} \sum_{i=1}^{H} x_i \]
+
+\[ \sigma = \sqrt{\frac{1}{H} \sum_{i=1}^{H} (x_i - \mu)^2} \]
+
+where $H$ is the number of elements in the input $x$.
+
 \begin{figure*}
     \centering
     \includegraphics[width=0.75\textwidth]{images/appendix/blocks/norm.png}
@@ -109,6 +119,10 @@ where $\mu = \mathbb{E}(x)$ is the mean of the input, $\sigma = \text{Var} (x)$ 
 
 
 
+\subsection*{Adaptive Layer Normalization (adaLN)}
+
+% TODO: Complete
+Adaptive Layer Normalization (adaLN) blocks are ...
 
 
 
