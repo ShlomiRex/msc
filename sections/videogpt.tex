@@ -29,7 +29,7 @@ The researchers used EMA (exponential moving average which is described in the V
 \begin{figure}
     \centering
     \includegraphics[width=0.75\textwidth]{images/video_gpt/res_atten_block.png}
-    \caption{Residual attention block as described in VideoGPT. This block is used in the VQ-VAE model. The "Norm" layers are \texttt{LayerNorm} blocks (described in appendix \ref{appendix:blocks_norm}).}
+    \caption{Residual attention block as described in VideoGPT. This block is used in the VQ-VAE model. The "Norm" layers are \texttt{LayerNorm} blocks (described in appendix \ref{appendix:blocks_norm}). The position embeddings is not explained in the paper; but we can infer them as the frame position (i.e. frame 0, 1, ... in the video), which is added element-wise.}
     \label{fig:videogpt_res_atten_block}
 \end{figure}
 
@@ -71,7 +71,5 @@ The architecture of VideoGPT is shown in figure \ref{fig:videogpt_architecture}.
 \end{figure}
 
 The model can start to autoregressively generate videos given starting image: the VQ-VAE turns the first image to latent vector, and this vector is then fed to the GPT transformer to generate the next frame. The process is repeated until the desired number of frames is generated.
-
-Another option is to sample latents with the transformer
 
 Multiple video generation examples are shown in figure \ref{fig:videogpt_video_generation}.

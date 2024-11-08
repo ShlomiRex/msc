@@ -14,6 +14,16 @@ Explain Temporal Attention Mechanism in video synthesis and appendix. Its tempor
 
 In diffusion transformers paper explain "adaptive normalization layers" [40] - he says it works like cross-attention that it enables the model to learn conditional information
 
+Video-LDM patch-wise temporal discriminator - architecture of this model is not known? Maybe need to read the rest of the paper
+
+Video-LDM: Temporal binary mask: I don't understand C_s = (m_S \cdot z, m_S). Wtf does that mean
+
+I don't know how the interpolation model works or how the keyframe generation model works in Video-LDM. Do they have different objectives? What are its training regime? How are they different?
+
+The interpolation model in Video-LDM - its input should be 2 latents? How it outputs 3 or more frames/latents? Whats the architecture and training objectives?
+
+In video-LDM they said they used pixel-space DM as upsampler. And also LDM upsampler for text-to-video models. Then whats its architecture? Like why use pixel-space DM and LDM for different models/outputs?
+
 =========================================================================================================================================================
 
 In stable diffusion paper, explain the figure 2.

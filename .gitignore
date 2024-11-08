@@ -16,3 +16,4 @@ main.bbl-SAVE-ERROR
 main.bcf*
 *.aux
 *.log
+*.synctex*
