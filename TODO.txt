@@ -24,6 +24,11 @@ The interpolation model in Video-LDM - its input should be 2 latents? How it out
 
 In video-LDM they said they used pixel-space DM as upsampler. And also LDM upsampler for text-to-video models. Then whats its architecture? Like why use pixel-space DM and LDM for different models/outputs?
 
+Maybe do section on Long Video GAN (Generating long videos of dynamic scenes) which was state-of-the-art video synthesis model?
+
+CogVideo looks very good, its like an upgraded VideoGPT model, maybe I can do it also? It also has interpolation and keyframe generation
+
+
 =========================================================================================================================================================
 
 In stable diffusion paper, explain the figure 2.
