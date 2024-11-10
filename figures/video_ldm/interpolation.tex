@@ -1,0 +1,21 @@
+\begin{tikzpicture}
+    \draw[fill=white!50] (0, 0) rectangle (2, 2);
+    \node[anchor=center] at (1, 1) {L1};
+
+    \draw[fill=black!50] (3, 0) rectangle (5, 2);
+    \node[anchor=center] at (4, 1) {L2};
+
+    \draw[fill=black!50] (6, 0) rectangle (8, 2);
+    \node[anchor=center] at (7, 1) {L3};
+
+    \draw[fill=black!50] (9, 0) rectangle (11, 2);
+    \node[anchor=center] at (10, 1) {L4};
+
+    \draw[fill=white!50] (12, 0) rectangle (14, 2);
+    \node[anchor=center] at (13, 1) {L5};
+
+    \draw[->] (2, 0) to[bend right] (12, 0);
+
+    \node[anchor=center, scale=2] at (7,3) {$c_S$};
+    \draw[] (-0.5, -0.5) rectangle (14.5, 2.5);
+\end{tikzpicture}

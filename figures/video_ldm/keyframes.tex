@@ -1,0 +1,28 @@
+\begin{tikzpicture}
+    \draw[fill=white!50] (0, 0) rectangle (2, 2);
+    \node[anchor=center] at (1, 1) {L1};
+
+    \draw[fill=white!50] (3, 0) rectangle (5, 2);
+    \node[anchor=center] at (4, 1) {L2};
+
+    \draw[fill=white!50] (6, 0) rectangle (8, 2);
+    \node[anchor=center] at (7, 1) {L3};
+
+    \draw[fill=white!50] (9, 0) rectangle (11, 2);
+    \node[anchor=center] at (10, 1) {L4};
+
+    \draw[fill=black!50] (12, 0) rectangle (14, 2);
+    \node[anchor=center] at (13, 1) {L5};
+
+    \draw[fill=black!50] (15, 0) rectangle (17, 2);
+    \node[anchor=center] at (16, 1) {L6};
+
+    % c_S
+    \node[anchor=center, scale=2] at (8.5,3) {$c_S$};
+
+    % Context guidance box
+    \draw[] (2.5, -0.5) rectangle (14.5, 2.5);
+
+    % 3 Dots
+    \node [scale=4] at (18,1) {\rotatebox{90}{$\vdots$}};
+\end{tikzpicture}
