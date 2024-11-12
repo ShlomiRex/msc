@@ -34,6 +34,7 @@ There are five main contributions in the paper:
 
 
 \subsection{Text-to-Text Transfer Transformer (T5)}
+\label{subsec:t5}
 
 \textbf{T}ext-\textbf{t}o-\textbf{T}ext \textbf{T}ransfer \textbf{T}ransformer (T5) \cite{t5_model} is a model that was introduced by Google Research that treats tasks as a text-to-text problems. For example, for summarization tasks we could prompt the LLM: "Please summarize the following: ...", for translation tasks we could prompt the LLM: "Translate from English to French the word 'You'", as well as for text classification, question answering, conversations, and other tasks. In short, this knowledge can be viewed as developing a 'general-purpose' model that can understand text.  Instead of explicitly training the model to learn words or text, such as in the case of \textbf{word vectors} \cite{cbow_word2vec}, a more common practice is to \textbf{pre-train} \cite{bert} the model on data-rich task in an unsupervised manner. The model T5 is open-source and was trained on large corpora of textual data. The base version of the model (T5-base) consists of 220 million parameters, while the largest version of the model (T5-XXL) consists of \textbf{11 billion parameters}. In the context of Imagen, the Imagen model uses a frozen version of T5-XXL model to encode conditional text prompts.
 

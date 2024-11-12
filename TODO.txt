@@ -28,6 +28,11 @@ Maybe do section on Long Video GAN (Generating long videos of dynamic scenes) wh
 
 CogVideo looks very good, its like an upgraded VideoGPT model, maybe I can do it also? It also has interpolation and keyframe generation
 
+Imagen-Video: explain frame skipping
+
+Imagen-Video: understand what it means: " All models generate an entire block of frames simultaneously – so for instance, our SSR models do not suffer from obvious artifacts that would occur from naively running super-resolution on independent frames"
+
+Imagen-Video: explain Video U-Net block. I don't understand. Read the paper "Video diffusion models".
 
 =========================================================================================================================================================
 
