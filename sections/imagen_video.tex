@@ -24,7 +24,7 @@ The benefit of cascading pipeline is the ability to independently train each mod
 \begin{figure}
     \centering
     \includegraphics[width=1\textwidth]{images/imagen_video/video_u_net.png}
-    \caption{Video U-Net block \cite{video_diffusion_models} used by Imagen-Video.}
+    \caption{Video U-Net block \cite{video_diffusion_models} used by Imagen-Video. Each frame independently processed by spatial convolution and spatial attention, while a collection of frames are processed by temporal attention and convolution.}
     \label{fig:imagen_video_video_unet}
 \end{figure}
 
@@ -41,17 +41,30 @@ Imagen Video also builds on the work of Video U-Net \cite{video_diffusion_models
 
 \subsection{Architecture}
 
-Imagen Video has 1 frozen text encoder, 1 base video diffusion model, three SSR (spatial super-resolution) models, and three TSR (temporal super-resolution) models (totaling 7 video diffusion models).
+Imagen Video has 1 frozen text encoder, 1 base video diffusion model, three SSR (spatial super-resolution) models, and three TSR (temporal super-resolution) models (totaling 7 video diffusion models). Each of the denoising diffusion models $\hat{x_\theta}$ operate on multiple video frames simultaneously.
 
-Each of the denoising diffusion models $\hat{x_\theta}$ operate on multiple video frames simultaneously.
-
-\textbf{Number of parameters:} Imagen Video consists of 11.6 billion parameters.
+Whereas typically diffusion models for image generation use a 2D U-Net architecture (spatial attention and convolution), \textbf{Video U-Net} block used by Imagen-Video (figure \ref{fig:imagen_video_video_unet}) generalizes the U-Net to 3D space-time by using temporal attention and convolution to capture dependencies between video frames.
 
 Imagen-Video pipeline is compromised of the following model types:
 
 \begin{itemize}
-    \item \textbf{T5-XXL:} As we discussed before, T5-XXL is a text-to-text transformer used to encode (text encoder) the text prompts to embeddings (tokens). 
-    \item \textbf{Base:} The base model 
-    \item \textbf{SSR:} The SSR model is a spatial super-resolution model that increases the resolution of the input image to higher spatial resolution.
-    \item \textbf{TSR:} The TSR model increases the temporal resolution of the input video by filling in intermediate frames between the input frames.
+    \item \textbf{T5-XXL:} As we discussed before, T5-XXL is a text-to-text transformer used to encode (text encoder) the text prompts to embeddings (tokens). These tokens condition all of the 7 diffusion models (not only the base model as shown in figure \ref{fig:imagen_video_video_unet}).
+    \item \textbf{Base:} The base diffusion model generate low FPS low resolution video clip, it uses temporal attention.
+    \item \textbf{SSR:} The SSR model is a spatial super-resolution (SSR) model that increases the resolution of the input image to higher spatial resolution. Unlike the base model, it uses temporal convolution instead of temporal attention. Like SR3, we first apply bilinear or bicubic interpolation to increase the resolution, then we remove noise (add details) by first concatenating noise $y_t$ to the upsampled image $x$ and then use the U-Net denoising network to learn to denoise the image.
+    \item \textbf{TSR:} The TSR model is a temporal super-resolution (TSR) model that increases the temporal resolution of the input video. To achieve this, they repeat the frames or fill blank frames (masked) which increases the amount of frames in the video clip. Unlike the base model, it uses temporal convolution instead of temporal attention.
 \end{itemize}
+
+
+\textbf{Temporal Attention v.s. Temporal Convolution}: The base diffusion model uses temporal attention because they want it to learn to model long term temporal dependencies, whereas the SSR and TSR models use temporal convolution instead, which maintains local temporal consistency. Temporal convolution reduces memory and computation costs over temporal attention, which is critical for the SSR and TSR models, which are applied to high-resolution high-fps videos. This is why temporal attention is used at the beginning of the cascading pipeline.
+
+\textbf{Spatial attention at the beginning of the pipeline}: The base model and the first two SSR models have spatial attention in addition to spatial convolution, because it improves sample fidelity, and the attention mechanism is used in the beginning of the pipeline which requires less compute resources than at the end of the pipeline. For example, the last SSR model in the pipeline is a fully convolutional model.
+
+\textbf{Number of parameters}: Imagen Video consists of 11.6 billion parameters. Each of the model's parameters count is shown in figure \ref{fig:imagen_video_pipeline}.
+
+
+
+
+
+\subsection{v-prediction}
+
+...

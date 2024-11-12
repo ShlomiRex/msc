@@ -155,6 +155,8 @@ In \textbf{Video Diffusion Models (VDM)} \cite{video_diffusion_models} (2022) by
 
 \textbf{Make-a-Video} (2022) \cite{make_a_video} also uses pre-trained image generator (DALL-E 2 \cite{dalle_2}) and temporally align its decoder and its super-resolution DM for video generation. One down side of this model is that it operates in pixel space, which is less efficient.
 
+\textbf{EasyAnimate} (2024) \cite{easyanimate} by Alibaba Group is a 12 billion multi-modal diffusion video generation model. Its one of the most recent works today (July 2024). The model uses the transformer and scale it to video domain. In particular the model architecture consists of Diffusion Transformer (DiT) (appendix \ref{appendix:diffusion_transformer}) that leverages the attention mechanism. The paper introduced \textbf{Slice VAE} which reduce the GPU memory usage compared to traditional video VAE.
+
 \textbf{To summarize}, there is a common consensus among the researchers in the previous works. They agree that in order to generate high-cohesion long videos, we need to model long-range temporal dependence in videos with many more frames. Not only that, but also that base models GANs are difficult to optimize for video generation tasks because of the adversarial loss, unlike the likelihood loss found in every other base model (VAE, diffusion, transformers). And finally, they agree that \textit{"the video domain has not yet witnessed its 'AlexNet moment'"} [quote from \cite{tran2018closer}] (AlexNet \cite{alexnet} was a major breakthrough in 2012 for image classification task which led to the development of imaging domain in deep learning). 
 
 
