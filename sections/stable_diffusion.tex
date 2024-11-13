@@ -146,7 +146,7 @@ Another guidance approach, which is the latest and most successful approach, is 
 \nabla \log p(x_t | y) = \underbrace{\gamma \nabla \log p(x_t | y)}_{\text{conditional score}} + \underbrace{(1 - \gamma) \nabla \log p(x_t)}_{\text{unconditional score}}
 \]
 
-To summorize, in contrast to classifier guidance, classifier-free guidance streamlines the training process and lowers computational costs by utilizing a single model instead of training two separate models.
+To summarize, in contrast to classifier guidance, classifier-free guidance streamlines the training process and lowers computational costs by utilizing a single model instead of training two separate models.
 
 \begin{lstlisting}[language=Python, caption={Classifier-free guidance (CFG) in Stable Diffusion. The CFG scale is the weight of the conditioning signal.}, label={lst:cfg_stable_diffusion}]
 if do_cfg:

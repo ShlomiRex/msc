@@ -39,6 +39,10 @@ Imagen Video also builds on the work of Video U-Net \cite{video_diffusion_models
 
 
 
+
+
+
+
 \subsection{Architecture}
 
 Imagen Video has 1 frozen text encoder, 1 base video diffusion model, three SSR (spatial super-resolution) models, and three TSR (temporal super-resolution) models (totaling 7 video diffusion models). Each of the denoising diffusion models $\hat{x_\theta}$ operate on multiple video frames simultaneously.
@@ -61,10 +65,77 @@ Imagen-Video pipeline is compromised of the following model types:
 
 \textbf{Number of parameters}: Imagen Video consists of 11.6 billion parameters. Each of the model's parameters count is shown in figure \ref{fig:imagen_video_pipeline}.
 
+\textbf{Classifier-free guidance}: CFG is also used in Imagen-Video. They found that it helps the model generate high fidelity samples with respect to the text prompts. Higher guidance weights lead the model to focus more on the text prompt conditioning.
+
+\textbf{Oscillating guidance}: Similar to Imagen, when the guidance weight is too large, the possible range of values of predicted noise is beyond $[-1, 1]$, which causes train-test mismatch. This leads to significant artifacts in the generated videos. \textbf{Dynamic thresholding}, as described in Imagen section, helps to prevent this issue, which dynamically clip the image to the chosen threshold followed by scaling by $s$: \texttt{np.clip(x, -s, s) / s}. However, constant high guidance weight leads to saturation artifacts, especially at high resolutions. The researchers didn't find dynamic thresholding sufficient, therefor they experimented with letting the guidance weight \textbf{oscillate between high and low values} for a certain number of sampling steps. They apply this oscillating dynamic threshold only to the base and first SR models. The generation starts with a high guidance weight to establish a strong alignment with the prompt, then alternates between high and low weights in subsequent steps.
 
 
 
-
+% TODO: Not sure if I should explain this. It only affects the efficiency of sampling, so its not really that important.
 \subsection{v-prediction}
 
-...
+In a 2022 paper by Google \cite{salimans2022progressive} the research team introduced a fast sampling method for diffusion models. It allows the diffusion model to sample in a fixed amount of model evaluations, instead of thousands. They presented a way to distill a trained deterministic diffusion sampler (such as \textbf{DDIM} (section \ref{subsec:ddim_sampler})) that takes as half as many sampling steps. Each distillation halves the number of required sampling steps each time.
+
+For example, state-of-the-art samplers that take 8192 steps can be distilled down to as few as 4 steps without significant loss in perceptual quality.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/imagen_video/v_prediction.png}
+    \caption{v-prediction: A fast sampling method for diffusion models.}
+    \label{fig:v_prediction}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/imagen_video/progressive_distillation.png}
+    \caption{Progressive distillation algorithm.}
+    \label{fig:progressive_distillation}
+\end{figure}
+
+This is achieved by creating a sequence of models, where each model ("\textbf{student}") is trained to mimic a previous, slower model ("\textbf{teacher}") that requires more steps to produce a sample. In each distillation step the student model is initialized with the weights of the teacher model; 
+
+The teacher model uses standard sampling approach, such as DDIM, and then the student model learns to approximate this process in fewer steps.
+
+In figure \ref{fig:progressive_distillation} the trained teacher model $\hat{x}_{\eta} (z_t)$ is the trained diffusion model $\hat{x}_{\theta} (z_t)$, where $z_t$ is the noisy data (we take training data $\mathcal{D}$ and add noise to it). Now we modify this model and make it sample faster by changing the teacher model to the student model, after we distilled the student model. The student model learns to predict $\tilde{x}$ which is the result of two steps of the teacher model (by using two DDIM steps). This way the student model learns to match the two-step output of the previous (teacher) model in one step.
+
+After training on $N$ sampling steps, we repeat this process with $N/2$ steps and so on.
+
+
+
+
+
+
+
+
+
+
+
+
+\subsection{Noise conditioning augmentation}
+
+Similar to Imagen, Imagen-Video applied noise conditioning augmentation for all the spatial and temporal diffusion models. They apply Gaussian noise to the conditioning input video during training 
+
+In Imagen the researchers used noise conditioning augmentation to corrupt low-resolution images, and the super-resolution models would be conditioned on the noise level. During training, the corruption noise level ("augmentation level") is chosen randomly. This helps the model to generalize better to various noise levels.
+
+This technique is used primarily in cascading pipeline models, such as Imagen and Imagen-Video. It improves the quality and diversity of samples by changing the noise levels at different stages of training, which helps the model generalize better to various noise levels. The model receives conditioning information about the noise level its handling which guides the model to denoise it, similar to how the model receives timestep embeddings $t$ in the diffusion process; its injected in a similar way.
+
+This technique was introduced in a 2021 paper \cite{cascaded_diffusion_models} by Google.
+
+
+
+
+
+
+
+
+
+\subsection{Video-image joint training}
+
+Training on both images and videos data allows the model to learn from both types of data, which improves the model's performance in terms of image and video fidelity. In addition, data of text-video pairs is scarce, and it allows \textbf{knowledge transfer from images to videos}. As a result, this join training enables the model to learn to generate different styles of videos.
+
+Imagen-Video follows the same joint training approach as \cite{video_diffusion_models} (a 2022 paper by Google), in which the model is jointly trained from image and video data. During training, \textbf{individual images are treated as a single frame videos}.
+
+To bypass the temporal components on image data during training, they \textbf{apply a mask to the temporal computation paths}. This masking operation causes the model not to apply temporal operations across frames.
+
+
+
