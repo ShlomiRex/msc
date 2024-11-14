@@ -34,6 +34,11 @@ Imagen-Video: understand what it means: " All models generate an entire block of
 
 Imagen-Video: explain Video U-Net block. I don't understand. Read the paper "Video diffusion models".
 
+Maybe combine all diffusion samplers into a new section: explain old-school ODE solvers, ancestral samplers, DDIM, DPM and more:
+https://stable-diffusion-art.com/samplers/
+
+
+
 =========================================================================================================================================================
 
 In stable diffusion paper, explain the figure 2.
