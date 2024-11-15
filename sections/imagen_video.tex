@@ -31,6 +31,11 @@ The benefit of cascading pipeline is the ability to independently train each mod
 
 Imagen Video also builds on the work of Video U-Net \cite{video_diffusion_models}, which generalizes the 2D diffusion model architecture to 3D in space-time by using temporal attention and 3D convolution layers to capture dependencies between video frames. See figure \ref{fig:imagen_video_video_unet}.
 
+In Imagen-Video paper, the researchers write that due to the safety and ethical challenges in training the Imagen-Video model, they decided not to release the model to the public (closed source).
+
+One of the contribution of the paper is that they successfully transferred multiple methods from the image domain to video, such as v-parameterization \cite{v_prediction}, classifier-free guidance and conditioning augmentation \cite{cascaded_diffusion_models}. They also found out that progressive distillation \cite{v_prediction} \cite{meng2023distillation} is a valuable technique for speeding up video sampling.
+
+
 
 
 
@@ -71,34 +76,57 @@ Imagen-Video pipeline is compromised of the following model types:
 
 
 
-% TODO: Not sure if I should explain this. It only affects the efficiency of sampling, so its not really that important.
+
+
+
+
+
+
+
+
+
+
 \subsection{v-prediction}
 
-In a 2022 paper by Google \cite{salimans2022progressive} the research team introduced a fast sampling method for diffusion models. It allows the diffusion model to sample in a fixed amount of model evaluations, instead of thousands. They presented a way to distill a trained deterministic diffusion sampler (such as \textbf{DDIM} (section \ref{subsec:ddim_sampler})) that takes as half as many sampling steps. Each distillation halves the number of required sampling steps each time.
+In a 2022 paper by Google \cite{v_prediction} the research team introduced a fast sampling method called "progressive distillation" for diffusion models. It allows the diffusion model to sample in a fixed amount of model evaluations, instead of thousands (like in DDPM samplers). They presented a way to distill a trained deterministic diffusion sampler (such as \textbf{DDIM} (section \ref{subsec:ddim_sampler}) and appendix \ref{appendix:dm_samplers}) that takes as half as many sampling steps. Each distillation halves the number of required sampling steps.
 
 For example, state-of-the-art samplers that take 8192 steps can be distilled down to as few as 4 steps without significant loss in perceptual quality.
+
+Progressive distillation depends on "v-prediction" (velocity prediction). Instead of predicting the noise in U-Net (called $\epsilon$-prediction), v-prediction focuses on predicting the velocity of the diffusion process, which denotes the rate of change of the image with respect to time.
 
 \begin{figure}
     \centering
     \includegraphics[width=0.6\textwidth]{images/imagen_video/v_prediction.png}
-    \caption{v-prediction: A fast sampling method for diffusion models.}
-    \label{fig:v_prediction}
+    \caption{v-prediction: A fast sampling method for diffusion models. Instead of taking 4 sampler ($f(z; \eta)$) steps to transform from noise $\epsilon$ to an image $x$, we distilled the model and now it takes a single step.}
+    \label{fig:progressive_distillation}
 \end{figure}
 
 \begin{figure}
     \centering
     \includegraphics[width=0.7\textwidth]{images/imagen_video/progressive_distillation.png}
-    \caption{Progressive distillation algorithm.}
-    \label{fig:progressive_distillation}
+    \caption{Progressive distillation algorithm. After the student model (with parameters $\eta$) is distilled to match the output of the teacher model, the teacher model becomes the student model and the process is repeated.}
+    \label{fig:progressive_distillation_algorithm}
 \end{figure}
 
 This is achieved by creating a sequence of models, where each model ("\textbf{student}") is trained to mimic a previous, slower model ("\textbf{teacher}") that requires more steps to produce a sample. In each distillation step the student model is initialized with the weights of the teacher model; 
 
 The teacher model uses standard sampling approach, such as DDIM, and then the student model learns to approximate this process in fewer steps.
 
-In figure \ref{fig:progressive_distillation} the trained teacher model $\hat{x}_{\eta} (z_t)$ is the trained diffusion model $\hat{x}_{\theta} (z_t)$, where $z_t$ is the noisy data (we take training data $\mathcal{D}$ and add noise to it). Now we modify this model and make it sample faster by changing the teacher model to the student model, after we distilled the student model. The student model learns to predict $\tilde{x}$ which is the result of two steps of the teacher model (by using two DDIM steps). This way the student model learns to match the two-step output of the previous (teacher) model in one step.
+In figure \ref{fig:progressive_distillation_algorithm} the trained teacher model $\hat{x}_{\eta} (z_t)$ is the trained diffusion model $\hat{x}_{\theta} (z_t)$, where $z_t$ is the noisy data (we take training data $\mathcal{D}$ and add noise to it). Now we modify this model and make it sample faster by changing the teacher model to the student model, after we distilled the student model. The student model learns to predict $\tilde{x}$ which is the result of two steps of the teacher model (by using two DDIM steps). This way the student model learns to match the two-step output of the previous (teacher) model in one step.
+
+In the Imagen-Video paper, they used v-prediction parametrization:
+
+\[ v \equiv \alpha_t \epsilon - \sigma_t x \]
 
 After training on $N$ sampling steps, we repeat this process with $N/2$ steps and so on.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/imagen_video/samplers_comparison.png}
+    \caption{Comparison of v-prediction sampling to DDIM and stochastic samplers. The distilled model achieves significant lower FID scores with significantly fewer sampling steps (converges faster).}
+\end{figure}
+
+The v-prediction parametrization allows progressive distillation across all of the diffusion models in the pipeline, which ultimately allows faster inference. At higher resolutions, v-prediction avoids temporal color shifting artifacts.
 
 
 
@@ -113,13 +141,15 @@ After training on $N$ sampling steps, we repeat this process with $N/2$ steps an
 
 \subsection{Noise conditioning augmentation}
 
-Similar to Imagen, Imagen-Video applied noise conditioning augmentation for all the spatial and temporal diffusion models. They apply Gaussian noise to the conditioning input video during training 
+Similar to Imagen, Imagen-Video applied noise conditioning augmentation for all the spatial and temporal diffusion models.
 
-In Imagen the researchers used noise conditioning augmentation to corrupt low-resolution images, and the super-resolution models would be conditioned on the noise level. During training, the corruption noise level ("augmentation level") is chosen randomly. This helps the model to generalize better to various noise levels.
+In Imagen the researchers used noise conditioning augmentation to \textbf{corrupt low-resolution images}, and the \textbf{SR models would be conditioned on the noise level}. During training, the corruption noise level ("\textbf{augmentation level}") is chosen randomly. This helps the model to generalize better to various noise levels.
 
 This technique is used primarily in cascading pipeline models, such as Imagen and Imagen-Video. It improves the quality and diversity of samples by changing the noise levels at different stages of training, which helps the model generalize better to various noise levels. The model receives conditioning information about the noise level its handling which guides the model to denoise it, similar to how the model receives timestep embeddings $t$ in the diffusion process; its injected in a similar way.
 
 This technique was introduced in a 2021 paper \cite{cascaded_diffusion_models} by Google.
+
+
 
 
 
@@ -139,3 +169,70 @@ To bypass the temporal components on image data during training, they \textbf{ap
 
 
 
+
+
+
+
+
+
+
+
+\subsection{Progressive distillation with guidance and stochastic samplers}
+
+\cite{meng2023distillation} by Google Research and Stability AI proposed distilling classifier-free guided diffusion models into models that are fast to sample from. This method extends to diffusion models trained with CFG and uses stochastic sampler. Using this approach they successfully distilled 7 video diffusion models to just 8 sampling steps without any noticeable loss in perceptual quality in the Imagen-Video pipeline.
+
+The first stage trains the diffusion model with CFG (trained with guidance weight, in the paper \cite{meng2023distillation} they call this \textbf{$w$-conditioned model}), and in the second stage progressive distillation is applied that produces a distilled model that can be sampled from in fewer steps. Then they use stochastic $N$-step sampler in a manner described in figure \ref{fig:progressive_distillation} and \ref{fig:progressive_distillation_algorithm}.
+
+
+
+
+
+
+
+
+
+
+
+
+\subsection{Experiments}
+
+In their experiments, they sampled video clips at 192x320 resolution @ 24 fps for 128 frames (5.3 seconds). They repeat the evaluations over four runs and report the mean and standard error.
+
+\textbf{Datasets}: The researchers used 14 billion video-text pairs and 60 million image-text pairs from internal and public datasets, such as LAION-400M \cite{laion_400m}.
+
+\textbf{Resizing}: They resized images using \textbf{antialiased bilinear resizing} and temporally resize videos by \textbf{skipping frames}.
+
+\textbf{Evaluation}: They used FID on individual video frames, FVD for temporal consistency, and frame-wise CLIP scores for video-text alignment (they take the average across all frames).
+
+\begin{figure}
+    \centering
+    \includegraphics[width=1\textwidth]{images/imagen_video/scaling.png}
+    \caption{Imagen-Video scaling results on video U-Net. The more parameters the model has, the better the FVD and CLIP scores.}
+    \label{fig:imagen_video_scaling}
+\end{figure}
+
+\textbf{Scaling}: In figure \ref{fig:imagen_video_scaling} we can see the scaling comparison between different Imagen-Video models. \textbf{This result contradicts the findings of Imagen} \cite{imagen} paper; they found that increasing the U-Net size doesn't scale the sample quality as much as increasing the text encoder size. They conclude that video modeling task for which the performance is not yet saturated at current model sizes \footnote{This finding could hint that transformers, which benefit from scaling, could provide the necessary scaling capabilities that video modeling task demands.}.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/imagen_video/e_prediction_vs_v_prediction.png}
+    \caption{$\epsilon$-prediction (middle row) v.s. v-prediction (bottom row). In $\epsilon$-prediction we see color shifts across frames, whereas v-prediction is more consistent.}
+    \label{fig:imagen_video_epsilon_prediction_vs_v_prediction}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/imagen_video/e_prediction_vs_v_prediction_2.png}
+    \caption{$\epsilon$-prediction v.s. v-prediction parameterization. v-prediction converges faster.}
+\end{figure}
+
+\textbf{$\epsilon$-prediction v.s. v-prediction}: They found that v-prediction is more effective than $\epsilon$-prediction for SSR models, figure \ref{fig:imagen_video_epsilon_prediction_vs_v_prediction}.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/imagen_video/experiments_table.png}
+    \caption{Testing of fixed and oscillating guidance weight, distillation of base and SR models and evaluating each pipeline on CLIP score and sampling time. Distilling the pipeline results in significantly faster sampling time, while oscillating guidance weight improves the CLIP score a little.}
+    \label{fig:imagen_video_experiments_table}
+\end{figure}
+
+\textbf{Distillation}: They found that distillation provides a good trade-off between sampling time and quality (figure \ref{fig:imagen_video_experiments_table}). \textbf{Distilled model is 18x times faster} in sampling, without significant degradation in perceptual quality. The distilled model is \textbf{also 36x more efficient} in terms of compute cost (FLOPs). 

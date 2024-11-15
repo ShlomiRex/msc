@@ -1,4 +1,5 @@
 \subsection{Diffusion models samplers}
+\label{appendix:dm_samplers}
 
 Sampling from diffusion model can take thousands of denoising steps. In this section we will see common samplers used in the literature to sample from diffusion models for faster inference. But first we begin with the forward and reverse diffusion process as described in the DDPM paper \cite{ddpm}.
 
@@ -55,7 +56,7 @@ where $p(x_T)$ is the sampled noisy image (Gaussian noise) and we iteratively mu
 
 
 
-\subsubsection{DDPM Sampler}
+\subsubsection{DDPM / Stochastic Sampler}
 
 \begin{figure}
     \centering
@@ -141,6 +142,6 @@ If we begin at timestep $t = 999$, then we predict $x_0$ from $x_999$. Then we a
 
 
 
-\subsubsection{SDE Sampler}
+% \subsubsection{SDE Sampler}
 
-...
+% ...
