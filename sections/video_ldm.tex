@@ -98,17 +98,17 @@ To help us visualize how this reshaping operation works, lets think about 3D cub
     \begin{subfigure}{0.7\textwidth}
         \centering
         \scalebox{0.6}{
-            \input{figures/video_ldm/cube.tex}
+            \input{figures/video_ldm/all_dimensions.tex}
         }
-        \caption{The $t\ c\ h\ w$ dimensions. The slice in the middle shows a single frame of dimension $(b\ t\ c)\ h\ w$, all of the first three dimensions collapse into the channel dimension.}
+        \caption{All of the $b\ t\ c\ h\ w$ dimensions. }
     \end{subfigure}
 
     \begin{subfigure}{0.7\textwidth}
         \centering
         \scalebox{0.6}{
-            \input{figures/video_ldm/all_dimensions.tex}
+            \input{figures/video_ldm/cube.tex}
         }
-        \caption{All of the $b\ t\ c\ h\ w$ dimensions. }
+        \caption{The $t\ c\ h\ w$ dimensions. The slice in the middle shows a single frame of dimension $(b\ t\ c)\ h\ w$, all of the first three dimensions collapse into the channel dimension.}
     \end{subfigure}
 
     \caption{Representation of video dimensions ($b\ t\ c\ h\ w$ which corresponds to batch, temporal, channel, height, width dimensions in video) to better understand input reshaping in spatial and temporal layers of Video-LDM.}

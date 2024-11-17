@@ -179,9 +179,55 @@ To bypass the temporal components on image data during training, they \textbf{ap
 
 \subsection{Progressive distillation with guidance and stochastic samplers}
 
-\cite{meng2023distillation} by Google Research and Stability AI proposed distilling classifier-free guided diffusion models into models that are fast to sample from. This method extends to diffusion models trained with CFG and uses stochastic sampler. Using this approach they successfully distilled 7 video diffusion models to just 8 sampling steps without any noticeable loss in perceptual quality in the Imagen-Video pipeline.
+The researchers in the progressive distillation paper \cite{v_prediction} write why \textbf{$\epsilon$-prediction doesn't work well in distillation}: they say that in distillation we have to work at higher noise levels to the point where the signal-to-noise ratio (SNR) drops down to zero, at which point predicting the noise becomes a lot harder. This is why they turn to $v$-prediction.
 
-The first stage trains the diffusion model with CFG (trained with guidance weight, in the paper \cite{meng2023distillation} they call this \textbf{$w$-conditioned model}), and in the second stage progressive distillation is applied that produces a distilled model that can be sampled from in fewer steps. Then they use stochastic $N$-step sampler in a manner described in figure \ref{fig:progressive_distillation} and \ref{fig:progressive_distillation_algorithm}.
+An extension of the work of \cite{v_prediction} is the paper \cite{meng2023distillation} by Google Research and Stability AI, which \textbf{extends the distillation to models trained with classifier-free guidance}. This is the first time both the work of distilling models and classifier-free guidance is applied to video domain. As we remember, classifier-free guidance has unconditional prediction and conditional prediction which guides the model with guidance weight of both predictions. The paper also works on distilling the model; the idea is that the teacher model (which is trained with CFG) will take two DDIM steps, and the student model needs to match the teacher output, but instead of doing classifier-free guidance of the student model, the student is \textbf{conditioned on the guidance scale}. In the paper they call the student model a $w$-conditioned model. Conditioning the student model on the guidance weight (incorporated into the diffusion model backbone, similar to how time-step was incorporated in \cite{kingma2021variational}). In the paper \cite{meng2023distillation} they optimize the student model with the following objective:
+
+\begin{equation*}
+\mathbb{E}_{w \sim p_w, t \sim U[0, 1], x \sim p_{\text{data}}(x)} 
+\left[ 
+    \omega(\lambda_t) \left\| 
+        \underbrace{\hat{x}_{\eta_1}(z_t, w)}_{\text{student's pred}} - 
+        \underbrace{\hat{x}_{\theta}^w(z_t) }_{\text{teacher's pred}}
+    \right\|_2^2 
+\right]
+\end{equation*}
+
+where:
+
+\begin{itemize}
+    \item $w$ is the guidance weight and is picked from $p_w$ (which can be fixed or oscillate, but in Imagen-Video they chose to oscillate)
+    \item $p_w(w) = U[w_{\text{min}}, w_{\text{max}}]$ is the oscillating guidance weight
+    \item $t$ is the diffusion timestep
+    \item $x$ is the data (images): $x \sim p_{\text{data}}(x)$
+    \item $z_t$ is the noised version of $x$ (noisy image at timestep $t$)
+    \item $\lambda_t$ is the guidance scale (not really important)
+    \item $\omega(\lambda_t)$ is the weighting function (also not really important)
+    \item $\hat{x}_{\eta_1}$ is the student model (which is conditioned on the guidance weight $w$ as input: $\hat{x}_{\eta_1}(z_t, \textcolor{red}{w})$). Also notice the notation: $\hat{x}_{\eta_\mathbf{\textcolor{red}{1}}}$, which means that this is the first distillation iteration.
+    \item $\hat{x}_{\theta}^w$ is the teacher model. Notice in the notation, its using the guidance weight in CFG (its not conditioned on it, we apply it): $\hat{x}_{\theta}^\mathbf{\textcolor{red}{w}}(z_t)$.
+\end{itemize}
+
+Also notice that the teacher model's parameters ($\eta$) are different to the student model's parameters ($\theta$), since they change at each distillation step (the student is a copy of the teacher but to differentiate between the parameters after the distillation process they chose different notation).
+
+
+
+In the paper the mathematical notation for CFG for the teacher's model is:
+
+\[  
+    \underbrace{
+        \hat{x}_{\theta}^w(z_t) = 
+        \underbrace{(1+w) \hat{x}_{c,\theta} (z_t)}_{\text{conditional score}} - 
+        \underbrace{w \hat{x}_\theta (z_t)}_{\text{unconditional score}}
+    }_{\text{teacher CFG}}
+\]
+
+where $c$ is the teacher model's conditioning (for example, text prompt) \footnote{Thanks to \href{https://www.youtube.com/watch?v=ZXuK6IRJlnk}{this youtube tutorial} for explaining both papers}.
+
+After a lot of experiments, at the end, \cite{meng2023distillation} decided to go with a new \textbf{$N$-step stochastic sampler} to sample from the distilled model.
+
+To summarize, Using the work of \cite{meng2023distillation}, Imagen-Video researchers successfully distilled 7 video diffusion models with CFG to just 8 sampling steps without any noticeable loss in perceptual quality in the pipeline.
+
+
 
 
 
