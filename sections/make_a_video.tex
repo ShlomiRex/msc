@@ -99,12 +99,12 @@ In short, they added support of the temporal dimension in the convolutional laye
 
 \subsubsection{Spatiotemporal layers}
 
-The main modifications that were made to the T2I model was in the diffusion based U-Net backbone. The spatiotemporal decoder $\textcolor{blue}{D^t}$ now generates 16 RGB frames of $64\times 64$ resolution, instead of one frame.
+The main modifications that were made to the T2I model was in the diffusion based U-Net backbone. The spatiotemporal decoder $\textcolor{blue}{D^t}$ now \textbf{generates 16 RGB frames} of $64\times 64$ resolution, instead of one frame.
 
 % TODO: Explain how the interpolation network works
 They added a new network: frame interpolation network $\textcolor{OliveGreen}{\uparrow_F}$ which increases the fps by interpolating on the 16 frames from the spatiotemporal decoder (as seen in figure \ref{fig:make_a_video_overview}).
 
-They also modified the spatial layers of the super-resolution network $\text{SR}_l$ to spatiotemporal super-resolution network $\text{SR}_l^t$. The reason they chose not operate on the higher-resolution super-resolution network $\text{SR}_h$ because of memory and compute constraints, so the high super-resolution model doesn't work on the temporal dimension, whereas the low super-resolution model $\text{SR}_l$ does (its transformed to $\text{SR}_l^t$).
+They also modified the spatial layers of the super-resolution network $\text{SR}_l$ to spatiotemporal super-resolution network $\textcolor{red}{\mathbf{\text{SR}_l^t}}$. The reason they chose not operate on the higher-resolution super-resolution network $\text{SR}_h$ because of memory and compute constraints, so the high super-resolution model doesn't work on the temporal dimension, whereas the low super-resolution model $\text{SR}_l$ does (its transformed to $\text{SR}_l^t$).
 
 
 
@@ -112,7 +112,7 @@ They also modified the spatial layers of the super-resolution network $\text{SR}
 
 Because 3D convolutional layers are very compute and memory expensive, the researchers opt to go with pseudo 3D convolutional layers.
 
-In \cite{chollet2017xception}, the authors proposed a method to replace 3D convolutions with pseudo-3D convolutions. In this method they decouple the processing of spatial and temporal dimensions, which they call "\textbf{depthwise separable convolution layers}". In Make-a-Video they say that in addition to the more compute efficient convolutions they also want to retain the previously learned spatial knowledge of the T2I model.
+In \cite{chollet2017xception}, the authors proposed a method to replace 3D convolutions with pseudo-3D convolutions. In this method they decouple the processing of spatial and temporal dimensions, which they call "depthwise separable convolution layers". In Make-a-Video they say that in addition to the more compute efficient convolutions they also want to retain the previously learned spatial knowledge of the T2I model.
 
 First they apply the 2D convolution on spatial axis and only then they apply 1D convolution on the temporal axis. This facilitates information sharing between the spatial and temporal axes.
 
@@ -132,7 +132,7 @@ where $h \in \mathbb{R}^{B\times C\times F\times H\times W}$ is an input tensor,
     \label{fig:make_a_video_pseudo_3d_conv_and_attention}
 \end{figure}
 
-\textbf{Spatiotemporal initialization}: In figure \ref{fig:make_a_video_pseudo_3d_conv_and_attention} we can see the pseudo-3D convolutional layer initialization. After applying 2D spatial convolutions they apply 1D temporal convolution. \textbf{The temporal 1D convolution layer is initialized as the identity function, it performs no transformation on the input data initially}. This way the network relies on the already learned spatial features. \textbf{The temporal consistency will be learned at a later stage}, where the model is trained on video dataset. They allow smooth spatiotemporal initialization.
+\textbf{Spatiotemporal initialization}: In figure \ref{fig:make_a_video_pseudo_3d_conv_and_attention} we can see the pseudo-3D convolutional layer initialization. After applying 2D spatial convolutions they apply 1D temporal convolution. \textbf{The temporal 1D convolution layer is initialized as the identity function, it performs no transformation on the input data initially}. This way the network relies on the already learned spatial features. \textbf{The temporal consistency will be learned at a later stage}, where the model is trained on video dataset.
 
 
 
@@ -145,7 +145,13 @@ Adding the temporal dimension to the attention layers is computationally infeasi
 
 After each pre-trained spatial attention layer they stack a pseudo-3D temporal attention layer. 
 
-Given tensor a tensor $h$ the \texttt{flatten} operation flattens the spatial dimension to: $h' \in \mathbb{R}^{B\times C\times F\times \mathbf{\textcolor{red}{HW}}}$ and \texttt{unflatten} operation is the inverse operation. The pseudo-3D attention layer is defined as:
+Given tensor a tensor $h$ the \texttt{flatten} operation flattens the spatial dimension to: 
+
+\[ 
+h' \in \mathbb{R}^{B\times C\times F\times \mathbf{\textcolor{red}{HW}}} 
+\] 
+
+and \texttt{unflatten} operation is the inverse operation. The pseudo-3D attention layer is defined as:
 
 \[ \text{ATTN}_{\text{P3D}} (h) = \text{unflatten} 
 (\text{ATTN}_{\text{1D}} 
