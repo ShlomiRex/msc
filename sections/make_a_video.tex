@@ -5,6 +5,8 @@ Make-a-Video \cite{make_a_video} (2022) by Meta AI is a text-to-video model. Sim
 
 They present super-resolution strategies in space and time to generate higher spatial-resolution and higher frame rate video clips, provided a text prompt. They \textbf{leverage image priors} due to the complexity of modeling videos, which simplifies the learning process.
 
+One of the downsides of Make-a-Videos, is that because its trained on unlabeled video data, it can't learn associations between text and phenomenons that can only be inferred in videos (for example: moving hands from left to right). They left this to future work.
+
 The model has 3 main stages:
 
 \begin{itemize}
@@ -265,6 +267,16 @@ Human evaluation is shown in figure \ref{fig:make_a_video_human_eval}. They ask 
 \begin{figure}
     \centering
     \includegraphics[width=0.7\textwidth]{images/make_a_video/examples.png}
-    \caption{Example qualitative results of Make-a-Video.}
+    \caption{Examples of T2V samples of Make-a-Video.}
     \label{fig:make_a_video_examples}
 \end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.7\textwidth]{images/make_a_video/examples2.png}
+    \caption{Various qualitative results comparisons and applications. FILM by Google Research is a frame-interpolation model \cite{film}.}
+    \label{fig:make_a_video_examples2}
+\end{figure}
+
+In figure \ref{fig:make_a_video_examples2} (c) we see the interpolation network works better than FILM \cite{film}.
+

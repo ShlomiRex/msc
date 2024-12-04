@@ -1,0 +1,33 @@
+\section{Conclusion}
+
+This work explores recent advancements in deep learning techniques for image and video generation, focusing on the transition from the mature domain of image synthesis to the emerging challenges of video synthesis.
+
+We examined foundational models, including Variational Autoencoders (VAEs), Generative Adversarial Networks (GANs), and Diffusion Models (DMs), alongside state-of-the-art models like VQ-GAN, Stable Diffusion, and Imagen for image generation and Video-LDM, Stable Video Diffusion, and Make-a-Video for video generation.
+
+We discussed four key image synthesis models:
+
+\begin{itemize}
+    \item \textbf{VQ-VAEs}: Probabilistic models employing latent variables for structured image reconstructions, allowing smooth interpolation in the latent space. VQ-VAE enhances VAEs by introducing vector quantization, discretizing the latent space to facilitate more efficient prior learning and sample generation.
+    
+    \item \textbf{GANs}: Adversarial models that learn the data distribution by training a generator to produce realistic samples and a discriminator to distinguish between real and generated samples. However, GANs suffer from instability during training due to adversarial loss, leading to mode collapse and convergence issues. As a result, their usage has declined with the rise of diffusion-based methods.
+    
+    \item \textbf{Stable Diffusion}: Probabilistic model that learns the data distribution by iteratively applying noise to the data and then learns to denoise iteratively. Stable Diffusion is often the basis of most image and video generation models because of its stability and high-fidelity outputs.
+    
+    \item \textbf{Imagen}: Imagen leverages transformers for text-to-image (T2I) generation, combining their strengths with cascaded diffusion models and super-resolution techniques to achieve state-of-the-art performance. They have shown that the more parameters in the transformer, the better the FID and CLIP evaluation scores.
+\end{itemize}
+
+After discussing advancements in image synthesis models, we shift focus to video synthesis, which builds upon image-based techniques to address temporal challenges.
+
+We also discussed four video synthesis models:
+
+\begin{itemize}
+    \item \textbf{VideoGPT}: A transformer-based model that generates videos by predicting future frames conditioned on past frames. It uses VQ-VAE to operate in the latent space instead of the pixel space, which is more compute-efficient.
+    
+    \item \textbf{Video-LDM}: Is an extension of Stable Diffusion to video generation by freezing the spatial layers, and adding temporal attention and 3D convolution layers in order to fine-tune to video data. It operates in the latent space and incorporates a GAN discriminator to enhance the temporal coherence of generated video.
+    
+    \item \textbf{Imagen}: Imagen-Video is a T2V model based on the previous work of Imagen. Imagen-Video extends Imagen to video generation, employing a cascaded diffusion framework with seven diffusion-based models to enhance spatial and temporal resolution. It also uses a transformer as a text encoder.
+    
+    \item \textbf{Make-a-Video}: A model that is based on the work of DALL-E 2, it uses prior network to learn text embeddings, conditioned on fps, it uses decoder to generate 16 frames, and uses frame interpolation network to increase the frames, and then uses spatio-temporal super-resolution model to increase spatial resolution and then spatial super-resolution to increase further. It employs pseudo-3D convolutions and pseudo-temporal attention to balance computational efficiency with generative quality, addressing the high cost of full temporal attention and 3D convolutions.
+\end{itemize}
+
+In summary, the progression from image to video generation models illustrates the evolving capabilities of generative AI. While image synthesis models have reached a level of maturity with highly realistic outputs, video synthesis remains a frontier, requiring innovative approaches to address temporal coherence and computational challenges and is often based on previous works of T2I models.
