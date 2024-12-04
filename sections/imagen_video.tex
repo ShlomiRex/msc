@@ -72,7 +72,7 @@ Imagen-Video pipeline is compromised of the following model types:
 
 \textbf{Classifier-free guidance}: CFG is also used in Imagen-Video. They found that it helps the model generate high fidelity samples with respect to the text prompts. Higher guidance weights lead the model to focus more on the text prompt conditioning.
 
-\textbf{Oscillating guidance}: Similar to Imagen, when the guidance weight is too large, the possible range of values of predicted noise is beyond $[-1, 1]$, which causes train-test mismatch. This leads to significant artifacts in the generated videos. \textbf{Dynamic thresholding}, as described in Imagen section, helps to prevent this issue, which dynamically clip the image to the chosen threshold followed by scaling by $s$: \texttt{np.clip(x, -s, s) / s}. However, constant high guidance weight leads to saturation artifacts, especially at high resolutions. The researchers didn't find dynamic thresholding sufficient, therefor they experimented with letting the guidance weight \textbf{oscillate between high and low values} for a certain number of sampling steps. They apply this oscillating dynamic threshold only to the base and first SR models. The generation starts with a high guidance weight to establish a strong alignment with the prompt, then alternates between high and low weights in subsequent steps.
+\textbf{Oscillating guidance}: Similar to Imagen, when the guidance weight is too large, the possible range of values of predicted noise is beyond $[-1, 1]$, which causes train-test mismatch. This leads to significant artifacts in the generated videos. \textbf{Dynamic thresholding}, as described in Imagen section, helps to prevent this issue, which dynamically clip the image to the chosen threshold followed by scaling by $s$: \texttt{np.clip(x, -s, s) / s}. However, constant high guidance weight leads to \textbf{saturation artifacts}, especially at high resolutions. The researchers didn't find dynamic thresholding sufficient, therefor they experimented with letting the guidance weight \textbf{oscillate between high and low values} for a certain number of sampling steps. They apply this oscillating dynamic threshold only to the base and first SR models. The generation starts with a high guidance weight to establish a strong alignment with the prompt, then alternates between high and low weights in subsequent steps.
 
 
 
@@ -92,7 +92,7 @@ In a 2022 paper by Google \cite{v_prediction} the research team introduced a fas
 
 For example, state-of-the-art samplers that take 8192 steps can be distilled down to as few as 4 steps without significant loss in perceptual quality.
 
-Progressive distillation depends on "v-prediction" (velocity prediction). Instead of predicting the noise in U-Net (called $\epsilon$-prediction), v-prediction focuses on predicting the velocity of the diffusion process, which denotes the rate of change of the image with respect to time.
+Progressive distillation depends on "v-prediction" (\textbf{velocity prediction}). Instead of predicting the noise in U-Net (called $\epsilon$-prediction), v-prediction focuses on predicting the velocity of the diffusion process, which denotes the rate of change of the image with respect to time.
 
 \begin{figure}
     \centering
