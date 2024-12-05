@@ -189,7 +189,7 @@ This is why the researchers use the \textbf{CLIPTokenizer} which is part of the 
     \label{fig:openai_clip}
 \end{figure}
 
-In figure \ref{fig:openai_clip}, the diagonal of the similarity matrix ideally contains the highest scores for matching image-text pairs (idealy '1'), while the off-diagonal entries should have lower similarity scores (idealy '0'), indicating mismatches between images and texts.
+In figure \ref{fig:openai_clip}, the diagonal of the similarity matrix ideally contains the highest scores for matching image-text pairs (ideally '1'), while the off-diagonal entries should have lower similarity scores (ideally '0'), indicating mismatches between images and texts.
 
 The network implementation of CLIP is made up of an image encoder, which is typically a vision transformer (ViT) \cite{vision_transformer} or sometimes less commonly a ResNet \cite{resnet} model, while the text encoder is a text transformer \cite{transformer} or continous bag of words \cite{cbow_word2vec} (more commonly known as Word2Vec model by Google, 2013).
 
@@ -343,7 +343,7 @@ where $\sigma$ is a vector of indexes (of the steps): $\sigma \in \mathbb{R}^T_{
     \caption{Guided and unguided conditioning on landscapes dataset. Unguided sampling can lead to incoherent global structures.}
 \end{figure}
 
-To summorize, in the DDIM paper \cite{ddim} the main contributions are:
+To summarize, in the DDIM paper \cite{ddim} the main contributions are:
 
 \begin{itemize}
     \item \textbf{Non-markovian diffusion process:} they introduced a new family of forward processes that are non-Markovian, which allows for a more efficient reverse process.
@@ -369,13 +369,13 @@ To summorize, in the DDIM paper \cite{ddim} the main contributions are:
 
 \subsection{Training}
 
-Stable diffusion uses two-stage approach, called classifier-free guidance (see section \ref{subsec:classifier_free_diffusion_guidance}) which was discuessed before. In the paper the authors made simplified loss objective, which is to predict the noise removal process at each step:
+Stable diffusion uses two-stage approach, called classifier-free guidance (see section \ref{subsec:classifier_free_diffusion_guidance}) which was discussed before. In the paper the authors made simplified loss objective, which is to predict the noise removal process at each step:
 
 \[
     L_{\text{DM}} = \mathbb{E}_{x, \epsilon \sim \mathcal{N} (0, 1), t} \left[ \Vert \epsilon - \epsilon_\theta(x_t, t) \Vert _2^2 \right]
 \]
 
-this loss function is similar to the loss function of DDPM (eqaution \ref{eq:ddpm_loss}).
+this loss function is similar to the loss function of DDPM (equation \ref{eq:ddpm_loss}).
 
 
 
@@ -461,11 +461,11 @@ For text-to-image tasks, the researchers trained a 1.45B parameters model condit
 \begin{figure}
     \centering
     \includegraphics[width=0.5\textwidth]{images/diffusion_models/stable_diffusion/experiments_3.png}
-    \caption{Image synthesis conditioned on layouts. The model is trained on OpenImages dataset and then finetuned on COCO dataset.}
+    \caption{Image synthesis conditioned on layouts. The model is trained on OpenImages dataset and then fine-tuned on COCO dataset.}
     \label{fig:stable_diffusion_experiments_semantic_layouts}
 \end{figure}
 
-For semantic layouts, the model is trained to synthesis images based on semantic layouts from the OpenImages dataset and finetune on COCO dataset (see figure \ref{fig:stable_diffusion_experiments_semantic_layouts}).
+For semantic layouts, the model is trained to synthesis images based on semantic layouts from the OpenImages dataset and fine-tuned on COCO dataset (see figure \ref{fig:stable_diffusion_experiments_semantic_layouts}).
 
 % \begin{figure}
 %     \centering

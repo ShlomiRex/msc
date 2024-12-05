@@ -8,43 +8,11 @@ In generative models we are given a set of data points (e.g. images) and our goa
 
 It can be said that the development of image synthesis models reached its peak with the most advanced and biggest models, such as DALL-E \cite{dalle} and Stable Diffusion \cite{stable_diffusion}, and new image synthesis models don't add significant contributions as they used to. However, the research and development of long video synthesis models is still in its infancy. Video synthesis poses a distinct challenge compared to image synthesis due to its incorporation of the temporal dimension.
 
-New models for generating images and videos are developed by building upon existing models, enhancing them through innovative techniques and adjustments. In this work we explore the VQGAN model \cite{vqgan} \ref{sec:vqgan} which combines the GAN model \cite{gan} \ref{sec:gan} with the VQVAE model \cite{vqvae} \ref{sec:vqvae} and the Transformer model \cite{transformer} (appendix \ref{appendix:transformers}) together. Notably, VQGAN generates images based on textual descriptions, converting text inputs into visual outputs that reflect the text's description. The VQVAE model, derived from the VAE model \cite{vae} \ref{sec:vae} and employing vector quantization technique \cite{vqvae} \ref{sec:vq}, is itself an advancement of the Autoencoder model \cite{autoencoder} \ref{sec:vae}. In short, understanding these models and their inner workings requires prior familiarity with their foundations and previous works.
+New models for generating images and videos are developed by building upon existing models, enhancing them through innovative techniques and adjustments. In this work we explore the VQGAN model \cite{vqgan} \ref{sec:vqgan} which combines the GAN model \cite{gan} \ref{sec:gan} with the VQ-VAE model \cite{vqvae} \ref{sec:vqvae} and the Transformer model \cite{transformer} (appendix \ref{appendix:transformers}) together. Notably, VQGAN generates images based on textual descriptions, converting text inputs into visual outputs that reflect the text's description. The VQ-VAE model, derived from the VAE model \cite{vae} \ref{sec:vae} and employing vector quantization technique \cite{vqvae} \ref{sec:vq}, is itself an advancement of the Autoencoder model \cite{autoencoder} \ref{sec:vae}. In short, understanding these models and their inner workings requires prior familiarity with their foundations and previous works.
 
-Another example is the Variational Autoencoder (VAE) \cite{vae} \ref{sec:vae} model, which is used as a basis in VQVAE model. 
+Another example is the Variational Autoencoder (VAE) \cite{vae} \ref{sec:vae} model, which is used as a basis in VQ-VAE model. 
 
 \input{figures/intro_timeline.tex}
-
-
-% \begin{figure}[h!]
-%     \centering
-%     \begin{tikzpicture}[scale=1, transform shape]
-%         % Timeline
-%         \draw[->] (0,0) -- (14,0) node[right] {Year};
-
-%         % Points and labels
-%         \foreach \x/\year/\model in {
-%             0/1987/Autoencoders$^*$,
-%             3/2006/Autoencoders$^*$,
-%             5/2013/VAE,
-%             7/2014/GAN,
-%             9/2017/VQVAE,
-%             11/2022/Imagen,
-%             12/2022/Stable Diffusion,
-%             13/2024/Sora$^\dag$
-%         } {
-%             \draw (\x, 0.2) -- (\x, -0.2) node[below] {\year};
-%             \node[rotate=45, above] at (\x, 0.5) {\model};
-%         }
-
-%         % % Autoencoder description
-%         % \node[align=center, above] at (2, 1.5) {
-%         %     Autoencoders \\ (1980s) \\
-%         %     \small First introduced in the 1980s, autoencoders were not widely used until advancements in neural networks and computational power in the 2000s.
-%         % };
-%     \end{tikzpicture}
-%     \caption{Chronology of key image generation models publications $^*$The earliest mention of autoencoders appears in an 1986 publication \cite{autoencoder_original_paper_1986}, however the model was not widely used until 2006 when Hinton published a paper that uses autoencoders for dimensionality reduction \cite{autoencoder_2006_paper} which sparked interest in the model.$^\dag$Although Sora \cite{sora_website} is not specifically an image generation model, its considered a significant advancement in video synthesis field, which largly relies on image generation.}
-%     \label{fig:models_timeline}
-% \end{figure}
 
 \subsection{Mathematical Formulation of Generative Models}
 Mathematically speaking, let $x$ be a random variable representing a single data point (e.g. an image) of a dataset ${x_1,x_2,...,x_n}$. And let $p(x)$ denote the true probability density function (PDF) of the dataset. Then our objective (as in generative modeling) is to learn a function $q(x;\theta)$ that approximates the true data distribution $p(x)$ (where $\theta$ is the model's parameters). The goal is to estimate $p(x)$ such that new samples $\hat{x} \in p(x)$ drawn from this distribution resemble the dataset.
@@ -61,7 +29,7 @@ Once trained, the generative model can be used to generate new samples $\hat{x} 
 
 \subsection{Evaluation metrics}
 
-Evaluation of the trained model is done using metrics such as sample quality, diversity (variaty in generated samples), and coverage (how well the model covers the data distribution). As we will find later, one of the main problems of the GAN model is called 'mode collapse' \ref{gan_mode_collapse} which causes instability of the model during training, which is manifested in large fluctuations in the loss function or in the fact that the generator fails to converge to an optimal solution that represents the entire distribution of training data. In other words, the model's output isn't diverse enough and only focuses on specific modes of the data distribution (e.g. generating only one type of image, like a cat, whereas the dataset is a collection of all animals).
+Evaluation of the trained model is done using metrics such as sample quality, diversity (variety in generated samples), and coverage (how well the model covers the data distribution). As we will find later, one of the main problems of the GAN model is called 'mode collapse' \ref{gan_mode_collapse} which causes instability of the model during training, which is manifested in large fluctuations in the loss function or in the fact that the generator fails to converge to an optimal solution that represents the entire distribution of training data. In other words, the model's output isn't diverse enough and only focuses on specific modes of the data distribution (e.g. generating only one type of image, like a cat, whereas the dataset is a collection of all animals).
 
 
 
@@ -79,7 +47,7 @@ Evaluation of the trained model is done using metrics such as sample quality, di
     D_{\text{KL}}(p(y|x) \| p(y)) = \sum_{y} p(y|x) \log \frac{p(y|x)}{p(y)}
 \]
 
-(where $p(y)$ is the marginal probability of the lable across the set of generated images, and $D_{KL}$ is the Kullback-Leibler (KL) divergence \ref{appendix:kl_divergence} between the conditional label distribution $p(y|x)$ and marginal label distribution $p(y)$). Finally we get the IS score as:
+(where $p(y)$ is the marginal probability of the label across the set of generated images, and $D_{KL}$ is the Kullback-Leibler (KL) divergence \ref{appendix:kl_divergence} between the conditional label distribution $p(y|x)$ and marginal label distribution $p(y)$). Finally we get the IS score as:
 
 \[
     \text{IS} = \exp \left( \frac{1}{N} \sum_{i=1}^{N} D_{\text{KL}}(p(y|x_i) \| p(y)) \right) = \exp(\mathbb{E}_{x \sim p_g} \left[ D_{\text{KL}} \left( p(y | x) \Vert p(y) \right) \right])

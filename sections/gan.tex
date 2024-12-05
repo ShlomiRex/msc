@@ -15,7 +15,7 @@ Generative Adversarial Networks (GANs) \cite{gan} are a class of deep learning m
 \begin{figure}
     \centering
     \includegraphics[width=0.8\textwidth]{images/gan/gan_architecture.png}
-    \caption{More detailed architecture of GAN (from \cite{gan_architecture_figure_paper}). Its important to note that both the $G$ and $D$ networks are made up of multiple CNN layers (convolutional, deconvolution, fully connected and activation layers, such as relu, leaky relu, softmax and more). Softmax in $D$ indicates wether the image is real or fake (statistically 1 or 0).}
+    \caption{More detailed architecture of GAN (from \cite{gan_architecture_figure_paper}). Its important to note that both the $G$ and $D$ networks are made up of multiple CNN layers (convolutional, deconvolution, fully connected and activation layers, such as relu, leaky relu, softmax and more). Softmax in $D$ indicates whether the image is real or fake (statistically 1 or 0).}
     \label{fig:gan_architecture}
 \end{figure}
 
@@ -55,17 +55,17 @@ With respect to the generator gradients \footnote{When we do backpropogation wit
 \end{enumerate}
 
 
-The researchers mentioned that at the beginning of the training, the discriminator rejects samples with high confidense. To address this, they suggested instead of \textbf{minimizing} the second term, to \textbf{maximize} a new second term in the loss function: $\log D(G(z))$.
+The researchers mentioned that at the beginning of the training, the discriminator rejects samples with high confidence. To address this, they suggested instead of \textbf{minimizing} the second term, to \textbf{maximize} a new second term in the loss function: $\log D(G(z))$.
 
 
 \begin{figure}
     \centering
     \includegraphics[width=0.8\textwidth]{images/gan/gan_training.png}
-    \caption{The training algorithm for GAN using minibatch stochastic gradient decent \cite{gan}.}
+    \caption{The training algorithm for GAN using mini-batch stochastic gradient decent \cite{gan}.}
     \label{fig:gan_training}
 \end{figure}
 
-In order to balance of the training for both $G$ and $D$ the authors suggested using iterative approach using minibatch stochastic gradient decent (see figure \ref{fig:gan_training}). Instead of fully optimizing $D$ in each iteration, the algorithm alternates between a few steps ($k$ steps) of optimizing the discriminator and one step of optimizing the generator. By updating $D$ more often the researchers hope to update the generator more slowly and stabilize the training process.
+In order to balance of the training for both $G$ and $D$ the authors suggested using iterative approach using mini-batch stochastic gradient decent (see figure \ref{fig:gan_training}). Instead of fully optimizing $D$ in each iteration, the algorithm alternates between a few steps ($k$ steps) of optimizing the discriminator and one step of optimizing the generator. By updating $D$ more often the researchers hope to update the generator more slowly and stabilize the training process.
 
 
 
@@ -79,7 +79,7 @@ Mode-collapse is general term and is not limited to GANs only. We return to this
 \begin{figure}
     \centering
     \includegraphics[width=\textwidth]{images/gan/gan_mode_collapse.png}
-    \caption{Visualization of mode collapse in GANs \cite{gan_mode_collapse_image_source}. Top row shows the model failing to diversify its output, leading it to focus on specific mode of the dataset. Bottom row shows GAN samples without mode-collapse, where the model was successfully traind to diversify its output to match the underlying structure of the dataset. Blue dots are the prior $x \sim p_{\text{data}}(x)$ (the dataset) and the orange dots are the generated samples $p_g$.}
+    \caption{Visualization of mode collapse in GANs \cite{gan_mode_collapse_image_source}. Top row shows the model failing to diversify its output, leading it to focus on specific mode of the dataset. Bottom row shows GAN samples without mode-collapse, where the model was successfully trained to diversify its output to match the underlying structure of the dataset. Blue dots are the prior $x \sim p_{\text{data}}(x)$ (the dataset) and the orange dots are the generated samples $p_g$.}
     \label{fig:gan_mode_collapse}
 \end{figure}
 

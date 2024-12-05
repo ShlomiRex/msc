@@ -22,7 +22,7 @@ The model has 3 main stages:
 \begin{figure}
     \centering
     \includegraphics[width=1\textwidth]{images/make_a_video/overview.png}
-    \caption{Make-a-Video model high-level architecture overview (after adding temporal layers). The T2I model doesn't have "fps" input, the decoder generates only a single image, there is no interpolation network, and has two spatial-super-resolution networks, and no spatio-temporal super-resolution network, since in image we don't deal with the temporal axis.}
+    \caption{Make-a-Video model high-level architecture overview (after adding temporal layers). The T2I model doesn't have "fps" input, the decoder generates only a single image, there is no interpolation network, and has two spatial-super-resolution networks, and no spatio-temporal super-resolution network, since in image we don't deal with the temporal axis \cite{make_a_video}.}
     \label{fig:make_a_video_overview}
 \end{figure}
 
@@ -30,6 +30,7 @@ In figure \ref{fig:make_a_video_overview}:
 
 \begin{itemize}
     \item The model input is text prompt $x$ and "fps" (frames per second).
+    \item $\hat{x}$ is the BPE encoded text.
     \item The \textbf{CLIP text encoder} $C_x$ (not shown in the figure) is used to translate the text prompt $x$ into text embeddings $x_e$, which are fed to the prior network $\textcolor{Maroon}{P}$.
     \item The \textbf{image embedding prior} $\textcolor{Maroon}{P}$ translates these text embeddings $x_e$ into image embeddings $y_e$.
     \item The \textbf{spatio-temporal decoder $\textcolor{blue}{D^t}$} generates 16 $64\times 64$ frames, conditioned on these image embeddings $y_e$.
@@ -78,7 +79,7 @@ DALL-E 2 by OpenAI \cite{dalle_2} is a diffusion-based T2I model, which leverage
 \begin{figure}
     \centering
     \includegraphics[width=0.7\textwidth]{images/make_a_video/dalle_2.png}
-    \caption{High level overview of unCLIP (DALL-E 2) \cite{dalle_2} by OpenAI. The top figure shows the training objective of DALL-E 2, and the bottom figure shows the inference process. The prior model takes the CLIP text embeddings $z_t$ and generates image embeddings $z_i$. Then the decoder takes in image embeddings $z_i$ and generates the final image.}
+    \caption{High level overview of unCLIP (DALL-E 2) \cite{dalle_2} by OpenAI. The top figure shows the training objective of DALL-E 2, and the bottom figure shows the inference process. The prior model takes the CLIP text embeddings $z_t$ and generates image embeddings $z_i$. Then the decoder takes in image embeddings $z_i$ and generates the final image \cite{make_a_video}.}
     \label{fig:make_a_video_dalle2_overview}
 \end{figure}
 
@@ -155,7 +156,7 @@ where $h \in \mathbb{R}^{B\times C\times F\times H\times W}$ is an input tensor,
 \begin{figure}
     \centering
     \includegraphics[width=0.7\textwidth]{images/make_a_video/pseudo_3d.png}
-    \caption{Initialization and architecture of pseudo-3D convolutional and attention layers. Left: Pseudo-3D convolution and initialization. Right: Pseudo-3D attention and initialization.}
+    \caption{Initialization and architecture of pseudo-3D convolutional and attention layers. Left: Pseudo-3D convolution and initialization. Right: Pseudo-3D attention and initialization \cite{make_a_video}.}
     \label{fig:make_a_video_pseudo_3d_conv_and_attention}
 \end{figure}
 
@@ -236,7 +237,7 @@ In addition $\text{SR}_h$ is trained on HD-VILA-10M.
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.7\textwidth]{images/make_a_video/zero_shot_eval.png}
-    \caption{Make-a-Video significantly outperforms all state-of-the-art T2V generation models in zero-shot setting on MSR-VTT \cite{msr_vtt} dataset of video  and captions in both FID and CLIP-SIM score.}
+    \caption{Make-a-Video significantly outperforms all state-of-the-art T2V generation models in zero-shot setting on MSR-VTT \cite{msr_vtt} dataset of video  and captions in both FID and CLIP-SIM score \cite{make_a_video}.}
     \label{fig:make_a_video_zeroshot_eval}
 \end{figure}
 
@@ -245,7 +246,7 @@ Evaluation on MSR-VTT is shown in figure \ref{fig:make_a_video_zeroshot_eval}.
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.7\textwidth]{images/make_a_video/ucf_101.png}
-    \caption{Zero-shot and fine-tuning evaluation on UCF-101 dataset.}
+    \caption{Zero-shot and fine-tuning evaluation on UCF-101 dataset \cite{make_a_video}.}
     \label{fig:make_a_video_ucf_101}
 \end{figure}
 
@@ -254,7 +255,7 @@ Evaluation on UCF-101 is shown in figure \ref{fig:make_a_video_ucf_101}..
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.7\textwidth]{images/make_a_video/eval.png}
-    \caption{Human evaluation on DrawBench. The number indicates amount of videos compared in each evaluation.}
+    \caption{Human evaluation on DrawBench. The number indicates amount of videos compared in each evaluation \cite{make_a_video}.}
     \label{fig:make_a_video_human_eval}
 \end{figure}
 
@@ -267,14 +268,14 @@ Human evaluation is shown in figure \ref{fig:make_a_video_human_eval}. They ask 
 \begin{figure}
     \centering
     \includegraphics[width=0.7\textwidth]{images/make_a_video/examples.png}
-    \caption{Examples of T2V samples of Make-a-Video.}
+    \caption{Examples of T2V samples of Make-a-Video \cite{make_a_video}.}
     \label{fig:make_a_video_examples}
 \end{figure}
 
 \begin{figure}
     \centering
     \includegraphics[width=0.7\textwidth]{images/make_a_video/examples2.png}
-    \caption{Various qualitative results comparisons and applications. FILM by Google Research is a frame-interpolation model \cite{film}.}
+    \caption{Various qualitative results comparisons and applications. FILM by Google Research is a frame-interpolation model \cite{film}  \cite{make_a_video}.}
     \label{fig:make_a_video_examples2}
 \end{figure}
 

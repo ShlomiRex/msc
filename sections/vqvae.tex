@@ -49,7 +49,7 @@ Equation \ref{eq:vq_onehot} shows the one-hot representation of the posterior ca
 \begin{figure}[h]
     \centering
     \includegraphics[width=\textwidth]{images/vqvae_architecture.png}
-    \caption{VQ-VAE architecture \cite{vqvae}. The embedding space are the code vectors (purple), the green cube are the latent space vectors before quantization, and the blue matrix is the codebook indencies to the coresponding code vectors. Right: the 'snapping' operation is the quantization operation, which replaces the embeddings with the closest code vector from the codebook. This operation is not differentiable (see STE \ref{subsec:vqvae_ste}).}
+    \caption{VQ-VAE architecture \cite{vqvae}. The embedding space are the code vectors (purple), the green cube are the latent space vectors before quantization, and the blue matrix is the codebook indices to the corresponding code vectors. Right: the 'snapping' operation is the quantization operation, which replaces the embeddings with the closest code vector from the codebook. This operation is not differentiable (see STE \ref{subsec:vqvae_ste}).}
     \label{fig:vqvae_architecture}
 \end{figure}
 
@@ -70,14 +70,14 @@ The codebook is learned during training, and the embeddings are quantized to the
 
 where $z_e$ is the encoder output, $z_q$ is the quantized output, $\text{sg}[\cdot]$ is the stop gradient operation (which prevents gradients from flowing through the quantization operation), and $\beta$ is a hyperparameter that controls the weighting of the two terms in the loss function. The first term in the loss function is the quantization loss, which measures the distance between the encoder output and the quantized output. The second term is the commitment loss, which measures the distance between the quantized output and the encoder output. The commitment loss encourages the model to use the codebook, and prevents the model from ignoring the quantization operation.
 
-Finding the nearest code vector in the codebook is given by equation \ref{eq:quantization} (from the original paper \cite{vqvae}), where $z_e(x)$ is the output of the encoder. The quantizied embeddings are the indecies of the codebook, and not the vectors themselves. The reason is that learning indencies is easier than learning the code vectors, which significantly reduces the number of of parameters in the model. Less computation is needed to find the nearest code vector in the codebook, because the codebook is fixed and the indecies are learned.
+Finding the nearest code vector in the codebook is given by equation \ref{eq:quantization} (from the original paper \cite{vqvae}), where $z_e(x)$ is the output of the encoder. The quantized embeddings are the indices of the codebook, and not the vectors themselves. The reason is that learning indices is easier than learning the code vectors, which significantly reduces the number of of parameters in the model. Less computation is needed to find the nearest code vector in the codebook, because the codebook is fixed and the indices are learned.
 
 \begin{equation}
     \label{eq:quantization}
     z_q(x)=e_k, \text{  where } k = \text{argmin}_j || z_e(x) - e_j ||_2
 \end{equation}
 
-In the implementation of the quantisizer module of the VQ-VAE paper, the codebook vectors are initialized using uniform distribution between $-1/n_e$ and $1/n_e$, where $n_e$ is the number of embeddings and $e_d$ is the dimension of the codebook vectors (see listing \ref{lst:vq_codebook}).
+In the implementation of the quantizer module of the VQ-VAE paper, the codebook vectors are initialized using a uniform distribution between $-1/n_e$ and $1/n_e$, where $n_e$ is the number of embeddings and $e_d$ is the dimension of the codebook vectors (see listing \ref{lst:vq_codebook}).
 
 Finally, the loss function of the VQ-VAE is given by:
 
@@ -93,20 +93,18 @@ Finally, the loss function of the VQ-VAE is given by:
 
 
 
-\subsection{Streight Through Estimator (STE)}
+\subsection{Straight Through Estimator (STE)}
 \label{subsec:vqvae_ste}
 
 It is important to note that snapping embeddings to nearest codebook vectors operation is not differentiable (right side of figure \ref{fig:vqvae_architecture}), which means the gradients will always be 0 at the backpropogation \cite{why_round_function_is_not_differentiable}. For this reason, the researchers used the straight-through estimator (STE) to approximate the gradients. The STE is a technique used to approximate the gradients of a non-differentiable function by passing the gradients of the function through the function itself (see listing \ref{lst:vqvae_stop_gradients}) (in other words, they skip the quantization operation in the backward pass).
 
 \subsection{Video Generation Experiment}
 
-% TODO: The sentence: "correctly projected perspecivel" is not clear, need different phrasing.
-
 \begin{figure}[h]
     \centering
     \includegraphics[width=\textwidth]{images/vqvae_video_generation.png}
-    \caption{VQ-VAE video generation experiment \cite{vqvae}. Given 6 frames as input, the model predicted the next 10 frames conditioned on the action. Top row is the "move forward" action, bottom row is the "move right" action. In short, the model recognizes the action and creates frames that are correctly projected perspecively.}
+    \caption{VQ-VAE video generation experiment \cite{vqvae}. Given 6 frames as input, the model predicted the next 10 frames conditioned on the action. Top row is the "move forward" action, bottom row is the "move right" action. Essentially, the model effectively recognized the action and generated frames that accurately reflect perspective projection.}
     \label{fig:vqvae_video_generation}
 \end{figure}
 
-The researchers used the VQ-VAE model to generate videos conditioned on actions (video game controls). In figure \ref{fig:vqvae_video_generation} we can see the results of the video generation experiment. Each image is created by first generating latents and then ingressing into the decoder. Notice how the model successfully predicted the perspective projection aspect of movement to the right and to the forward actions.
+The researchers used the VQ-VAE model to generate videos conditioned on actions (video game controls). In figure \ref{fig:vqvae_video_generation} we can see the results of the video generation experiment. Each image is created by first generating latents and then ingress into the decoder. Notice how the model successfully predicted the perspective projection aspect of movement to the right and to the forward actions.
