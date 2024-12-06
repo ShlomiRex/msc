@@ -32,57 +32,101 @@ The non-differential operation of quantization is a problem we saw previously in
 
 \subsection{Architecture}
 
-The architecture of VQ-GAN is shown in figure \ref{fig:vqgan_architecture}. The training involves feeding images $x \in X$ of size $x \in \mathbb{R}^{H \times W \times 3}$ \footnote[2]{The training dataset was of size $256 \times 256 \times 3$.} to the encoder $E$ to get the latent representation $\hat{z}$ of size $\hat{z} \in \mathbb{R}^{h \times w \times n_z}$, where $n_z$ is the dimension of each codebook vector. These representations are then quantized by the VQ module to get the discrete latent representation $z_q \in \mathbb{R}^{h \times w \times n_z}$. This operation converts latent vectors to indices of code vectors by nearest neighbor code vector (index in the codebook points to a code vector). Using $z_q$ vectors, the CNN decoder $G$ then reconstructs the image $\hat{x}$. A discriminator $D$ is used to distinguish between real and fake (generated) pixel patches of size 16x16. This module encourages the model to generate finer details and local patterns in the image, leading to better overall quality.
+The architecture of VQ-GAN is shown in figure \ref{fig:vqgan_architecture}:
 
-The autoregressive transformer is used to predict the embeddings $z_q$ and provide the decoder $G$ the necessary information to generate a new image, compared to PixelCNN model \cite{pixelcnn} which uses transformer for pixel-by-pixel prediction.
+\begin{itemize}
+    \item \textbf{Input}: images $x \in X$ of size $x \in \mathbb{R}^{H \times W \times 3}$, the training images resolution is $256\times 256$.
+    \item \textbf{Encoder} $E$ converts images to latent representations $\hat{z}$ of size $\hat{z} \in \mathbb{R}^{h \times w \times n_z}$, where $n_z$ is the dimension of each codebook vector.
+    \item \textbf{Vector Quantization} (VQ) module discretizing latent vectors $z_q \in \mathbb{R}^{h \times w \times n_z}$.
+    \item CNN decoder $G$ reconstructs the image $\hat{x}$ given $z_q$.
+    \item \textbf{Patch-based discriminator} $D$  distinguishes between real and fake pixel patches of size $16\times 16$, which enhances the generator to output better quality images.
+    \item \textbf{Inference}: the autoregressive transformer predicts the embeddings $z_q$ and provide the decoder $G$ the necessary information to generate a new image (compared to PixelCNN \cite{pixelcnn}, which uses transformer for pixel-by-pixel prediction).
+\end{itemize}
+
+
+
 
 
 
 
 \subsection{Training}
 
-The model is trained in two stages: in the first phase, the VQ module is trained to learn a discrete latent representation of the input data (learn the codebook), and the second phase trains the transformer module to predict the code vectors sequence that will be used to generate the output image.
+The model trains in two phases:
 
-The loss function of training the model to learn the codebook is given by: (similar to the VQ-VAE loss function in equation \ref{eq:vqvae_loss}):
+\begin{enumerate}
+    \item Training the VQ module to learn discrete latent representations of the input data (learns the codebook).
+    \item Training a transformer to predict the codebook vector sequences.
+\end{enumerate}
 
-\begin{equation}
-    \mathcal{L}_{\text{VQ}} (E, G, \mathcal{Z}) = \Vert x - \hat{x} \Vert ^2 + \Vert \text{sg}[E(x)] - z_q \Vert ^2_2 +  \beta \Vert \text{sg}[z_q] - E(x) \Vert ^2_2
-\end{equation}
+The VQ-GAN model has 3 loss functions: , , and the 
 
-where the first term is the MSE reconstruction loss (similar to equation \ref{eq:mse}), the second term is the quantization error, and the third term is the commitment loss. The reconstruction loss is intended to train the decoder $G$ to output (reconstruct latents $z_q$ to an image) images of similar distribution to the dataset. The quantization loss encourages the model to move the codebook vectors towards the encoder outputs, so to match the encoder's output distribution (gradients are calculated for $z_q$ and not $\text{sg}[E(x)]$ because of the stop gradient operation). The commitment loss encourages the encoder to "commit" to outputting embeddings that are close to the codebook vectors.
+\begin{enumerate}
+    \item The vector quantization (VQ) loss, which trains the model to learn the codebook vectors.
+    \item The adversarial (GAN) loss, which trains the model to generate realistic images.
+    \item The transformer loss, which trains the model to predict the next code vector autoregressively.
+\end{enumerate}
 
-However, instead of the MSE loss, the authors used a perceptual loss \cite{perceptual_loss} \footnote[4]{Perceptual loss measures the difference between the high-level features of two images (a generated image and an image from the dataset). Typically the high-level features are extracted by pretrained CNNs.} and \textbf{introduced an adversarial training procedure with a patch-based discriminator $D$} that tries to distinguish between real and fake pixel patches of size 16x16 of an image. The loss function of the discriminator is given by:
 
-\begin{equation}
+
+\subsubsection*{Vector quantization loss}
+
+The loss function is similar to the VQ-VAE loss (equation \ref{eq:vqvae_loss}) and is given by:
+
+\begin{equation*}
+    \mathcal{L}_{\text{VQ}} (E, G, \mathcal{Z}) = 
+    \underbrace{\Vert x - \hat{x} \Vert ^2}_{\text{recon loss}} + 
+    \underbrace{\Vert \text{sg}[E(x)] - z_q \Vert ^2_2}_{\text{quant loss}} + 
+    \underbrace{\beta \Vert \text{sg}[z_q] - E(x) \Vert ^2_2}_{\text{commit loss}}
+\end{equation*}
+
+The loss function consists of three terms: the reconstruction loss, the quantization loss, and the commitment loss:
+
+\begin{itemize}
+    \item The reconstruction loss is intended to train the decoder $G$ to reconstruct latents $z_q$ and output images of similar distribution to the dataset.
+    \item The quantization loss encourages the model to move the codebook vectors towards the encoder outputs, so to match the encoder's output distribution (gradients are calculated for $z_q$ and not $\text{sg}[E(x)]$ because of the stop gradient operation). 
+    \item The commitment loss encourages the encoder to "commit" to outputting embeddings that are close to the codebook vectors.
+\end{itemize}
+
+However, instead of the MSE loss, the authors used a \textbf{perceptual loss} \cite{perceptual_loss} \footnote[4]{Perceptual loss measures the difference between the high-level features of two images (a generated image and an image from the dataset). Typically, high-level features are extracted by pre-trained CNNs networks.}
+
+
+
+
+
+
+
+\subsubsection*{GAN loss}
+
+The adversarial objective trains the patch-based discriminator $D$ to try and distinguish between real and fake pixel patches of size $16\times 16$ of an image. The loss function of the discriminator is given by:
+
+\begin{equation*}
     \mathcal{L}_{\text{GAN}}(\{E,G,Z\}, D) = [\log D(x) + \log (1-D(\hat{x}))]
-\end{equation}
+\end{equation*}
 
-If $D$ outputs 1, then the image is from the dataset (real), and if it outputs 0, then the image is fake (generated by the decoder $G$). Just like in GAN, the discriminator objective is to maximize the probability of assigning the correct label to the input image and in the loss function the first term encourages the discriminator to output 1 because $\log D(x)$ approaches 0 when $D(x)$ approaches 1, and the second term encourages the discriminator to output 0 for fake images because $\log (1-D(\hat{x}))$ approaches 0 when $D(\hat{x})$ approaches 0.
+The first term encourages the discriminator to output 1 (predicted real image from the dataset) because $\log D(x)$ approaches 0 when $D(x)$ approaches 1, and the second term encourages the discriminator to output 0 (predicted fake image from $G$) for fake images because $\log (1-D(\hat{x}))$ approaches 0 when $D(\hat{x})$ approaches 0.
 
 Combining both the VQ loss and the adversarial loss, the total loss function is given by:
 
-\begin{equation}
+\begin{equation*}
     \mathcal{Q^*} = \arg \min_{E, G, Z} \max_D \mathbb{E}_{x \sim p(x)} [\mathcal{L}_{\text{VQ}} + \lambda \mathcal{L}_{\text{GAN}}]
-\end{equation}
+\end{equation*}
 
 The $\lambda$ hyperparameter is used to balance the contribution of adversarial loss relative to the VQ loss.
 
-\begin{figure}
-    \centering
-    \includegraphics[width=0.5\textwidth]{images/vqgan_samples2.png}
-    \caption[Caption for LOF]{Samples generated by VQ-GAN by different tasks and different resolutions. From top to bottom: depth-to-image on RIN dataset, stochastic super resolution\footnotemark on RIN dataset, 3rd and 4th row are semantic synthesis (semantic masks) on S-FLCKR dataset, and bottom row are edge synthesis on IN dataset.}
-\end{figure}
 
 
-\footnotetext{Super resolution is a task that generates high-resolution image from a single low-resolution image while maintaining the spatial information of the image.}
+
+
+
+\subsubsection*{Transformer objective}
 
 The second phase of the training involves maximizing the transformer objective. The transformer learns to predict the distribution of possible next indices, which allows us to directly maximize the log-likelihood (appendix \ref{appendix:likelihood_function}) of the data representation:
 
-\begin{equation}
+\begin{equation*}
     \mathcal{L}_{\text{transformer}} = \mathbb{E}_{x \sim p(x)} [- \log p(x)]
-\end{equation}
+\end{equation*}
 
-To summarize, the VQ-GAN model has 3 loss functions: the VQ loss (which trains the model to learn the codebook vectors), the adversarial loss (which trains the model to generate realistic images), and the transformer loss (which trains the model to predict the next code vector autoregressively).
+
 
 
 
@@ -112,8 +156,12 @@ To summarize, the VQ-GAN model has 3 loss functions: the VQ loss (which trains t
     \label{fig:vqgan_conditional_generation}
 \end{figure}
 
-% TODO: Finish
-After the two-phase training is finished, the transformer is used to predict a sequence $s$ which is sequence of indices to code vectors. Each token $s_i$ corresponds to an index in the codebook. So a code vector is autoregressively predicted based on the previous tokens $s_{<i}$, which provides the necessary embeddings $z_q$ for image synthesis ($p(s) = \prod_{i} p(s_i | s_{<i})$). If the image generation process involves a condition basis $c$, such as text, images, depth map, semantic layout or pose, then another VQ-GAN model is trained on these kind of tasks, which obtain a new codebook $Z_c$ which are the representation $r$ of $c$. Then, this representation is prepended to $s$ which restricts the computation of the negative log-likelihood to entries $p(s_i | s_{<i}, r)$. This new sequence is then given to the transformer in the first model to generate the image based on the condition $c$ (figure \ref{fig:vqgan_conditional_generation}).
+
+After the two-phase training is finished, the transformer is used to predict a sequence $s$ which is sequence of indices to code vectors. Each token $s_i$ corresponds to an index in the codebook. So a code vector is autoregressively predicted based on the previous tokens $s_{<i}$, which provides the necessary embeddings $z_q$ for image synthesis: 
+
+\[ p(s) = \prod_{i} p(s_i | s_{<i}) \]
+
+To involve conditioning information $c$ such as text, images, depth map, semantic layout or pose, then a new VQ-GAN model is trained on each kind of conditioning modal, and the model obtain a new codebook $Z_c$ (which are the representation $r$ of $c$). Then, this representation is prepended to $s$ (see figure \ref{fig:vqgan_conditional_generation}) which restricts the computation of the negative log-likelihood to entries $p(s_i | s_{<i}, r)$.
 
 
 
@@ -122,16 +170,20 @@ After the two-phase training is finished, the transformer is used to predict a s
 
 
 
-\subsection{Sliding window technique for generating high-resolution images}
+\subsection{Sliding window attention technique for generating high-resolution images}
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.75\textwidth]{images/vqgan_sliding_attention.png}
-    \caption{Sliding window attention technique for generating high-resolution images. The output image is divided into patches of size 16x16=256 and by using attention mechanism, the transformer module is able to autoregressively generate the next code vector $s_i$ based on the previous outputs $s_{<i}$ (the context).}
+    \includegraphics[width=0.6\textwidth]{images/vqgan_sliding_attention.png}
+    \caption{Sliding window attention technique proposed in the paper \cite{vqgan}.}
     \label{fig:vqgan_sliding_window}
 \end{figure}
 
-Due to the attention mechanism in transformers (quadratic computation for number of tokens, because each token requires attention to all other tokens), the model is limited in the size of the transformer sequence (in the paper they used 256 tokens). Although the encoder can reduce the dimensionality of images, the researchers noticed significant degradation in generation quality. To solve this problem, they work patch-wise and crop input images to match the maximum token count in the transformer module.
+\textbf{The problem}: the attention mechanism in transformers requires quadratic computation for the number of tokens, because each token requires attention to all other tokens in the sequence (in the paper the sequence is limited to 256 tokens). Therefor they decided to use a sliding window attention mechanism to reduce the computational cost.
 
-To sample images, they also work patch-wise and the transformer autoregressively predicts the next token based on the window context (figure \ref{fig:vqgan_sliding_window}).
+\textbf{Sliding window attention technique}: to solve this problem, they work patch-wise and crop input images to match the maximum token count in the transformer module, so the transformer works on the window context only, instead the entire image, which reduces the token count required.
 
+In figure \ref{fig:vqgan_sliding_window}, the output image is divided into patches of $16\times 16$  the transformer is able to autoregressively predict the next token (code vector) $s_i$ based on the previous tokens $s_{<i}$ (the window context).
+
+
+\textbf{Sampling}: to sample images, they also work patch-wise and the transformer autoregressively predicts the next token based on the window context (figure \ref{fig:vqgan_sliding_window}).
