@@ -8,7 +8,7 @@
     \label{fig:videogpt_architecture}
 \end{figure}
 
-VideoGPT \cite{videogpt} uses likelihood based model VQ-VAE and GPT-like transformer model. The encoder of VQ-VAE first downsamples video into discrete latent space using 3D convolutions, and the decoder then reconstructs the video from these latent codes (by using a codebook - see VQ-VAE section \ref{sec:vqvae}). The generated latents are decoded to the original video resolution as the training dataset.
+VideoGPT \cite{videogpt} uses likelihood based model VQ-VAE and GPT-like transformer model. The encoder of VQ-VAE first downsamples video into discrete latent space using 3D convolutions, and the decoder then reconstructs the video from these latent codes (by using a codebook - see VQ-VAE section \ref{vqvae}). The generated latents are decoded to the original video resolution as the training dataset.
 
 The researchers take inspiration from image and video codecs: JPEG and MPEG for image and video compression. They contain the same spatio-temporal data as the uncompressed video, yet take less resources (by not working in the pixel space).
 
@@ -22,7 +22,7 @@ Reminder that the loss function of VQ-VAE is defined:
 
 where $\text{sg}$ refers to stop-gradient, $\mathcal{L}_\text{recon}$ is the \textbf{reconstruction loss} (encourages the VQ-VAE to learn good representations to accurately reconstruct the data), $\mathcal{L}_\text{codebook}$ is the \textbf{codebook loss} (quantization loss, it brings codebook vectors closer to the encoder outputs), and $\mathcal{L}_\text{commit}$ is the \textbf{commitment loss} (which prevents the encoder outputs from fluctuating between different code vectors). 
 
-The reconstruction loss optimizes only the decoder, the commitment loss optimizes only the encoder, and the codebook loss optimizes the codebook embeddings only. See section \ref{sec:vqvae} for more details.
+The reconstruction loss optimizes only the decoder, the commitment loss optimizes only the encoder, and the codebook loss optimizes the codebook embeddings only. See section \ref{vqvae} for more details.
 
 The researchers used EMA (exponential moving average which is described in the VQ-VAE paper \cite{vqvae}) update for the codebook loss. In short, it makes the VQ-VAE faster to train and converge.
 
@@ -39,7 +39,7 @@ The architecture of the \textbf{decoder} is the reverse of the encoder (residual
 
 \subsection*{The transformer (GPT)}
 
-As described in section \ref{sec:vqgan}, GPT is autoregressive transformer model. The autoregressive nature can be described as $p(x) = \prod_{i=1}^{d} p(x_i | x_{\leq i})$ through masked self-attention. The GPT transformer is optimized through maximum likelihood (appendix \ref{appendix:likelihood_function}). The transformer follows the same prior networks as Image-GPT \cite{imagegpt}.
+As described in section \ref{sec:vq_gan}, GPT is autoregressive transformer model. The autoregressive nature can be described as $p(x) = \prod_{i=1}^{d} p(x_i | x_{\leq i})$ through masked self-attention. The GPT transformer is optimized through maximum likelihood (appendix \ref{appendix:likelihood_function}). The transformer follows the same prior networks as Image-GPT \cite{imagegpt}.
 
 In \textbf{Image-GPT} the network learns to predict pixels and only a transformer is used, which is the first time a transformer-only image synthesis model was proposed (no CNN prior!). Instead of learning to predict tokens, the model learns to predict pixels. The network learns to predict the pixel values based on a probability distribution modeled on each of the previous pixels. The attention mechanism can map global spatial relationships, which helps in the modeling of the pixel distribution. The iGPT-XL model consists of 6.8 billion parameters, iGPT-M has 455 million parameters, and iGPT-S has 76 million parameters. 
 

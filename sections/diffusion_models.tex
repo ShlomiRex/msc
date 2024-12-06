@@ -12,6 +12,7 @@ In the next section, we will take a closer look at DDPMs, which is subclass of D
 
 
 \subsection{DDPMs}
+\label{sec:ddpm}
 
 Denoise Diffusion Probabilistic Models (DDPMs) \cite{ddpm} are a class of diffusion models that are trained to denoise images. In training phase, a dataset of images is fed to the model and DDPMs add noise to input image (it can be thought of as adding random pixel values to the input) in multiple steps (the intermediate latent variables $z_i$), unti the final result is pure noise (which will converge to the noise distribution). Then the model is trained to remove the noise and reconstruct the original image. The denoising process is called 'reverse diffusion' or reverse step and the noising process is called 'forward diffusion' or forward step. The forward diffusion step is denoted as $q(x_t | x_{t-1})$ and the reverse diffusion step is denoted as $p_\theta (x_{t-1} | x_t)$ (figure \ref{fig:ddpm_process}).
 
@@ -25,7 +26,7 @@ DDPMs are latent variable models in the form of
     p_\theta (x_0) = \int p_\theta(x_{0:T}) dx_{1:T} \text{,\ \ where \ \ \ } p_\theta (x_{0:T}) := p_\theta (x_T) \prod_{t=1}^{T} p_\theta (x_{t-1} | x_t)
 \end{equation}
 
-where $x_1, ..., x_T$ are latent variables. Because the integral is intractable, we use ELBO (appendix \ref{appendix:elbo}). The parameters of the model $\theta$ are learned to fit the data distribution $q(x_0)$ by maximizing a variational lower bound:
+where $x_1, ..., x_T$ are latent variables. Because the integral is intractable, we use ELBO. The parameters of the model $\theta$ are learned to fit the data distribution $q(x_0)$ by maximizing a variational lower bound:
 
 \begin{equation}
     \max_{\theta} \mathbb{E}_{q(x_0)} [\log p_\theta (x_0)] \leq \max_\theta \mathbb{E}_{q(x_0, x_1, ..., x_T)} [\log p_\theta (x_{0:T}) - \log q(x_{1:T} | x_0)]
@@ -147,7 +148,7 @@ A more formal notation for the forward process is:
     \end{aligned}
 \end{equation*}
 
-In the above formula we can see that to define the next timestep $x_t$ and to get a noisier image, we define it as gaussian / normal distribution where the mean is $\sqrt{1-\beta_t} x_{t-1}$ and variance $\beta_t \mathbf{I}$. The $\beta$ parameter is the noise scheduler (how much noise we add at each step). This process is known as Markov Chain, since the next step depends only on the previous step (see appendix \ref{appendix:markov_chains}).
+In the above formula we can see that to define the next timestep $x_t$ and to get a noisier image, we define it as gaussian / normal distribution where the mean is $\sqrt{1-\beta_t} x_{t-1}$ and variance $\beta_t \mathbf{I}$. The $\beta$ parameter is the noise scheduler (how much noise we add at each step). This process is known as Markov Chain, since the next step depends only on the previous step.
 
 An interesting point the authors made is that \textbf{its possible to sample $x_t$ from any arbitrary timestep $t$}, given the original image $x_0$ (without calculating all the intermediate steps):
 

@@ -1,65 +1,72 @@
 \section{Variational Autoencoder}
 \label{sec:vae}
 
-Variational Autoencoder (VAE) \cite{vae} is generative model is used to learn the underlying distribution of data and generate new samples (similar to the dataset). The model consists of 3 main components: an encoder, latent space (sometimes called 'code vectors' or 'bottleneck layer') and a decoder. The main idea behind VAE is to use the autoencoder model \cite{autoencoder} \cite{autoencoder2} (figure \ref{figure:autoencoder_architecture}) to compress large dimensional vectors (in our case, images) into smaller, lower dimension vectors that represent the underlying features hidden within the input data. These code vectors are then fed into a decoder network which reconstructs the image (i.e. high dimensional vector).
+Variational Autoencoder (VAE) \cite{vae} is generative model is used to learn the underlying distribution of data and generate new samples (similar to the dataset). The model consists of 3 main components: an \textbf{encoder}, \textbf{latent space} (sometimes called 'code vectors' or 'bottleneck layer') and a \textbf{decoder}. The main idea behind VAE is to use the autoencoder model \cite{autoencoder} \cite{autoencoder2} (figure \ref{figure:autoencoder_architecture}) to compress large dimensional space (in our case, images) into smaller, lower dimension vectors that represent the underlying hidden features. These code vectors are then fed into a decoder network which reconstructs the image (maps latent vectors to high-dimensional space).
 
-Compared to the autoencoder model, VAEs gives significant control over how we want to model our latent distribution, which in turn gives precise control over the output samples. This kind of control (the prior) doesn't exists in the usual autoencoder framework. In addition, VAEs are more practical and feasable for large datasets. 
+Compared to the AE, VAEs gives significant control over how we want to model our latent distribution, which in turn gives \textbf{precise control over the output samples}. This kind of control doesn't exists in the usual autoencoder framework.
 
 \input{figures/autoencoder}
 
 \begin{figure}
     \centering
     \includegraphics[scale=0.5]{images/vae.png}
-    \caption{Visualization a VAE model of learned data with 2D latent space \cite{vae}, learned on two different datasets. Notice how its easy to control the output by only adjusting the latent vector in 2 dimensions. The variational aspect makes it possible to control the generated images.}
+    \caption{Visualization a VAE modeled 2D latent space of learned data \cite{vae}, learned on two different datasets. The variational aspect makes it possible to control the generated output. \href{https://ar5iv.labs.arxiv.org/html/1804.00140}{Source}.}
 \end{figure}
 
 More formally, the encoder network takes an input data point $x$ and maps it to a latent space representation $z$, which is a compressed representation of $x$. The input is a vector, therefor an image must be flattened from 2D to 1D vector. This flattening will become an issue later in image generation, as this action removes important spatial information and hidden structures in the image. Because of this, modifications were made to the VAE model which allows the capture of spatial information by using a CNN (Convolutional Neural Network) \cite{cnn} layers \cite{vae_cnn_example}, max pooling layers, and other different types of spatial layers. After compression, the latent vector $z$ is then passed onto the decoder for reconstruction. 
 
-The reconstruction is learned by a reconstruction loss function, usually mean squared error (MSE) loss function:
+The reconstruction is learned by a reconstruction loss function, usually \textbf{mean squared error (MSE)} loss function:
 
 \begin{equation}
     \text{MSE} = \frac{1}{N} \sum_{i=1}^{N} (y_i - \hat{y}_i)^2
 \label{eq:mse}
 \end{equation}
 
-The MSE loss is common in image generation models, because this loss is used to ensure that the generated images closely resemble the original input images by comparing the distance between pixels (input image, output image). This objective motivates the model to reconstruct the image from latent vector to resemble the original image. However, this loss is not used alone usually, but in combination with more complex loss functions, as we will see later in VAE.
+This loss is used to ensure that the generated images closely resemble the original input images by comparing the \textbf{distance between pixels}, which motivates the model to reconstruct the image to resemble the input image.
 
-Its important to note that the inference process (the generation process) of autoencoders (and VAEs) uses only the decoder network. The encoder network is used only during training to learn the latent space, but in inference its not used. Both the encoder and decoder parameters are learned together by backpropogation during training.
+During training, both the encoder and decoder are learned with backpropagation, but during inference, only the decoder is used.
 
-The code vectors learned by autoencoders, however, are one-to-one map of the input and code vector (deterministic mapping from input to code vectors). The model doesn't capture any semantic relationships between the data (e.g the code vectors of images of cats are scattered throughout the entire latent space, whereas in VAE, they are clustered together). The latent space in autoencoders is irregular and discontinuous, meaning a small change in the latent vector can lead to large unpredictable changes in the output. This makes interpolation in the latent space difficult. VAE solves this problem: it regularizes the latent space by enforcing a prior distribution. This regularization leads to a smooth and continuous latent space (see figure \ref{fig:ae_vs_vae}), which allows the model to interpolate between the latent space smoothly, thus creating similar new images with different variations. VAEs also provide an explicit model of the data distribution by maximizing a variational lower bound on the likelihood of the data. In other words, VAE is probabilistic model instead of discrete mapper (like the autoencoder model).
+The code vectors learned by AE are \textbf{deterministic mapping} from input to code vectors; e.g. the code vectors of images of cats are scattered throughout the entire latent space, whereas in VAE, they are clustered together. 
+
+The latent space in AEs is irregular and discontinuous which makes \textbf{interpolation in the latent space} difficult. VAE solves this problem: it regularizes the latent space by enforcing a prior distribution. This regularization leads to a smooth and continuous latent space (see figure \ref{fig:ae_vs_vae}), which allows the model to interpolate between the latent space smoothly, thus creating similar new images with different variations. 
+
+In other words, VAE is \textbf{probabilistic model instead of discrete mapper}, like AE.
 
 \begin{figure}[h]
     \centering
     \includegraphics[scale=0.4]{images/autoencoder-vs-variational-autoencoder-point-vs-distribution-768x409.png}
-    \caption{Illustration of mapping an input image to code vector (left) and mapping an input image to a distribution (right) \cite{ae_vs_vae}. The left is meant to represent the regular autoencoder model, where no attention is given to variations in the latent vectors, and the right figure is meant to represent the VAE model, where latent codes are sampled from a distribution, which allows some control (some variations) over the output.}
+    \caption{Mapping an input image to code vector (left) in AE and mapping an input image to a distribution (right) in VAE \cite{ae_vs_vae}. \href{https://vitalflux.com/autoencoder-vs-variational-autoencoder-vae-difference/}{Source}.}
     \label{fig:ae_vs_vae}
 \end{figure}
 
-At the heart of VAE lies the concept of latent variables (Appendix \ref{appendix:latent_variables}). Latent variables are hidden, unobserved variables that the model infers from the observed data (dataset). Latent variable models, such as VAE, take indirect approach to describing a probability distribution $p(x)$ over multi-dimensional variable $x$. Instead of directly writing the expression for $p(x)$, they model a joint distribution $p(x|z)$ of the data $x$ and an unobserved hidden latent variable $z$.
+At the heart of VAE lies the concept of \textbf{latent variables}. Latent variables are hidden, unobserved variables that the model infers from the observed data (dataset). Latent variable models, such as VAE, take indirect approach to describing a probability distribution $p(x)$ over multidimensional variable $x$. Instead of directly writing the expression for $p(x)$, they model a joint distribution $p(x|z)$ of the data $x$ and an unobserved hidden latent variable $z$.
 
-The variational aspect of VAE refers to the use of variational inference (VI) (Appendix \ref{appendix:variational_inference}). VI is used to used to approximate complex posterior distributions: 
+The variational aspect of VAE refers to the use of \textbf{variational inference (VI)}, which is used to approximate complex posterior distributions by transforming the problem into optimization problem:
 
 \begin{equation}
 p(z|x) = \frac{p(x|z) \cdot p(z)}{\int p(x|z) \cdot p(z) dz}
 \label{eq:vae_posterior}
 \end{equation}
 
-by transforming the problem into optimization problem. The denominator in eq. \ref{eq:vae_posterior} is intractable because it involves integrating over all possible values of $z$, and $z$ is often relatively high-dimensional and its infeasible to evaluate exactly. Which is why VI is used, which approximates the true posterior distribution $p(z|x)$ with simpler, tractable distribution $q_\phi (z|x)$, parameterized by $\phi$.
+The denominator in eq. \ref{eq:vae_posterior} is \textbf{intractable} because it involves integrating over all possible values of $z$, and $z$ is often relatively high-dimensional, and it's infeasible to evaluate exactly. Which is why VI is used, which approximates the true posterior distribution $p(z|x)$ with simpler, tractable distribution $q_\phi (z|x)$, parameterized by $\phi$.
 
-The original VAE model uses fully connected layers at the encoder and decoder networks. However, in the image synthesis field, CNN layers (appendix \ref{appendix:cnn}) are used instead which are computationally less expensive and better capture the spatial information, for instance, its used in VQ-VAE (section \ref{sec:vqvae}) and PixelCNN \cite{pixelcnn}.
+\textbf{Inference}: to generate an image, first we sample a latent variable $z$ from prior distribution $p(z)$, which is typically standard normal distribution $\mathcal{N}(0, 1)$. Then $z$ is passed to the decoder and image $x$ is generated from the conditional distribution $p_\theta (x|z)$. 
 
-To generate an image, we first sample a latent variable $z$ from prior distribution $p(z)$, which is typically standard normal distribution $\mathcal{N}(0, 1)$. Then $z$ is passed to the decoder an an image $x$ is generated from the conditional distribution $p_\theta (x|z)$. 
+
+
+
 
 \subsection{The Reparameterization Trick}
-To enable backpropogation through the sampling process, VAEs use the reparameterization trick. This trick involves expressing the sampled latent variables $z$ as a deterministic function of the encoder's output and some random noise. Without this technique, backpropogation would not be possible through the sampling operation. The reason is that sampling is a non-differentiable operation, because sampling from a distribution involves randomness that does not have a gradient, and the gradients cannot be computed with respect to the parameters of the encoder. To make the sampling operation differentiable and thus allow gradients to flow through the network, the reparameterization trick is used. 
 
-Specifically, if $\mu$ and $\sigma$ are the mean and standard deviation vectors outputted by the encoder, we can write:
+To enable backpropagation through the sampling process, VAEs use the reparameterization trick. This trick involves expressing the sampled latent variables $z$ as a deterministic function of the encoder's output and some random noise.\textbf{Without this technique, backpropagation would not be possible}, because sampling from a distribution is a stochastic process (involves randomness) and is a non-differentiable operation and the gradients can't be computed with respect to the parameters of the encoder. 
 
-\begin{equation}
+To make the sampling operation differentiable and thus allow gradients to flow through the network, the reparameterization trick is used. Specifically, if $\mu$ and $\sigma$ are the mean and standard deviation vectors outputted by the encoder, we can write:
+
+\begin{equation*}
     z = \mu + \sigma \cdot \epsilon
-\end{equation}
+\end{equation*}
 
-where $\epsilon \sim \mathcal{N}(0, 1)$ is a standard normal random variable. This $\epsilon$ will not change throughout the training regime. It is sampled once and fixed in place. This trick allows us instead of having full stochastic node that blocks flow of gradients, to having two parts: one where we can do backpropogation, and another part which is still stochastic but which we don't want to train because its fixed.
+where $\epsilon \sim \mathcal{N}(0, 1)$ is a standard normal random variable. This $\epsilon$ \textbf{will not change throughout the training regime}: it's sampled once and fixed in place.
 
 \input{figures/vae}
 
@@ -67,11 +74,11 @@ The VAE architecture is shown in figure \ref{figure:vae}.
 
 \subsection{Training}
 
-The VAE optimizes the Evidence Lower Bound (ELBO) (see appendix \ref{appendix:elbo}) to ensure that the approximate posterior $q_\phi (z|x)$ is close to the true posterior $p(z|x)$ (we want to maximize it):
+The VAE optimizes the \textbf{Evidence Lower Bound (ELBO)} to ensure that the approximate posterior $q_\phi (z|x)$ is close to the true posterior $p(z|x)$ (we want to maximize it):
 
 \begin{equation}
     \mathcal{L}(\theta, \phi; x, z) = \text{ELBO} = \mathbb{E}_{q_\phi(z|x)} \left[ \log p_\theta(x|z) \right] - D_\text{KL}(q_\phi(z|x) \| p(z))
     \label{eq:vae_elbo}
 \end{equation}
 
-where the first term is the reconstruction loss and the second term is the KL divergence (see appendix \ref{appendix:kl_divergence}) (which measure how much the approximate posterior $q_\phi (z|x)$ diverges from the prior $p(z)$). 
+where the first term is the \textbf{reconstruction loss} and the second term is the \textbf{KL divergence loss} (which measure how much the approximate posterior $q_\phi (z|x)$ diverges from the prior $p(z)$). 
