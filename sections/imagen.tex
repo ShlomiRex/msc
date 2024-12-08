@@ -158,7 +158,7 @@ The implementation of static and dynamic thresholding is shown in figure \ref{fi
 
 In a 2021 paper \cite{sr3}, the Google Research team introduced a new super-resolution model based on diffusion process. \textbf{S}uper-resolution via \textbf{R}epeated \textbf{R}efinment (SR3) model upsamples in iterative manner, similar to reverse diffusion. It upsamples images from $64\times 64$ to $256\times 256$ and finally to $1024\times 1024$.
 
-SR3 achieves close to a 50\% fool rate (47\%) \footnote{A 50\% fool rate means humans can't distinguish between a generated face image and an image of a real face.} on 16x16 $\rightarrow$ 128x128 faces, outperforming the previous state-of-the-art GAN models (FSRGAN and PULSE).
+SR3 achieves close to a 50\% fool rate (47\%) \footnote{A 50\% fool rate means humans can't distinguish between a generated face image and an image of a real face.} on $16\times 16 \rightarrow 128\times 128$ faces, outperforming the previous state-of-the-art GAN models (FSRGAN and PULSE).
 
 \textbf{Iterative refinment}: Given low-resolution image $x_{low}$ the model applies \textbf{bicubic interpolation} \footnote{Bicubic interpolation is a method for resizing images that uses the closest 4x4 pixels grid to estimate new values, resulting in smoother transitions (compared to nearest-neighbor or bilinear interpolation) and fewer visual artifacts.} to upscale the image to the target resolution to get high-resolution image $x$ and then concatenates $x$ with pure Gaussian noise $y_t \sim \mathcal{N} (0, I)$ channel-wise (see figure \ref{fig:sr3_architecture}). Then the U-Net iteratively refines the image $(x, y_t)$ by denoising. The output of a single refinement step (from the U-Net) is $y_{t-1}$. Then in the next refinement step, $x$ is concatenated with $y_{t-1}$ and the process is repeated until we reach $y_0$. The final output is a high-resolution image $y_0$. Note that both $x$ (after the upsampling), $y_i$ are all on same resolution / dimension (see figure \ref{fig:sr3_architecture}).
 
@@ -180,7 +180,7 @@ SR3 achieves close to a 50\% fool rate (47\%) \footnote{A 50\% fool rate means h
 \begin{figure}
     \centering
     \includegraphics[width=0.5\textwidth]{images/imagen/sr3_architecture.png}
-    \caption{SR3 16x16 $\rightarrow$ 128x128 upsampling. where $x$ is the input image, upscaled to the target resolution using bicubic interpolation, and then its concatenated with the noise $y$.}
+    \caption{SR3 $16\times 16 \rightarrow 128\times 128$ upsampling where $x$ is the input image, upscaled to the target resolution using bicubic interpolation, and then its concatenated with the noise $y$ \cite{sr3}.}
     \label{fig:sr3_architecture}
 \end{figure}
 
@@ -269,7 +269,7 @@ Similar to LDMs, Imagen also uses CFG \cite{classifier_free_guidance} (section \
 \begin{figure}
     \centering
     \includegraphics[width=0.5\textwidth]{images/imagen/architecture.png}
-    \caption{Overview of Imagen architecture.}
+    \caption{Overview of Imagen architecture \cite{imagen}.}
     \label{fig:imagen_architecture}
 \end{figure}
 
@@ -293,7 +293,7 @@ Similar to LDMs, Imagen also uses CFG \cite{classifier_free_guidance} (section \
 \begin{figure}
     \centering
     \includegraphics[width=0.35\textwidth]{images/appendix/imagen/unet_resnetblock.png}
-    \caption{Imagen efficient U-Net \texttt{ResNetBlock} architecture.}
+    \caption{Imagen efficient U-Net \texttt{ResNetBlock} architecture \cite{imagen}.}
     \label{fig:imagen_resnetblock}
 \end{figure}
 
@@ -305,14 +305,14 @@ In figure \ref{fig:imagen_resnetblock} we can see the \texttt{ResNetBlock} which
         \centering 
         \includegraphics[width=\textwidth]{images/appendix/imagen/dblock.png}
         \caption[]%
-        {{\small Imagen efficient U-Net \texttt{DBlock} architecture.}}
+        {{\small Imagen efficient U-Net \texttt{DBlock} architecture \cite{imagen}.}}
     \end{subfigure}
     \hfill
     \begin{subfigure}[b]{0.475\textwidth}
         \centering
         \includegraphics[width=\textwidth]{images/appendix/imagen/ublock.png}
         \caption[]%
-        {{\small Imagen efficient U-Net \texttt{UBlock} architecture.}}
+        {{\small Imagen efficient U-Net \texttt{UBlock} architecture \cite{imagen}.}}
     \end{subfigure}
 \end{figure*}
 
@@ -338,8 +338,8 @@ Due to these limitations, the researchers created new benchmark called \textbf{D
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.75\textwidth]{images/imagen/drawbench_categories.png}
-    \caption{Descriptions and examples of the 11 categories in DrawBench.}
+    \includegraphics[width=0.6\textwidth]{images/imagen/drawbench_categories.png}
+    \caption{Descriptions and examples of the 11 categories in DrawBench \cite{imagen}.}
     \label{fig:imagen_drawbench_categories}
 \end{figure}
 
@@ -374,13 +374,13 @@ DrawBench has 11 categories of prompts which test different capabilities of mode
         \caption{Human evaluation on 256x256 COCO. Imagen splits to two categories: no filters, and human filters. Imagen struggles a little bit with photorealistic people.}
         \label{fig:imagen_coco_human_eval}
     \end{subfigure}
-    \caption{Results of Imagen on COCO dataset.}
+    \caption{Results of Imagen on COCO dataset \cite{imagen}.}
 \end{figure}
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.75\textwidth]{images/imagen/alignment_fidelity_imagen_vs_models.png}
-    \caption{Imagen beats all other models (DALL-E 2 \cite{dalle_2}, GLIDE \cite{glide}, VQGAN+CLIP \cite{vqgan_clip} and Latent Diffusion (Stable Diffusion) \cite{stable_diffusion} (section \ref{sec:stable_diffusion})) in terms of image-text alignment and image fidelity.}
+    \includegraphics[width=0.6\textwidth]{images/imagen/alignment_fidelity_imagen_vs_models.png}
+    \caption{Imagen beats all other models (DALL-E 2 \cite{dalle_2}, GLIDE \cite{glide}, VQGAN+CLIP \cite{vqgan_clip} and Latent Diffusion (Stable Diffusion) \cite{stable_diffusion} (section \ref{sec:stable_diffusion})) in terms of image-text alignment and image fidelity \cite{imagen}.}
     \label{fig:imagen_alignment_fidelity_vs_other_models}
 \end{figure}
 
