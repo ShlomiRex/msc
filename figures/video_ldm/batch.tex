@@ -1,4 +1,23 @@
 \begin{tikzpicture}
+    % 3D Cube - we want to draw some of the cube edges below the frames
+    % variables
+    \def\cubeWidth{3}
+    \def\cubeHeight{3}
+    % \def\cubeDepth{8}
+
+    % Cube points
+    \coordinate (A) at (0, 0, -5);
+    \coordinate (B) at (\cubeWidth, 0, -5);
+    \coordinate (C) at (\cubeWidth, \cubeHeight, -5);
+    \coordinate (D) at (0, \cubeHeight, -5);
+    \coordinate (E) at (-0.5, -0.5, 3);
+    \coordinate (F) at (\cubeWidth - 0.5, -0.5, 3);
+    \coordinate (G) at (\cubeWidth - 0.5, \cubeHeight - 0.5, 3);
+    \coordinate (H) at (-0.5, \cubeHeight - 0.5, 3);
+
+    % Draw cube edges that are below the frames
+    \draw[thick] (A) -- (E);
+
     \def\width{2}
     \def\height{2}
     \def\shift{0.1} % Shift for the green and red channels
@@ -8,7 +27,7 @@
     \def\lastrectxshift{\xshift * -5} % Last image should be shifted more because of three dots
     \def\lastrectyshift{\yshift * -5} % Last image should be shifted more because of three dots
     \def\dotstartx{2}  % Starting x position for the dots
-    \def\dotstarty{2}  % Starting y position for the dots
+    \def\dotstarty{1.5}  % Starting y position for the dots
     \def\dotshift{0.3}  % Shift for the dots
 
 
@@ -42,7 +61,23 @@
     \node at (\dotstartx + \dotshift*5, \dotstarty + 5*\dotshift) {\huge$\cdot$};
 
     % Arrow
-    \draw[<->, thick] (2, -1) -- (4, 1) node[midway, below] {Temporal $t$};
+    \draw[<->, thick] (2.5, -1) -- (4.5, 1) node[midway, below] {Temporal $t$};
+
+
+
+
+
+
+
+    % Draw the rest of the cube
+    \draw[thick] (A) -- (B) -- (C) -- (D) -- cycle;
+    \draw[thick] (E) -- (F) -- (G) -- (H) -- cycle;
+    \draw[thick] (B) -- (F);
+    \draw[thick] (C) -- (G);
+    \draw[thick] (D) -- (H);
+
+    % Draw clip text
+    \node at (0, -2) {Video clip};
 
     
 
