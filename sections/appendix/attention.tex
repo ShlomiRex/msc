@@ -1,9 +1,7 @@
 \subsection{Attention mechanism}
 \label{appendix:attention}
 
-Most of the attention mechanisms were introduced in the Transformer paper \cite{transformer}.
-
-In this section we dive deeper into the attention mechanism and explore the building blocks of transformers and other blocks used in image and video synthesis models.
+Attention mechanisms, introduced in the Transformer paper \cite{transformer}, are pivotal in modern deep learning. This section explores the core components of transformers and their role in image and video synthesis models.
 
 
 
@@ -43,9 +41,9 @@ Finally, the self-attention is defined as:
     \label{eq:self_attention}
 \end{equation}
 
-where $d_k$ is the dimension of the key vector, and dividing by $\sqrt{d_k}$ normalizes the large magnitude of the dot product - which \textbf{stabilizes the gradients and the training}.
+where $d_k$ is the dimension of the key vector, and dividing by $\sqrt{d_k}$ normalizes the large magnitude of the dot product - which stabilizes the gradients and the training.
 
-We then apply softmax function (see appendix \ref{appendix:activations}) to the attention weights, which \textbf{converts the vector to a probability distribution} between 0 and 1, which gives probability to tokens in the sequence. 
+We then apply softmax function (see appendix \ref{appendix:activations}) to the attention weights, which converts the vector to a probability distribution between 0 and 1, which gives probability to tokens in the sequence. 
 
 We then multiply (dot product) the attention weights with the value matrix to get the output. $K$ is transposed to match the dimensions of $Q$ (so we can multiply them).
 
@@ -182,17 +180,15 @@ Notice lines 14, 15, 16 in listing \ref{lst:stable_diffusion_cross_attention}: t
 
 \subsubsection{Axial attention}
 
-Axial attention \cite{axial_attention}, as described in VideoGPT \cite{videogpt}, is a variant of the self-attention block. One of the biggest problem of self-attention is the quadratic complexity: particularly in Image-GPT, where the entire image is self-attended. One of the solutions is the axial attention. Where as in typical self-attention the complexity is $O(n^2)$, in axial attention the complexity is $O(n\sqrt{n})$ (where $n$ is the width/height of the image).
+Axial attention \cite{axial_attention}, used in VideoGPT \cite{videogpt}, addresses the quadratic complexity of self-attention ($O(n^2)$) by attending to one axis at a time, reducing the complexity to $O(n\sqrt{n})$. Instead of processing the full input sequence, it alternately attends to masked rows and columns, saving computations while preserving global spatial context.
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.75\textwidth]{images/appendix/attention/axial.png}
+    \includegraphics[width=0.6\textwidth]{images/appendix/attention/axial.png}
     \caption{Types of axial attention layers which are the building blocks of axial transformer.}
     \label{fig:axial_attention}
 \end{figure}
 
-Axial attention first attends to the masked column and then masked row, instead of the full input sequence (we only focus on one axis at a time instead of all of the pixels). When we roll the 2D image into 1D image, we typically go from top-left to bottom-right, in that order. So the masked row, column intend to save computations. This masking can be seen in figure \ref{fig:axial_attention}. Why the row, column are masked? Because of the order of pixels that are flattened to 1D tensor, we go from top-left to bottom-right and as autoregressive pixel prediction model, the model will be predicting the pixel $p_{i, j}$ and not $p_{i+1, j}$ or $p_{i, j+1}$. It only depends on previous pixels.
+This axial attention masking can be seen in figure \ref{fig:axial_attention}. The order of pixels that are go from top-left to bottom-right and as an autoregressive pixel prediction model, which uses axial attention, will be predicting the pixel $p_{i, j}$ and not $p_{i+1, j}$ or $p_{i, j+1}$, which depends only on previous pixels.
 
-Although axial transformer is not attending to every pixel for every prediction, it still captures spatial global context.
-
-
+Although axial transformer is not attending to every pixel, it still captures spatial global context more efficiently.
