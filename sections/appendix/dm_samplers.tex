@@ -1,7 +1,7 @@
 \subsection{Diffusion models samplers}
 \label{appendix:dm_samplers}
 
-Sampling from diffusion model can take thousands of denoising steps. In this section we will see common samplers used in the literature to sample from diffusion models for faster inference. But first we begin with the forward and reverse diffusion process as described in the DDPM paper \cite{ddpm}.
+Sampling from diffusion model can take thousands of denoising steps. In this section we will see common samplers used in the literature to sample from diffusion models for faster inference. First we need to establish basic mathematical grounds with the forward and reverse diffusion process as described in the DDPM paper \cite{ddpm} in the next two sections.
 
 
 
@@ -18,13 +18,13 @@ In the forward process we can take step-by-step approach (adding noise at each s
 
 where $\alpha \in (0, 1]$ is the scaling factor of the noise scheduler, $\alpha_t$ is the noise added at timestep $t$.
 
-However in the DDPM paper \cite{ddpm} they showed that we can go from $x_0$ (the original image without any noise added) to $x_T$ (pure Gaussian noise) (or to that matter any step $t$) in one step:
+However in the DDPM paper \cite{ddpm} they showed that we can go from $x_0$ (the original image without any noise added) to $x_T$ (pure Gaussian noise) (or to that matter any arbitrary step $t$) in one step:
 
 \[ q(x_t | x_0) := \mathcal{N} \left( x_t; \sqrt{\bar{\alpha}_t} x_0, (1 - \bar{\alpha}_t) I \right) \]
 
 where $\bar{\alpha}_t = \prod_{s=1}^{t} \alpha_s$.
 
-But because its not straightforward to implement, they used the \textbf{reparameterization trick}:
+Because its not straightforward to implement, they used the reparameterization trick:
 
 \begin{equation}
     x_t = \sqrt{\alpha_t} x_0 + \sqrt{1 - \alpha_t} \epsilon
@@ -42,7 +42,7 @@ where $\epsilon \sim \mathcal{N} (0, I)$.
 
 \subsubsection*{Backward process}
 
-The backward process is when we go from noisy image and denoise it to get the original image. The backward process is described as:
+In reverse diffusion process we go from noisy image and denoise it iteratively to get the original denoised image:
 
 \[ p_\theta (x_{0:T}) := p(x_T) \prod_{t=1}^{T} p_\theta (x_{t-1} | x_t) \]
 
@@ -60,16 +60,18 @@ where $p(x_T)$ is the sampled noisy image (Gaussian noise) and we iteratively mu
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.5\textwidth]{images/appendix/dm_samplers/ddpm.png}
+    \includegraphics[width=0.3\textwidth]{images/appendix/dm_samplers/ddpm.png}
     \caption{DDPM sampler. Sampling process from the DDPM paper \cite{ddpm}.}
     \label{fig:appendix_ddpm_sampling}
 \end{figure}
 
-The denoising diffusion probabilistic model (DDPM) sampler is shown in figure \ref{fig:appendix_ddpm_sampling}. At first we sample random Gaussian noise $x_T \sim \mathcal{N} (0, I)$. Then for $T$ iterations we slowly denoise the image:
+The DDPM sampler is shown in figure \ref{fig:appendix_ddpm_sampling}: random Gaussian noise $x_T \sim \mathcal{N} (0, I)$ is first sampled, and then for $T$ iterations we slowly denoise the image:
 
 \[ x_{t-1} = \frac{1}{\sqrt{\alpha_t}} \left( x_t - \frac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha_t}}} \epsilon_\theta (x_t, t) \right) + \sigma_t z \]
 
-where $\epsilon_\theta$ is the denoising neural network (that predicts the noise) with the inputs $(x_t, t)$, and we remove that noise with $\left( x_t - \frac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha_t}}} \right)$. The last element: $\sigma_t z$ is to add variance to the generated samples. For instance, if $z=0$ then every time we generate an image from the same noisy image $x_T$ we get the same result (the same cat for instance). But if we add some variance to it, we get different cats every time we sample from the same noisy image $x_T$. When we reach $t=0$ then we set $z=0$ to get the final denoised image $x_0$ without variance.
+where $\epsilon_\theta$ is the denoising neural network (that predicts the noise, the U-Net) with the inputs $(x_t, t)$. Then the noise is removed from the image: $\left( x_t - \frac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha_t}}} \right)$. 
+
+The last term $\sigma_t z$ is the variance to vary the samples. For instance, if $z=0$ then every time we generate an image from the same noisy image $x_T$ we get the same result (the same cat for instance). When we reach the final step $t=0$ then we set $z=0$ to get the final denoised image $x_0$ without variance.
 
 
 
@@ -79,13 +81,11 @@ where $\epsilon_\theta$ is the denoising neural network (that predicts the noise
 
 \subsubsection{DDIM Sampler}
 
-One problem of denoising an image is that there are multiple paths of the denoising steps to take; in two denoising steps, we can reach the same result but in different ways. For example, the first denoising step removes $x$ amount of noise and the second steps removes $y$ amount of noise, totaling $x+y$ noise removes; but we can also remove $y$ amount of noise at the first step and $x$ amount at the second step.
-
-The denoising diffusion implicit models (DDIM) paper \cite{ddim} suggest non-markovian \textbf{deterministic} approach to fast infer samples from the diffusion model:
+One problem of denoising an image is that there are multiple paths of the denoising steps to take; in two denoising steps, we can reach the same result but in different ways. The denoising diffusion implicit models (DDIM) paper \cite{ddim} suggest non-markovian deterministic approach to fast infer samples from the diffusion model:
 
 \[ q_\sigma (x_{1:T} | x_0) := q_\sigma (x_T | x_0) \prod_{t=2}^{T} q_\sigma (x_{t-1} | x_t, x_0)\]
 
-where $q_\sigma (x_T | x_0)$ is the forward process to noise an image in a single step (equation \ref{eq:appendix_ddpm_reparam_trick}). The term $q_\sigma (x_{t-1} | x_t, x_0)$ describes how to get to noisy image at timestep $t$ from the original image $x_0$ from any marginal distribution in the middle of the diffusion process given $x_t, x_0$ \footnote{Thanks in part to \href{https://www.youtube.com/watch?v=r4V0vLhYZIQ&t=686s}{a youtube guide} for the explanation of DDIM sampling}:
+where $q_\sigma (x_T | x_0)$ is the forward process to noise an image in a single step (equation \ref{eq:appendix_ddpm_reparam_trick}). The term $q_\sigma (x_{t-1} | x_t, x_0)$ describes how to get to noisy image at timestep $t$ from the original image $x_0$ from any marginal distribution in the middle of the diffusion process given $(x_t, x_0)$ \footnote{Thanks in part to \href{https://www.youtube.com/watch?v=r4V0vLhYZIQ&t=686s}{a youtube guide} for the explanation of DDIM sampling}:
 
 \begin{equation}
 q_\sigma (x_{t-1} | x_t, x_0) = \mathcal{N} \left( 
@@ -100,7 +100,7 @@ q_\sigma (x_{t-1} | x_t, x_0) = \mathcal{N} \left(
 
 In other words, we can achieve $x_100$ if we have $x_101, x_0$; we can achieve $x_99$ if we have $x_100, x_0$ and so on.
 
-The underbrace term is the reparameterization trick (equation \ref{eq:appendix_ddpm_reparam_trick}). We can see that this equation is similar, the only difference is the noise term $\epsilon$, instead of sampling noise from normal distribution, its now dependent on $x_0$ and $x_T$ and is \textbf{deterministic} (the term $\textcolor{magenta}{\frac{x_t - \sqrt{\alpha_t} x_0}{\sqrt{1 - \alpha_t}}}$).
+The underbrace term is the reparameterization trick (equation \ref{eq:appendix_ddpm_reparam_trick}). We can see that this equation is similar, the only difference is the noise term $\epsilon$: instead of stochastically sampling noise from normal distribution, its now dependent on $x_0$ and $x_T$ and is deterministic (the term $\textcolor{magenta}{\frac{x_t - \sqrt{\alpha_t} x_0}{\sqrt{1 - \alpha_t}}}$).
 
 Another difference between equations \ref{eq:appendix_ddim_q} and \ref{eq:appendix_ddpm_reparam_trick} is the $\sigma_t^2$ term; the role of this term is to add stochasticity. If we set $\sigma_t^2 = 0$ then we have no variance and we deterministically traverse every intermediate noisy image $x_t$.
 
@@ -116,7 +116,7 @@ But since we don't have $x_0$ at inference time, we estimate it using our neural
 
 \[ f_\theta^{(t)} (x_t) := \left( x_t - \sqrt{1 - \alpha_t} \cdot \epsilon_\theta^{(t)} (x_t) \right) / \sqrt{\alpha_t} \]
 
-So at each timestep $t$ our neural network has estimation of $x_0$; the larger the $t$ the more error we have (since the task of directly denoising from complete noisy image $x_T$ is more challenging than denoising from less noisy image, say $x_10$).
+So at each timestep $t$ our neural network has estimation of $x_0$; the larger the $t$ the more error we have (since the task of directly denoising from complete noisy image $x_T$ is more challenging than denoising from less noisy image, say $x_{10}$).
 
 We calculate the error for $x_t$, $x_{t-1}$, and so on. The noise prediction task becomes more and more easy.
 
@@ -132,7 +132,6 @@ To summarize, the sampling process is described as follows:
     \item The third term: similar to $\sigma_t^2$ in equation \ref{eq:appendix_ddim_q}; it adds stochasticity to the sampling process.
 \end{itemize}
 
-If we begin at timestep $t = 999$, then we predict $x_0$ from $x_999$. Then we add the noise prediction (the second term) to $x_999$ to get to $x_750$ (this is what enables us to skip diffusion steps). The sampling process skips some diffusion steps (in this case 250, but its not fixed and changes according to the noise prediction error). We repeat the process, and instead of having to do 1000 diffusion steps to sample an image, we can do it in 10 steps (for instance).
 
 
 
