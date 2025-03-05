@@ -1,9 +1,9 @@
 \section{Variational Autoencoder}
 \label{sec:vae}
 
-Variational Autoencoder (VAE) \cite{vae} is generative model is used to learn the underlying distribution of data and generate new samples (similar to the dataset). The model consists of 3 main components: an \textbf{encoder}, \textbf{latent space} (sometimes called 'code vectors' or 'bottleneck layer') and a \textbf{decoder}. The main idea behind VAE is to use the autoencoder model \cite{autoencoder} \cite{autoencoder2} (figure \ref{figure:autoencoder_architecture}) to compress large dimensional space (in our case, images) into smaller, lower dimension vectors that represent the underlying hidden features. These code vectors are then fed into a decoder network which reconstructs the image (maps latent vectors to high-dimensional space).
+Variational Autoencoder (VAE) \cite{vae} is a generative model used to learn the underlying distribution of data and generate new samples (similar to the dataset). The model consists of 3 main components: an \textbf{encoder}, \textbf{latent space} (sometimes called 'code vectors' or 'bottleneck layer') and a \textbf{decoder}. The main idea behind VAE is to use the autoencoder model \cite{autoencoder} \cite{autoencoder2} (figure \ref{figure:autoencoder_architecture}) to compress large dimensional space (in our case, images) into smaller, lower dimension vectors that represent the underlying hidden features. These code vectors are then fed into a decoder network which reconstructs the image (maps latent vectors to high-dimensional space).
 
-Compared to the AE, VAEs gives significant control over how we want to model our latent distribution, which in turn gives \textbf{precise control over the output samples}. This kind of control doesn't exists in the usual autoencoder framework.
+Compared to the AE, VAEs gives significant control over how we want to model our latent distribution, which in turn gives \textbf{precise control over the output samples}. This kind of control doesn't exist in the usual autoencoder framework.
 
 \input{figures/autoencoder}
 
@@ -28,9 +28,7 @@ During training, both the encoder and decoder are learned with backpropagation, 
 
 The code vectors learned by AE are \textbf{deterministic mapping} from input to code vectors; e.g. the code vectors of images of cats are scattered throughout the entire latent space, whereas in VAE, they are clustered together. 
 
-The latent space in AEs is irregular and discontinuous which makes \textbf{interpolation in the latent space} difficult. VAE solves this problem: it regularizes the latent space by enforcing a prior distribution. This regularization leads to a smooth and continuous latent space (see figure \ref{fig:ae_vs_vae}), which allows the model to interpolate between the latent space smoothly, thus creating similar new images with different variations. 
-
-In other words, VAE is \textbf{probabilistic model instead of discrete mapper}, like AE.
+The latent space in AEs is irregular and discontinuous which makes \textbf{interpolation in the latent space} difficult. VAE solves this problem: it regularizes the latent space by enforcing a prior distribution. This regularization leads to a smooth and continuous latent space (see figure \ref{fig:ae_vs_vae}), which allows the model to interpolate between the latent space smoothly, thus creating similar new images with different variations. In other words, VAE is \textbf{probabilistic model instead of discrete mapper}, like AE.
 
 \begin{figure}[h]
     \centering

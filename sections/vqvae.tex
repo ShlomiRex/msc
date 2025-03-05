@@ -35,7 +35,7 @@ In the context of VQ-VAE, the continuous latent space $z$ is mapped into discret
 
 After the input passes through the encoder, the embeddings are replaced by the \textbf{closest vector from the codebook} (by minimizing distance between vectors, usually Euclidean distance). 
 
-The input vectors are partitioned into clusters and each cluster is represented by a single codebook vector (see eq. \ref{eq:vq_onehot}).
+The input vectors are partitioned into clusters and each cluster is represented by a single codebook vector (see eq. \ref{eq:vq_onehot}):
 
 \begin{equation}
     \label{eq:vq_onehot}
@@ -45,8 +45,13 @@ The input vectors are partitioned into clusters and each cluster is represented 
     \end{cases}
 \end{equation}
 
-Equation \ref{eq:vq_onehot} shows the one-hot representation of the posterior categorical distribution. One-hot means each vector is categorically 0 or 1. In other words, each embedding is replaced by the single closest codebook vector.
+Let $K$ be the size of the discrete latent space and $D$ the dimensionality of each latent embedding vector $e_i$. There are $K$ embedding vectors: $e_i \in \mathbb{R}^D, i \in 1, 2, ..., K$. The model takes an input $x$ (in the VQ-VAE paper \ref{vqvae} it was images) and is passed through an encoder, producing $z_e(x)$. The discrete latent variables $z$ are then calculated by a nearest neighbor look-up: $\text{argmin}_j \Vert z_e(x) - e_j \Vert_2$ which finds the index $k$ of the embedding vector $e_j$ closest to $z_e(x)$. 
 
+% The input to the decoder is the vector $e_k$ in the following equation:
+
+% \begin{equation}
+%     z_q(x) = e_k,\ \text{where}\ k = \text{argmin}_j \Vert z_e(x) - e_j \Vert_2
+% \end{equation}
 
 
 
@@ -66,7 +71,7 @@ The architecture of VQ-VAE is shown in figure \ref{fig:vqvae_architecture}. The 
 
 The encoder first maps the input $x$ to a continuous latent space $z_e$ using CNN layers. The embeddings $z_e$ are then quantized to the nearest code vector in the codebook, resulting in the quantized embeddings $z_q$. These embeddings are passed to the decoder to reconstruct the image.
 
-The quantization operation is not differentiable, which is why a straight-through estimator (STE) is used (see STE \ref{ste}) to allow backpropagation.
+The quantization operation is not differentiable, that is why a straight-through estimator (STE) is used (see STE \ref{ste}) to allow backpropagation.
 
 
 
@@ -121,11 +126,12 @@ Snapping embeddings to the nearest codebook vectors operation is not differentia
 The STE is a technique used to \textbf{approximate the gradients of a non-differentiable function} by passing the gradients of the function through the function itself (in other words, they skip the quantization operation in the backward pass):
 
 
-\begin{lstlisting}[language=Python, label=lst:vqvae_stop_gradients, caption=Allow gradients to flow through the snapping operation.]
-    # preserve gradients
-    z_q = z + (z_q - z).detach()
-\end{lstlisting}
+% \begin{lstlisting}[language=Python, label=lst:vqvae_stop_gradients, caption=Allow gradients to flow through the snapping operation.]
+%     # preserve gradients
+%     z_q = z + (z_q - z).detach()
+% \end{lstlisting}
 
+In figure \ref{fig:vqvae_architecture} we can see the STE with the red arrow, which copy the gradients from the decoder to the encoder (and skips the quantization process, in the middle).
 
 
 
