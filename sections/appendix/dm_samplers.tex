@@ -58,14 +58,35 @@ where $p(x_T)$ is the sampled noisy image (Gaussian noise) and we iteratively mu
 
 \subsubsection{DDPM / Stochastic Sampler}
 
-\begin{figure}
-    \centering
-    \includegraphics[width=0.3\textwidth]{images/appendix/dm_samplers/ddpm.png}
-    \caption{DDPM sampler. Sampling process from the DDPM paper \cite{ddpm}.}
-    \label{fig:appendix_ddpm_sampling}
-\end{figure}
+% \begin{figure}
+%     \centering
+%     \includegraphics[width=0.3\textwidth]{images/appendix/dm_samplers/ddpm.png}
+%     \caption{DDPM sampler. Sampling process from the DDPM paper \cite{ddpm}.}
+%     \label{fig:appendix_ddpm_sampling}
+% \end{figure}
 
-The DDPM sampler is shown in figure \ref{fig:appendix_ddpm_sampling}: random Gaussian noise $x_T \sim \mathcal{N} (0, I)$ is first sampled, and then for $T$ iterations we slowly denoise the image:
+
+
+
+\begin{algorithm}
+    \caption{DDPM Sampling algorithm from the DDPM paper \cite{ddpm}.}
+    \label{alg:appendix_ddpm_sampling}
+    \begin{algorithmic}[1]
+        \State $\mathbf{x}_T \sim \mathcal{N}(\mathbf{0}, \mathbf{I})$
+        \For{$t = T, \dots, 1$}
+            \State $\mathbf{z} \sim \mathcal{N}(\mathbf{0}, \mathbf{I})$ if $t > 1$, else $\mathbf{z} = \mathbf{0}$
+            \State $\mathbf{x}_{t-1} = \frac{1}{\sqrt{\alpha_t}} \left( \mathbf{x}_t - \frac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}} {\epsilon}_{\theta} (\mathbf{x}_t, t) \right) + \sigma_t \mathbf{z}$
+        \EndFor
+        \State \textbf{return} $\mathbf{x}_0$
+    \end{algorithmic}
+\end{algorithm}
+
+
+
+
+
+
+The DDPM sampling algorithm is shown in algorithm \ref{alg:appendix_ddpm_sampling}: random Gaussian noise $x_T \sim \mathcal{N} (0, I)$ is first sampled, and then for $T$ iterations we slowly denoise the image:
 
 \[ x_{t-1} = \frac{1}{\sqrt{\alpha_t}} \left( x_t - \frac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha_t}}} \epsilon_\theta (x_t, t) \right) + \sigma_t z \]
 

@@ -52,16 +52,52 @@ The loss function aims to:
 
 When we do backpropagation with respect to the generator gradients, the \textbf{first term is constant}.
 
-\begin{figure}
-    \centering
-    \includegraphics[width=0.7\textwidth]{images/gan/gan_training.png}
-    \caption{The training algorithm for GAN using mini-batch stochastic gradient decent \cite{gan}.}
-    \label{fig:gan_training}
-\end{figure}
 
-\textbf{Stabilizing the training}: In order to balance of the training for both $G$ and $D$ the authors suggested using \textbf{iterative approach using mini-batch stochastic gradient decent} (see figure \ref{fig:gan_training}). Instead of fully optimizing $D$ in each iteration, the algorithm alternates between a few steps ($k$ steps) of optimizing the discriminator and one step of optimizing the generator.
 
-In figure \ref{fig:gan_training} the mini-batch size is $m$. We first sample $m$ noise vectors $z_1, ..., z_m$ and we also sample mini-batch $x_1, ..., x_m$ of size $m$ of the training data distribution $p_\text{data} (x)$. We then \textbf{update the discriminator} $D$ using the formula \ref{eq:gan_loss} (we replaced expectation with sum since we are working in discrete finite space of mini-batch of size $m$, which is why we also divide by $1/m$). Similarly, we sample new noise vectors $z_1, ..., z_m$ and \textbf{update the generator} $G$ using stochastic gradient decent, also similar to formula \ref{eq:gan_loss}. The reason we leave out the term $\mathbb{E}_{x \sim p_{\text{data}}(x)}[\log D(x)]$ in the generator SGD, is because when we do gradient calculation in regards to the generator $G$, this term doesn't have $G$ in it so it becomes a constant and we are left with the second term: $\mathbb{E}_{z \sim p_z(z)}[\log(1 - D(G(z)))]$.
+
+
+% \begin{figure}
+%     \centering
+%     \includegraphics[width=0.7\textwidth]{images/gan/gan_training.png}
+%     \caption{The training algorithm for GAN using mini-batch stochastic gradient decent \cite{gan}.}
+%     \label{fig:gan_training}
+% \end{figure}
+
+
+
+\begin{algorithm}
+    \caption{The training algorithm for GAN using mini-batch stochastic gradient decent \cite{gan}. The number of steps to apply to the discriminator, $k$, is a hyperparameter. They used $k = 1$, the least expensive option, in their experiments.} 
+    \label{alg:gan_training}
+    \begin{algorithmic}
+        \State \textbf{for} number of training iterations \textbf{do}
+        \State \quad \textbf{for} $k$ steps \textbf{do}
+        \Statex \qquad $\bullet$ Sample minibatch of $m$ noise samples $\{ \mathbf{z}^{(1)}, \dots, \mathbf{z}^{(m)} \}$ from noise prior $p_g(\mathbf{z})$.
+        \Statex \qquad $\bullet$ Sample minibatch of $m$ examples $\{ \mathbf{x}^{(1)}, \dots, \mathbf{x}^{(m)} \}$ from data generating distribution $p_{\text{data}}(\mathbf{x})$.
+        \Statex \qquad $\bullet$ Update the discriminator by ascending its stochastic gradient:
+        \Statex
+        \[
+        \nabla_{\theta_d} \frac{1}{m} \sum_{i=1}^{m} \left[ \log D \left( \mathbf{x}^{(i)} \right) + \log \left( 1 - D \left( G \left( \mathbf{z}^{(i)} \right) \right) \right) \right] .
+        \]
+        \State \quad \textbf{end for}
+        \Statex \quad $\bullet$ Sample minibatch of $m$ noise samples $\{ \mathbf{z}^{(1)}, \dots, \mathbf{z}^{(m)} \}$ from noise prior $p_g(\mathbf{z})$.
+        \Statex \quad $\bullet$ Update the generator by descending its stochastic gradient:
+        \Statex
+        \[
+        \nabla_{\theta_g} \frac{1}{m} \sum_{i=1}^{m} \log \left( 1 - D \left( G \left( \mathbf{z}^{(i)} \right) \right) \right) .
+        \]
+        \State \textbf{end for}
+    \end{algorithmic}
+\end{algorithm}
+
+
+
+
+
+
+
+\textbf{Stabilizing the training}: In order to balance of the training for both $G$ and $D$ the authors suggested using \textbf{iterative approach using mini-batch stochastic gradient decent} (see algorithm \ref{alg:gan_training}). Instead of fully optimizing $D$ in each iteration, the algorithm alternates between a few steps ($k$ steps) of optimizing the discriminator and one step of optimizing the generator.
+
+In algorithm \ref{alg:gan_training} the mini-batch size is $m$. We first sample $m$ noise vectors $z_1, ..., z_m$ and we also sample mini-batch $x_1, ..., x_m$ of size $m$ of the training data distribution $p_\text{data} (x)$. We then \textbf{update the discriminator} $D$ using the formula \ref{eq:gan_loss} (we replaced expectation with sum since we are working in discrete finite space of mini-batch of size $m$, which is why we also divide by $1/m$). Similarly, we sample new noise vectors $z_1, ..., z_m$ and \textbf{update the generator} $G$ using stochastic gradient decent, also similar to formula \ref{eq:gan_loss}. The reason we leave out the term $\mathbb{E}_{x \sim p_{\text{data}}(x)}[\log D(x)]$ in the generator SGD, is because when we do gradient calculation in regards to the generator $G$, this term doesn't have $G$ in it so it becomes a constant and we are left with the second term: $\mathbb{E}_{z \sim p_z(z)}[\log(1 - D(G(z)))]$.
 
 Why then we do a for-loop for updating the discriminator and only one update for the generator? Because the researchers wanted to balance the min-max game, and updating the discriminator faster than the prevents the generator from dominating early. However, different implementation can be used: its possible to update both $G$ and $D$ at the same rate.
 

@@ -87,7 +87,7 @@ The loss function consists of three terms: the reconstruction loss, the quantiza
     \item The commitment loss encourages the encoder to "commit" to outputting embeddings that are close to the codebook vectors.
 \end{itemize}
 
-However, instead of the MSE loss, the authors used a \textbf{perceptual loss} \cite{perceptual_loss} \footnote[4]{Perceptual loss measures the difference between the high-level features of two images (a generated image and an image from the dataset). Typically, high-level features are extracted by pre-trained CNNs networks.}
+However, instead of the MSE loss, the authors used a \textbf{perceptual loss} \cite{perceptual_loss} \footnote[4]{Perceptual loss measures the difference between the high-level features of two images (a generated image and an image from the dataset). Usually, the high-level features are extracted by pre-trained CNNs networks and then are compared.}
 
 
 
@@ -138,7 +138,7 @@ The second phase of the training involves maximizing the transformer objective. 
 
 \begin{figure}
     \centering
-    \caption{The conditioned input sequence given to the transformer, based on the spatial condition information $c$. The middle rectangle represents a 'begin sequence' token.}
+    \caption{The conditioned input sequence given to the transformer, based on the spatial condition information $c$. The first sequence $r$ are the representation of $c$. The middle rectangle represents a 'begin of sequence' token. And $s$ is the sequence tokens of the input $x$ (the indices $z_q$ in figure \ref{fig:vqgan_architecture}).}
     \begin{tikzpicture}
         \def \rectheight{0.5}
 
@@ -148,6 +148,7 @@ The second phase of the training involves maximizing the transformer objective. 
         
         % Draw the middle rectangle
         \draw (3,0) rectangle (4,\rectheight);
+        \node at (3.5,\rectheight / 2) {\textless bos\textgreater};
         
         % Draw the third rectangle
         \draw (4,0) rectangle (7,\rectheight);
@@ -157,11 +158,16 @@ The second phase of the training involves maximizing the transformer objective. 
 \end{figure}
 
 
-After the two-phase training is finished, the transformer is used to predict a sequence $s$ which is sequence of indices to code vectors. Each token $s_i$ corresponds to an index in the codebook. So a code vector is autoregressively predicted based on the previous tokens $s_{<i}$, which provides the necessary embeddings $z_q$ for image synthesis: 
+After the two-phase training is finished, the transformer is used to predict a sequence $s$ which is sequence of indices to code vectors (each token $s_i$ corresponds to an index in the codebook). In other words, a code vector is autoregressively predicted based on the previous tokens $s_{<i}$, which provides the necessary embeddings $z_q$ for image synthesis: 
 
-\[ p(s) = \prod_{i} p(s_i | s_{<i}) \]
+\begin{equation}
+    p(s) = \prod_{i} p(s_i | s_{<i})
+    \label{eq:vqgan_conditional_generation}
+\end{equation}
 
-To involve conditioning information $c$ such as text, images, depth map, semantic layout or pose, then a new VQ-GAN model is trained on each kind of conditioning modal, and the model obtain a new codebook $Z_c$ (which are the representation $r$ of $c$). Then, this representation is prepended to $s$ (see figure \ref{fig:vqgan_conditional_generation}) which restricts the computation of the negative log-likelihood to entries $p(s_i | s_{<i}, r)$.
+Equation \ref{eq:vqgan_conditional_generation} represents the autoregressive conditional synthesis objective of the transformer.
+
+To involve conditioning information $c$ such as text, images, depth map, semantic layout or pose, a \textbf{new VQ-GAN model} is trained on each kind of conditioning modal\footnote{Conditioning modal refers to specific type of data representation given as the conditioning signal. For instance, it can be images, text, video, etc.}. If the conditioning information $c$ has spatial extent (consists of spatial information like images, semantic masks..), then we learn a new VQ-GAN on this data to obtain index-based representations $r \in \{0,...,|\mathcal{Z}_c| - 1\}^{h_c \times w_c}$ (similar to $s_i \in z_q$ in the first VQ-GAN model) of $c$ with the new codebook $\mathcal{Z}_c$. Then, this representation $r$ is prepended to $s$ (figure \ref{fig:vqgan_conditional_generation}) as an input sequence to the transformer, which restricts the computation of the negative log-likelihood to entries $p(s_i | s_{<i}, r)$.
 
 
 

@@ -9,9 +9,12 @@ Diffusion models are probabilistic generative models that map latent variables t
 A diffusion model consists of:
 
 \begin{itemize}
-    \item An encoder mapping data $x$ through stochastic intermediate latent variables $z_1, ..., z_T$
-    \item A decoder reversing the noising process
+    \item An encoder that maps the data $x$ through stochastic intermediate latent variables $z_1, ..., z_T$.
+    \item And a decoder reversing the noising process
 \end{itemize}
+
+
+
 
 
 
@@ -25,7 +28,7 @@ Denoise Diffusion Probabilistic Models (DDPMs) \cite{ddpm} are a class of diffus
 There are two processes, each process takes multiple ($t$) steps:
 
 \begin{itemize}
-    \item \textbf{Forward diffusion process}: Adds noise to the input image. The addition of noise is the addition of random pixel values to the input image. In forward diffusion, we transform the image $x$ (from the dataset, without noise) to a latent variable $z_0 = x$. Then we add noise to get $z_1$, and so on, until $t$ steps we get $z_t$ - which is pure noise image, distributed from the noise distribution (usually Gaussian). The forward diffusion step is denoted as $\mathbf{q(x_t | x_{t-1})}$.
+    \item \textbf{Forward diffusion process}: Adds noise to the input image\footnote{There are multiple implementations on how to add noise to image. The simplest way is to use random values for each pixel (\texttt{torch.randn\_like()}) by tensor addition, but the most common way is to use Gaussian noise which distributes the noise normally (\texttt{np.random.normal(mean, sigma, ...)}).}. The addition of noise is the addition of random pixel values to the input image. In forward diffusion, we transform the image $x$ (from the dataset, without noise) to a latent variable $z_0 = x$. Then we add noise to get $z_1$, and so on, until $t$ steps we get $z_t$ - which is pure noise image, distributed from the noise distribution (usually Gaussian). The forward diffusion step is denoted as $\mathbf{q(x_t | x_{t-1})}$.
     
     \item \textbf{Reverse diffusion process}: Removes noise from the input noised image. The removal of noise can be thought as adding new features to the image. In reverse diffusion, we transform the image $z_t$ to $z_{t-1}$ by removing noise in a single step. We repeat this process until we get the original image $x = z_0$. The reverse diffusion step is denoted as $\mathbf{p_\theta (x_{t-1} | x_t)}$.
 \end{itemize}
@@ -38,7 +41,7 @@ DDPMs are latent variable models in the form of:
     p_\theta (x_0) = \int p_\theta(x_{0:T}) dx_{1:T} \text{,\ \ where \ \ \ } p_\theta (x_{0:T}) := p_\theta (x_T) \prod_{t=1}^{T} p_\theta (x_{t-1} | x_t)
 \end{equation*}
 
-Because the \textbf{integral is intractable}, we use ELBO. The parameters of the model $\theta$ are learned to fit the data distribution $q(x_0)$ by \textbf{maximizing a variational lower bound}:
+Because this \textbf{integral is intractable}, we use ELBO. The parameters of the model $\theta$ are learned to fit the data distribution $q(x_0)$ by \textbf{maximizing a variational lower bound}:
 
 \begin{equation*}
     \max_{\theta} \mathbb{E}_{q(x_0)} [\log p_\theta (x_0)] \leq \max_\theta \mathbb{E}_{q(x_0, x_1, ..., x_T)} [\log p_\theta (x_{0:T}) - \log q(x_{1:T} | x_0)]
@@ -110,12 +113,16 @@ where $q(x_{1:T} | x_0)$ is the reverse diffusion process over the latent variab
 
 \subsection{Noise Schedulers}
 
+A noise scheduler defines how noise is added to the image at each timestep (for the forward process in DDPMs). Instead of adding noise all at once, a scheduler defines how much noise to add periodically (in steps).
+
+Typically, we control noise schedulers with two parameters: $\alpha_t$ which controls how much noise is added (strength of the noise) at step $t$, and $\beta_t$ which controls the variance  of the noise added at step $t$ (typically referred to as just 'noise schedule' or 'variance').
+
 In the paper \cite{ddpm} the authors used linear scheduler, however OpenAI released a paper \cite{openai_improved_ddpm} that uses cosine scheduler. They have shown that a cosine scheduler performs better than a linear scheduler in terms of image generation quality (see figure \ref{fig:linear_cosine_scheduler}).
 
 \begin{figure}
     \centering
     \includegraphics[width=1\textwidth]{images/diffusion_models/linear_cosine_scheduler.png}
-    \caption{\textit{Top}: Linear scheduler \cite{ddpm}; \textit{Bottom}: cosine scheduler \cite{openai_improved_ddpm}. The linear scheduler adds noise too quickly which degrades the model's performance too quickly, whereas cosine scheduler adds noise more slowly \cite{openai_improved_ddpm}.}
+    \caption{\textit{Top}: Linear scheduler \cite{ddpm}; \textit{Bottom}: cosine scheduler \cite{openai_improved_ddpm}. The linear scheduler adds noise too quickly which degrades the model's performance quickly, whereas cosine scheduler adds noise more slowly \cite{openai_improved_ddpm}.}
     \label{fig:linear_cosine_scheduler}
 \end{figure}
 
@@ -185,7 +192,7 @@ A more formal notation for the \textbf{forward diffusion process} is:
 \subsubsection*{Skipping intermediate steps in forward diffusion}
 
 
-An interesting point the authors made is that in forward diffusion its possible to sample $x_t$ from any arbitrary timestep $t$, given the original image $x_0$ (without calculating all the intermediate steps):
+An interesting point the authors made is that in forward diffusion it is possible to sample $x_t$ from any arbitrary timestep $t$, given the original image $x_0$ (without calculating all the intermediate steps):
 
 \begin{equation}
     \begin{aligned}
@@ -257,7 +264,7 @@ The OpenAI team released a paper titled "Improved denoising diffusion probabilis
 
 \subsection{Loss function}
 
-Diffusion models are in the form of $p_\theta (x_0) := \int p_\theta(x_{0:T}) d\mathbf{x}_{1:T}$ which is intractable. Which is why we use the ELBO loss function to approximate the likelihood of the data.
+Diffusion models are in the form of $p_\theta (x_0) := \int p_\theta(x_{0:T}) d\mathbf{x}_{1:T}$ which is intractable, thus we use the ELBO loss function to approximate the likelihood of the data.
 
 We seek to train the model to predict the noise $\epsilon_i$ added at each timestep. We could start with a simple loss function (\textbf{negative log likelihood}):
 
@@ -330,16 +337,31 @@ where $\epsilon_\theta (x_t, t)$ is the noise predicted by the model, given time
 
 The training of diffusion models is done by sampling a batch of images from the dataset, and then adding noise to the images in the forward diffusion process. The model is trained to remove the noise and reconstruct the original image in the reverse diffusion process. The loss function is the ELBO loss function. Usually, the model is trained using stochastic gradient descent (SGD), but more advanced optimizers like Adam can be used as well.
 
-\begin{figure}
-    \centering
-    \includegraphics[width=0.4\textwidth]{images/diffusion_models/training.png}
+
+
+
+
+\begin{algorithm}
     \caption{The training algorithm of diffusion models \cite{ddpm}.}
-    \label{fig:ddpm_training}
-\end{figure}
+    \label{alg:ddpm_training}
+    \begin{algorithmic}[1] % Enables line numbering
+        \State \textbf{repeat}
+        \State \hspace{5pt} $ \mathbf{x}_0 \sim q(\mathbf{x}_0) $
+        \State \hspace{5pt} $ t \sim \text{Uniform}(\{1, \dots, T\}) $
+        \State \hspace{5pt} $ \epsilon \sim \mathcal{N}(\mathbf{0}, \mathbf{I}) $
+        \State \hspace{5pt} Take gradient descent step on
+        \[
+        \nabla_{\theta} \left\| \epsilon - \epsilon_{\theta} \left( \sqrt{\bar{\alpha}_t} \mathbf{x}_0 + \sqrt{1 - \bar{\alpha}_t} \epsilon, t \right) \right\|^2
+        \]
+        \State \textbf{until} converged
+    \end{algorithmic}
+\end{algorithm}
 
-In figure \ref{fig:ddpm_training} in line 2, we take a sample from the dataset. In line 3, we generate random number between 1 and T uniformly. In line 4, we sample some noise. Line 5: we calculate the gradients of the loss function.
 
-In line 5, we try to optimize the model's parameters $\theta$ by gradient decent. $\epsilon_\theta$ is the predicted noise added at timestep $t$ (a function approximator with 2 parameters that intends to predict $\epsilon$ from $x_t$) where the first parameter is the noisy image at timestep $t$, and the second parameter is the timestep $t$.
+
+
+
+In algorithm \ref{alg:ddpm_training} line 2, we take a sample from the dataset. In line 3, we generate random number between 1 and T uniformly. In line 4, we sample some noise. Line 5: we calculate the gradients of the loss function: we try to optimize the model's parameters $\theta$ by gradient decent. $\epsilon_\theta$ is the predicted noise added at timestep $t$ (a function approximator with 2 parameters that intends to predict $\epsilon$ from $x_t$) where the first parameter is the noisy image at timestep $t$, and the second parameter is the timestep $t$.
 
 
 
