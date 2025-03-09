@@ -150,6 +150,80 @@ In progressive distillation we duplicate a model that we desire to distill, whic
     \label{fig:progressive_distillation_algorithm}
 \end{figure}
 
+
+
+
+
+
+
+\begin{algorithm}
+    \caption{Standard diffusion training algorithm \cite{v_prediction}}
+    \begin{algorithmic}
+        \Require Model $\hat{\mathbf{x}}_{\theta}(\mathbf{z}_t)$ to be trained
+        \Require Data set $\mathcal{D}$
+        \Require Loss weight function $w()$
+        
+        \While{not converged}
+            \State $\mathbf{x} \sim \mathcal{D}$ \Comment{Sample data}
+            \State $t \sim U[0,1]$ \Comment{Sample time}
+            \State $\epsilon \sim \mathcal{N}(0, I)$ \Comment{Sample noise}
+            \State $\mathbf{z}_t = \alpha_t \mathbf{x} + \sigma_t \epsilon$ \Comment{Add noise to data}
+            
+            \State $\tilde{\mathbf{x}} = \mathbf{x}$ \Comment{Clean data is target for $\hat{\mathbf{x}}$}
+            \State $\lambda_t = \log[\alpha_t^2/\sigma_t^2]$ \Comment{log-SNR}
+            \State $L_{\theta} = w(\lambda_t) \|\tilde{\mathbf{x}} - \hat{\mathbf{x}}_{\theta}(\mathbf{z}_t)\|_2^2$ \Comment{Loss}
+            \State $\theta \gets \theta - \gamma \nabla_{\theta} L_{\theta}$ \Comment{Optimization}
+        \EndWhile
+    \end{algorithmic}
+\end{algorithm}
+    
+
+
+
+
+
+
+\begin{algorithm}
+    \caption{Progressive distillation algorithm \cite{v_prediction}}
+    \begin{algorithmic}
+        \Require \colorbox{lime} {Trained teacher model $\hat{\mathbf{x}}_{\eta}(\mathbf{z}_t)$}
+        \Require Data set $\mathcal{D}$
+        \Require Loss weight function $w()$
+        \Require \colorbox{lime}{Student sampling steps $N$}
+        \For{\colorbox{lime}{$K$ iterations}}
+            \State \colorbox{lime}{$\theta \gets \eta$} \Comment{Init student from teacher}
+            \While{not converged}
+                \State $\mathbf{x} \sim \mathcal{D}$
+                \State \colorbox{lime}{$t = i/N, \quad i \sim \text{Cat}[1,2,\dots,N]$}
+                \State $\epsilon \sim \mathcal{N}(0, I)$
+                \State $\mathbf{z}_t = \alpha_t \mathbf{x} + \sigma_t \epsilon$
+                
+                \State \colorbox{lime}{{\textbf{\# 2 steps of DDIM with teacher}}}
+                \State \colorbox{lime}{{$t' = t - 0.5/N, \quad t'' = t - 1/N$}}
+                \State \colorbox{lime}{{$\mathbf{z}_{t'} = \alpha_{t'} \hat{\mathbf{x}}_{\eta}(\mathbf{z}_t) + \frac{\sigma_{t'}}{\sigma_t} (\mathbf{z}_t - \alpha_t \hat{\mathbf{x}}_{\eta}(\mathbf{z}_t))$}}
+                \State \colorbox{lime}{{$\mathbf{z}_{t''} = \alpha_{t''} \hat{\mathbf{x}}_{\eta}(\mathbf{z}_{t'}) + \frac{\sigma_{t''}}{\sigma_{t'}} (\mathbf{z}_{t'} - \alpha_{t'} \hat{\mathbf{x}}_{\eta}(\mathbf{z}_{t'})$)}}
+                \State \colorbox{lime}{{$\tilde{\mathbf{x}} = \frac{\mathbf{z}_{t''} - (\sigma_{t''}/\sigma_t) \mathbf{z}_t}{\alpha_{t''} - (\sigma_{t''}/\sigma_t) \alpha_t}$}} \Comment{Teacher $\hat{\mathbf{x}}$ target}
+                
+                \State $\lambda_t = \log[\alpha_t^2/\sigma_t^2]$
+                \State $L_{\theta} = w(\lambda_t) \|\tilde{\mathbf{x}} - \hat{\mathbf{x}}_{\theta}(\mathbf{z}_t)\|_2^2$
+                \State $\theta \gets \theta - \gamma \nabla_{\theta} L_{\theta}$
+            \EndWhile
+            \State \colorbox{lime}{$\eta \gets \theta$} \Comment{Student becomes next teacher}
+            \State \colorbox{lime}{$N \gets N/2$} \Comment{Halve number of sampling steps}
+        \EndFor
+    \end{algorithmic}
+\end{algorithm}
+    
+
+
+
+
+
+
+
+
+
+
 This process is illustrated in figure \ref{fig:progressive_distillation_algorithm}. The teacher model $\hat{x}_{\eta} (z_t)$ is the diffusion model $\hat{x}_{\theta} (z_t)$ where $z_t$ is the noisy data (we take training data $\mathcal{D}$ and add noise to it). After the student model (with parameters $\eta$) learns to predict $\tilde{x}$ (which is two DDIM steps), is distilled to match the output of the teacher model. Then the teacher model becomes the student and the process is repeated.
 
 \begin{figure}
