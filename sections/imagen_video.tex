@@ -143,21 +143,19 @@ In figure \ref{fig:progressive_distillation} we see the distillation process: in
 
 In progressive distillation we duplicate a model that we desire to distill, which becomes a "student" and "teacher" model (they start with the same weights and biases). The student model learns to produce the output of the teacher model in fewer steps. The teacher model uses two steps of DDIM sampling and the student should learn to output the same teacher's output but in a single sampling step.
 
-\begin{figure}
+% \begin{figure}
+%     \centering
+%     \includegraphics[width=0.7\textwidth]{images/imagen_video/progressive_distillation.png}
+%     \caption{Progressive distillation algorithm \cite{v_prediction}. }
+%     \label{fig:progressive_distillation_algorithm}
+% \end{figure}
+
+
+
+\begin{algorithm}[H]
     \centering
-    \includegraphics[width=0.7\textwidth]{images/imagen_video/progressive_distillation.png}
-    \caption{Progressive distillation algorithm \cite{v_prediction}. }
-    \label{fig:progressive_distillation_algorithm}
-\end{figure}
-
-
-
-
-
-
-
-\begin{algorithm}
     \caption{Standard diffusion training algorithm \cite{v_prediction}}
+    \label{alg:ddpm_training_before_distillation}
     \begin{algorithmic}
         \Require Model $\hat{\mathbf{x}}_{\theta}(\mathbf{z}_t)$ to be trained
         \Require Data set $\mathcal{D}$
@@ -176,15 +174,12 @@ In progressive distillation we duplicate a model that we desire to distill, whic
         \EndWhile
     \end{algorithmic}
 \end{algorithm}
-    
 
 
-
-
-
-
-\begin{algorithm}
+\begin{algorithm}[H]
+    \centering
     \caption{Progressive distillation algorithm \cite{v_prediction}}
+    \label{alg:progressive_distillation_algorithm}
     \begin{algorithmic}
         \Require \colorbox{lime} {Trained teacher model $\hat{\mathbf{x}}_{\eta}(\mathbf{z}_t)$}
         \Require Data set $\mathcal{D}$
@@ -213,7 +208,6 @@ In progressive distillation we duplicate a model that we desire to distill, whic
         \EndFor
     \end{algorithmic}
 \end{algorithm}
-    
 
 
 
@@ -224,7 +218,8 @@ In progressive distillation we duplicate a model that we desire to distill, whic
 
 
 
-This process is illustrated in figure \ref{fig:progressive_distillation_algorithm}. The teacher model $\hat{x}_{\eta} (z_t)$ is the diffusion model $\hat{x}_{\theta} (z_t)$ where $z_t$ is the noisy data (we take training data $\mathcal{D}$ and add noise to it). After the student model (with parameters $\eta$) learns to predict $\tilde{x}$ (which is two DDIM steps), is distilled to match the output of the teacher model. Then the teacher model becomes the student and the process is repeated.
+
+This process is illustrated in algorithms \ref{alg:progressive_distillation_algorithm} and \ref{alg:ddpm_training_before_distillation}. In algorithm \ref{alg:progressive_distillation_algorithm} the marked lines are the only modifications made to the original training algorithm \ref{alg:ddpm_training_before_distillation} of diffusion models. The teacher model $\hat{x}_{\eta} (z_t)$ is the diffusion model $\hat{x}_{\theta} (z_t)$ where $z_t$ is the noisy data (we take training data $\mathcal{D}$ and add noise to it). After the student model (with parameters $\eta$) learns to predict $\tilde{x}$ (which is two DDIM steps), is distilled to match the output of the teacher model. Then the teacher model becomes the student and the process is repeated.
 
 \begin{figure}
     \centering
