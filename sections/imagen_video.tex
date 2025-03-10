@@ -5,6 +5,7 @@
     \centering
     \includegraphics[width=0.7\textwidth]{images/video_synthesis/imagen_video.png}
     \caption{Imagen-Video video samples \cite{imagen_video}.}
+    \label{fig:imagen_video_samples}
 \end{figure}
 
 \begin{figure}
@@ -14,7 +15,7 @@
     \label{fig:imagen_video_pipeline}
 \end{figure}
 
-Imagen-Video by Google \cite{imagen_video} is a T2V cascading diffusion model, based on Imagen (section \ref{sec:imagen}). Imagen-Video has 7 sub-models in a cascading pipeline (figure \ref{fig:imagen_video_pipeline}). It generates high definition $1280\times 768$ videos @ 24 fps, for 5.3 seconds. A big downside compared to Video-LDM is that Imagen-Video works in the pixel-space, whereas Video-LDM works in latent space. In addition, Imagen-Video is a much larger model and uses more compute resources than Video-LDM, however Google is able to achieve good scaling results through training on massive datasets.
+Imagen-Video by Google \cite{imagen_video} is a T2V cascading diffusion model, based on Imagen (section \ref{sec:imagen}). Imagen-Video has 7 sub-models in a cascading pipeline (figure \ref{fig:imagen_video_pipeline}). It generates high definition $1280\times 768$ videos @ 24 fps (see figure \ref{fig:imagen_video_samples} for samples), for 5.3 seconds. A big downside compared to Video-LDM is that Imagen-Video works in the pixel-space, whereas Video-LDM works in latent space. In addition, Imagen-Video is a much larger model and uses more compute resources than Video-LDM, however Google is able to achieve good scaling results through training on massive datasets.
 
 Like Imagen, Imagen-Video uses the same large frozen text-encoder T5-XXL (section \ref{subsec:t5}) in it is pipeline. The benefit of cascading pipeline is the ability to independently train each model, allowing the parallel training of all 7 models.
 
@@ -113,8 +114,14 @@ v-prediction is defined as:
 
 where $\alpha_t$ is the time-dependent coefficient determined by noise scheduler, $\epsilon$ is the noise, $x$ is the data, and $\sigma_t$ is the standard deviation of the noise at timestep $t$.
 
+\begin{figure}
+    \centering
+    \includegraphics[width=0.5\textwidth]{images/imagen_video/e_prediction_vs_v_prediction_2.png}
+    \caption{$\epsilon$-prediction v.s. v-prediction parameterization. v-prediction converges faster \cite{imagen_video}.}
+    \label{fig:imagen_video_epsilon_prediction_vs_v_prediction_2}
+\end{figure}
 
-
+In figure \ref{fig:imagen_video_epsilon_prediction_vs_v_prediction_2} we can see that v-prediction requires less training steps to get lower first frame FID score (they only measured the FID score of the first frame of the generated video) compared to $\epsilon$-prediction, because v-prediction is more stable and converges faster than $\epsilon$-prediction. v-prediction is used in Imagen-Video to predict the change of pixels in time of the diffusion process, which helps the model to generate high-quality videos.
 
 
 
@@ -311,7 +318,7 @@ To summarize, Using the work of \cite{meng2023distillation}, Imagen-Video resear
 
 \subsection{Experiments}
 
-In their experiments, they sampled video clips at $192\times 320$ resolution @ 24 fps for 128 frames (5.3 seconds). They repeat the evaluations over four runs and report the mean and standard error.
+In their experiments (in the Imagen-Video paper \cite{imagen_video}), they sampled video clips at $192\times 320$ resolution @\footnote{In the paper they used the symbol '@' to say 'at'. For instance: "4.2s @ 24 fps" means "4.2 seconds at 24 frames per second".} 24 fps for 128 frames (5.3 seconds). They repeat the evaluations over four runs and report the mean and standard error.
 
 \textbf{Datasets}: The researchers used 14 billion video-text pairs and 60 million image-text pairs from internal and public datasets, such as LAION-400M \cite{laion_400m}.
 
@@ -326,13 +333,7 @@ In their experiments, they sampled video clips at $192\times 320$ resolution @ 2
     \label{fig:imagen_video_scaling}
 \end{figure}
 
-\textbf{Scaling}: In figure \ref{fig:imagen_video_scaling} we can see interesting result which contradicts the findings of Imagen \cite{imagen} paper. They found that increasing the U-Net size doesn't scale the sample quality as much as increasing the text encoder size. They conclude that video modeling task for which the performance is not yet saturated at current model sizes\footnote{This finding could hint that transformers, which benefit from scaling on large datasets, could provide the necessary scaling capabilities that video modeling task demands.}.
-
-\begin{figure}
-    \centering
-    \includegraphics[width=0.5\textwidth]{images/imagen_video/e_prediction_vs_v_prediction_2.png}
-    \caption{$\epsilon$-prediction v.s. v-prediction parameterization. v-prediction converges faster \cite{imagen_video}.}
-\end{figure}
+\textbf{Scaling}: In figure \ref{fig:imagen_video_scaling} we can see an interesting result which contradicts the findings of Imagen \cite{imagen} paper. They found that increasing the U-Net size doesn't scale the sample quality as much as increasing the text encoder size. They conclude that video modeling task for which the performance is not yet saturated at current model sizes\footnote{This finding could hint that transformers, which benefit from scaling on large datasets, could provide the necessary scaling capabilities that video modeling task demands.}.
 
 \begin{figure}
     \centering
@@ -341,5 +342,5 @@ In their experiments, they sampled video clips at $192\times 320$ resolution @ 2
     \label{fig:imagen_video_experiments_table}
 \end{figure}
 
-\textbf{Quality vs. Sampling time in a distilled model}: In figure \ref{fig:imagen_video_experiments_table} we can see that distillation provides a good trade-off between sampling time and quality. Distilled model is 18x times faster in sampling, without significant degradation in perceptual quality. IIn addition, the distilled model is also 36x more efficient in terms of compute cost in FLOPs metric. 
+\textbf{Quality vs. Sampling time in a distilled model}: In figure \ref{fig:imagen_video_experiments_table} we can see that distillation provides a good trade-off between sampling time and quality. Distilled model is 18 times faster in sampling, without significant degradation in perceptual quality. In addition, the distilled model is also 36 times more efficient in terms of compute cost in FLOPs metric. 
 

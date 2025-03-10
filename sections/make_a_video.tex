@@ -33,9 +33,9 @@ The model has 3 main stages:
 In figure \ref{fig:make_a_video_overview}:
 
 \begin{itemize}
-    \item The T2I model doesn't have "fps" input, the decoder generates only a single frame, there is are interpolation networks, there are two spatial SR networks and no spatio-temporal SR network.
+    \item The T2I model doesn't have "fps" input, the decoder generates only a single frame, there are interpolation networks, there are two spatial SR networks and no spatio-temporal SR network.
     \item The T2V input is a text prompt $x$ and "fps" (frames per second).
-    \item $\hat{x}$ is the BPE encoded text.
+    \item It's not shown in the figure (omitted), but the input text $x$ is converted to \textbf{BPE encoding} $\hat{x}$ and given as an input to the prior $\textcolor{Maroon}{P}$ network (explained below). However, it's used in equation \ref{eq:make_a_video_inference}.
     \item The \textbf{CLIP text encoder} $C_x$ (not shown in the figure) is used to translate the text prompt $x$ into text embeddings $x_e$, which are fed to the prior network $\textcolor{Maroon}{P}$.
     \item The \textbf{image embedding prior} $\textcolor{Maroon}{P}$ translates these text embeddings $x_e$ into image embeddings $y_e$.
     \item The \textbf{spatio-temporal decoder $\textcolor{blue}{D^t}$} generates 16 $64\times 64$ frames, conditioned on these image embeddings $y_e$.

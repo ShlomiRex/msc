@@ -25,7 +25,7 @@ Video synthesis can be based on four main methods:
 \begin{enumerate}
     \item \textbf{Diffusion}: diffusion models for video generation extend the iterative refinement process used in image-based diffusion models, such as LDMs, to handle temporal dynamics required for videos. The key idea is to generate not just a sequence of independent images, but a continuous video where both the spatial content of each frame and the temporal coherence between frames are learned and generated simultaneously.
     \item \textbf{Spatial autoregressive}: spatial autoregressive models for video generation, as described in \cite{graves2013generating}, synthesize video by sequentially generating content in a patch-based fashion, where each patch in a frame is conditioned on previously generated patches. This method builds video frame-by-frame, ensuring spatial and temporal coherence.
-    \item \textbf{GAN}: similar to diffusion models, GANs can also be leveraged for video synthesis. However, it is used seldom because of unstable training, partly due to the adversarial loss objective.
+    \item \textbf{GAN}: similar to diffusion models, GANs can also be leveraged for video synthesis. However, it's used seldom because of unstable training, partly due to the adversarial loss objective.
     \item \textbf{Mask modeling}: mask modeling in video generation uses the technique of selectively masking parts of video frames. The model is tasked with predicting and reconstructing the missing parts, forcing it to better understand the underlying structure and motion in the video.
 \end{enumerate}
 
@@ -124,7 +124,7 @@ Spatial autoregressive models are adept at processing tokenized sequence inputs 
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.7\textwidth]{images/video_synthesis/eval_metrics.png}
+    \includegraphics[width=1\textwidth]{images/video_synthesis/eval_metrics.png}
     \caption{Evaluation metrics in video generation \cite{long_video_survey}.}
     \label{fig:video_synthesis_eval_metrics}
 \end{figure}
@@ -134,6 +134,8 @@ A common metric used for video generation models is the \textbf{Frechet Video Di
 \begin{equation*}
     \text{FVD} = \left| \left| \mu_{\text{real}} - \mu_{\text{fake}} \right| \right|^2_2 + \text{Tr} \left( \Sigma_{\text{real}} + \Sigma_{\text{fake}} - 2 \left( \Sigma_{\text{real}} \Sigma_{\text{fake}} \right)^{1/2} \right)
 \end{equation*}
+
+where $\mu_{\text{real}}$, $\mu_{\text{fake}}$ is the mean of the real and fake data, $\Sigma_{\text{real}}$, $\Sigma_{\text{fake}}$ is the covariance matrix of the real and fake data, $\text{Tr}$ function is the trace of the matrix, and $\left| \left| \cdot \right| \right|^2_2$ is the squared Euclidean norm.
 
 The lower the FVD score, the better the video generation model. A more comprehensive list of evaluation metrics is shown in figure \ref{fig:video_synthesis_eval_metrics}.
 
