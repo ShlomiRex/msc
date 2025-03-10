@@ -113,11 +113,11 @@ More formally, in CFG, sampling is performed weighting the conditional and uncon
 
 where $\epsilon_\theta$ is the noise prediction with the learned parameters $\theta$, $w$ is the guidance weight, $c$ is the condition, and $z_t$ is the latent variable at timestep $t$.
 
-Imagen depends on CFG for effective text conditioning. They found that increasing the guidance weight improves image-text alignment but reduces image fidelity. It is caused by \textbf{train-test mismatch}: looking at equation \ref{eq:classifier_free_guidance} if we set $w$ to 1, then we disable CFG, and then the model won't be trained on unconditional samples (only on conditional signals). This causes the model to generate outputs that exceed the noise prediction in the normalized range of [-1, 1]. And when iteratively applying the model to it is own outputs at each step, errors caused by this mismatch accumulate, which causes unnatural artifacts in output images. When we set $w>1$ then it improves the model's image-text alignment, but damages image fidelity.
+Imagen depends on CFG for effective text conditioning. They found that increasing the guidance weight improves image-text alignment but reduces image fidelity. It is caused by \textbf{train-test mismatch}: looking at equation \ref{eq:classifier_free_guidance} if we set $w$ to 1, then we disable CFG, and then the model won't be trained on unconditional samples (only on conditional signals). This causes the model to generate outputs that exceed the noise prediction in the normalized range of [-1, 1]. And when iteratively applying the model to its own outputs at each step, errors caused by this mismatch accumulate, which causes unnatural artifacts in output images. When we set $w>1$ then it improves the model's image-text alignment, but damages image fidelity.
 
 For this reason they investigated static thresholding and dynamic thresholding:
 
-\textbf{Static thresholding} applies the clipping operation to force the $x$-prediction output to fit to the normalized range of [-1, 1]. However, static thresholding still result in over-saturated and less detailed images as the guidance weight approaches 1.
+\textbf{Static thresholding} applies the clipping operation to force the $x$-prediction output to fit to the normalized range of [-1, 1]. However, static thresholding still results in over-saturated and less detailed images as the guidance weight approaches 1.
 
 \textbf{Dynamic thresholding}: instead of clipping the $x$-prediction to the normalized range, it sets a dynamic threshold $s$ based on the distribution of absolute pixel values in the current $x$-prediction, allowing the threshold to adapt to the specific output of the model at that moment. In other words, if the pixel values are saturated (close to the [-1, 1] range), dynamic thresholding pushes them inwards by thresholding in the range [-$s$, $s$] and then dividing by $s$.
 
@@ -135,7 +135,7 @@ For this reason they investigated static thresholding and dynamic thresholding:
     \label{fig:imagen_static_vs_dynamic_thresholding}
 \end{figure}
 
-The implementation of static and dynamic thresholding is shown in figure \ref{fig:imagen_dynamic_thresholding}. The impact of dynamic thresholding is shown in figure \ref{fig:imagen_static_vs_dynamic_thresholding} where it is shown that dynamic thresholding produces samples with higher image-text alignment (CLIP) and fidelity (FID) compared to static thresholding.
+The implementation of static and dynamic thresholding is shown in figure \ref{fig:imagen_dynamic_thresholding}. The impact of dynamic thresholding is shown in figure \ref{fig:imagen_static_vs_dynamic_thresholding} where it's shown that dynamic thresholding produces samples with higher image-text alignment (CLIP) and fidelity (FID) compared to static thresholding.
 
 
 
@@ -202,7 +202,7 @@ SR3 achieves close to a 50\% fool rate (47\%) \footnote{A 50\% fool rate means h
 
 Cascaded diffusion models, introduced in a 2022 paper \cite{cascaded_diffusion_models} by Google Research, builds upon the SR3 paper \cite{sr3} and introduces a new method for super-resolution (SR) called Cascaded Diffusion Models (CDMs). CDMs use a base diffusion model that output image at low resolution, followed by a sequence (pipeline) of SR3 SR diffusion models that progressively upsamples until we reach the target resolution.
 
-The CDM paper \cite{cascaded_diffusion_models} outperformed VQ-VAE 2 \cite{vqvae2} and BigGAN-deep \cite{biggan_deep} in SR task in FID metric on ImageNet dataset.
+In the CDM paper \cite{cascaded_diffusion_models}, the model outperformed VQ-VAE 2 \cite{vqvae2} and BigGAN-deep \cite{biggan_deep} in SR task in FID metric on ImageNet dataset.
 
 A big strength of CDMs is the ability to train and fine tune each model individually.
 
@@ -243,7 +243,7 @@ In figure \ref{fig:imagen_cdm_architecture} we see CDM upsamples the low-resolut
 
 An overview of Imagen architecture is shown in figure \ref{fig:imagen_architecture}.
 
-The researchers conducted experiments with frozen LLMs such as BERT \cite{bert}, T5 \cite{t5_model}, and CLIP \cite{openai_clip} and found that humans prefer T5-XXL over CLIP. T5-XXL (T5-Extra Extra Large) text encoder maps text prompts to embeddings. The T5-XXL model has 11 billion parameters, and it is the largest version of the T5 model. All the diffusion models are conditioned on the same text embeddings.
+The researchers conducted experiments with frozen LLMs such as BERT \cite{bert}, T5 \cite{t5_model}, and CLIP \cite{openai_clip} and found that humans prefer T5-XXL over CLIP. T5-XXL (T5-Extra Extra Large) text encoder maps text prompts to embeddings. The T5-XXL model has 11 billion parameters, and it's the largest version of the T5 model. All the diffusion models are conditioned on the same text embeddings.
 
 \textbf{Base model}: the base model is a $64\times 64$ T2I diffusion model. The network is conditioned on text embeddings (via cross-attention and layer normalization layers), as well as with diffusion timestep embeddings, similar to the class embedding conditioning in the CDM paper \cite{cascaded_diffusion_models}.
 
@@ -299,10 +299,11 @@ Similar to LDMs, Imagen also uses CFG \cite{classifier_free_guidance} (section \
     \label{fig:imagen_resnetblock}
 \end{figure}
 
-In figure \ref{fig:imagen_resnetblock} we can see the \texttt{ResNetBlock} which is in use by both the \texttt{DBlock} and the \texttt{UBlock}. The only input of the \texttt{ResNetBlock} is the number of channels. The activation function is Swish (equation \ref{eq:appendix_activations_swish}). 
+In figure \ref{fig:imagen_resnetblock} we can see the \texttt{ResNetBlock} which is in use by both the \texttt{DBlock} and the \texttt{UBlock}. The only input of the \texttt{ResNetBlock} is the number of channels. The activation function is Swish (equation \ref{eq:appendix_activations_swish}).
 
-\begin{figure*}
+\begin{figure}
     \centering
+    \caption{Efficient \texttt{UBlock} and \texttt{DBlock} architectures proposed in Imagen paper \cite{imagen}.}
     \begin{subfigure}[b]{0.5\textwidth}   
         \centering 
         \includegraphics[width=\textwidth]{images/appendix/imagen/dblock.png}
@@ -316,8 +317,10 @@ In figure \ref{fig:imagen_resnetblock} we can see the \texttt{ResNetBlock} which
         \caption[]%
         {{\small Imagen efficient U-Net \texttt{UBlock} architecture \cite{imagen}.}}
     \end{subfigure}
-\end{figure*}
+    \label{fig:imagen_dblock_ublock}
+\end{figure}
 
+And in figure \ref{fig:imagen_dblock_ublock} we see the architecture of \texttt{UBlock} and \texttt{DBlock}.
 
 
 
@@ -364,13 +367,14 @@ DrawBench has 11 categories of prompts which test different capabilities of mode
 
 \begin{figure}[t!]
     \centering
-    \begin{subfigure}{0.4\textwidth}
+    \begin{subfigure}{0.48\textwidth}
         \centering
         \includegraphics[width=0.6\linewidth]{images/imagen/imagen_coco_zeroshot.png}
         \caption{Although Imagen was not explicitly trained on MS-COCO dataset, it outperforms all other models on COCO FID score, achieving 7.27 FID.}
         \label{fig:imagen_coco_zeroshot}
     \end{subfigure}
-    \begin{subfigure}{0.4\textwidth}
+    \hfill
+    \begin{subfigure}{0.48\textwidth}
         \centering
         \includegraphics[width=0.6\linewidth]{images/imagen/imagen_coco_human_eval.png}
         \caption{Human evaluation on 256x256 COCO. Imagen splits to two categories: no filters, and human filters. Imagen struggles a little with photorealistic people.}

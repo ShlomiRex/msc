@@ -1,12 +1,12 @@
 \section{Video Synthesis}
 \label{sec:video_synthesis}
 
-\begin{figure}
-    \centering
-    \includegraphics[width=0.7\textwidth]{images/video_synthesis/techniques.png}
-    \caption{Overview of video synthesis techniques \cite{long_video_survey}.}
-    \label{fig:video_synthesis_techniques}
-\end{figure}
+% \begin{figure}
+%     \centering
+%     \includegraphics[width=0.7\textwidth]{images/video_synthesis/techniques.png}
+%     \caption{Overview of video synthesis techniques \cite{long_video_survey}.}
+%     \label{fig:video_synthesis_techniques}
+% \end{figure}
 
 Video synthesis is a complex task. One can think of video generation as a sequence of image generation tasks. Formally, a video is a sequence of images (or frames) that are shown in fast fashion, usually 24 frames per second (at the minimum, to get smooth video). Therefor to create a smooth video of 5 seconds, you'll need 120 frames or images at the minimum. Video data is complex; we have the addition of the \textbf{time dimension}, which is not present in image generation tasks. The video should be \textbf{coherent} in time, meaning that the frames should be related to each other and should follow a logical sequence. Objects should not appear out of nowhere, there should be \textbf{smooth transition of motion} and correct \textbf{spatial relationships} between objects. We also have to deal with limited hardware resources, since video generation is extremely computationally expensive.
 
@@ -43,8 +43,10 @@ In the realm of video synthesis there are two paradigms: \textbf{divide and conq
     \centering
     \includegraphics[width=0.6\textwidth]{images/video_synthesis/generation_technologies.png}
     \caption{Overview of video generation technologies \cite{zhou2024survey}.}
+    \label{fig:video_synthesis_generation_technologies}
 \end{figure}
 
+In figure \ref{fig:video_synthesis_generation_technologies} we can see different video generation techniques, some we already covered: GAN, VAE, diffusion and autoregressive. The autoregressive model we did not yet covered; it is covered in the next sections.
 
 
 
@@ -150,13 +152,19 @@ In the Diffusion Transformer (DiT) paper \cite{diffusion_transformer} the resear
     \centering
     \includegraphics[width=0.7\textwidth]{images/video_synthesis/previous_works.png}
     \caption{Video generation models \& papers \cite{zhou2024survey}.}
+    \label{fig:video_synthesis_previous_works}
 \end{figure}
+
+In figure \ref{fig:video_synthesis_previous_works} we can see different models, divided into four main categories (VAE, GAN, diffusion, autoregressive) for the task of video synthesis. Different models have different input methods (video, text, audio, motion, etc.).
 
 \begin{figure}
     \centering
     \includegraphics[width=0.9\textwidth]{images/video_synthesis/timeline.png}
     \caption{Text-to-Video generators evolutionary timeline, based on foundational algorithms \cite{sun2024sora}.}
+    \label{fig:video_synthesis_timeline}
 \end{figure}
+
+In figure \ref{fig:video_synthesis_timeline} we can see the timeline of different text-to-video models, their paper origin (Meta, Microsoft, Google, OpenAI, and even some universities) based on foundational algorithms (GAN/VAE, Autoregressive, Diffusion and Diffusion Transformer). We can also see the key models/algorithms, such as transformers, DDPM, DiT, and more.
 
 \textbf{NUWA-Infinity } \cite{nuwa_infinity}, introduced by Microsoft AI in 2022, is a T2V model capable of generating videos of arbitrary resolution and length. It ensures spatial and temporal consistency through an innovative \textbf{autoregressive over autoregressive} generation mechanism. This mechanism combines two levels of autoregressive modeling: a global patch-level model that captures dependencies between patches and a local token-level model that addresses dependencies within visual tokens of each patch.
 
@@ -197,10 +205,13 @@ Modern approaches leverage 3D convolution networks (3D ConvNets) and temporal at
 
 Figure \ref{fig:c3d_feature_maps} shows the feature maps of the first 3D convolution layer of the C3D model \cite{tran2015learning}.
 
+And in figure \ref{fig:video_synthesis_3d_conv} we can see how 3D convolution evolved from 1D and 2D convolution. The output of 2D convolution flat (2D), compared to 3D convolution where we also have volume, which is used as the frames dimension in video synthesis models.
+
 \begin{figure}
     \centering
     \includegraphics[width=0.7\textwidth]{images/video_synthesis/conv.png}
     \caption{2D and 3D convolution operations. (a) Applying 2D convolution on image results in an image. (b) Applying 2D convolution on video (multiple frames) also results in an image. (c) Applying 3D convolution on video results in another volume (channel), preserving temporal information \cite{tran2015learning}.}
+    \label{fig:video_synthesis_3d_conv}
 \end{figure}
 
 \begin{figure}
