@@ -47,7 +47,7 @@ In figure \ref{fig:unet_architecture} the U-Net is shaped like a 'U' in which th
 \subsection{Sinusoidal embeddings}
 \label{subsec:sinusoidal_embeddings}
 
-The diffusion process uses \textbf{timestep embeddings} which is a scalar representing the current diffusion timestep: $t \in [0, T]$. This way the model knows if its in the beginning of the diffusion or at the late stage, which is essential for removing noise. 
+The diffusion process uses \textbf{timestep embeddings} which is the embeddings representing the current diffusion timestep: $t \in [0, T]$. Instead of directly using timestep scalar, we first convert it to embeddings. This way the model knows if it is in the beginning of the diffusion or at the later stages, which is essential for removing noise (because noise schedulers depend on the current timestep).
 
 To get the embeddings, the timestep is first projected into a \textbf{sinusoidal embedding}, similar to the way positional encodings are used in transformers.
 
@@ -107,7 +107,7 @@ The high-level architecture is shown in figure \ref{fig:stable_diffusion_archite
         \item Encoder $\varepsilon$ which converts the input images $x$ to latent space $z$.
         \item Decoder $\mathcal{D}$ which converts the latent vector $z$ back to the pixel space $\tilde{x}$.
     \end{itemize}
-    \item A U-Net backbone which which serves as the noise prediction network, predicts the noise needed to denoise the intermediate latent vectors $z_T, ..., z_1$ in each step. It incorporates timestep embeddings as an essential input.
+    \item A U-Net backbone which serves as the noise prediction network, predicts the noise needed to denoise the intermediate latent vectors $z_T, ..., z_1$ in each step. It incorporates timestep embeddings as an essential input.
     \item A domain specific encoder $\tau_\theta$ which encodes the conditional information (text prompts, images, segmentation masks) into tokens which will be used in the cross-attention layers, or concatenated with the latent vector (the switch mechanism).
 \end{itemize}
 
@@ -143,15 +143,17 @@ We dive deeper into self-attention, multi-head attention and cross-attention in 
 
 \label{subsec:classifier_free_diffusion_guidance}
 
-Classifier-free guidance (CFG) (see section \ref{subsec:classifier_free_diffusion_guidance}) is used in Stable Diffusion to control the influence of the conditioning signal and balance between being faithful to the conditioning signal or being diverse in the generated samples.
+Classifier-free guidance (CFG) is used in Stable Diffusion to control the influence of the conditioning signal and balance between being faithful to the conditioning signal or being diverse in the generated samples.
 
 So far we have focused on modeling just the data distribution $p(x)$. However, we are often also interested in learning conditional distribution $p(x|y)$, which would enable us to explicitly control the data we generate through conditioning signal $y$.
 
-We can add conditioning information alongside the timestep information, at each iteration:
+We can add conditioning information alongside the timestep information, at each iteration (appendix B equation 8 of \cite{ddpm}, appendix H equation 31 of \cite{openai_diffusion_beats_gans}):
 
 \[
 p(x_{0:T}) = p(x_T) \prod_{t=1}^{T} p_\theta (x_{t-1} | x_{t, y})
 \]
+
+where $p$ is the reverse diffusion process that removes noise in image $x_t$ in steps $t = T, T-1, ..., 0$, $y$ is the conditioning information
 
 When training a diffusion model to generate images based on specific conditional information, there's a risk that the model might not fully consider or even ignore these conditions, using this vanilla formulation. To address this, a technique called "guidance" is used. Guidance allows us to explicitly control \textbf{how much influence the conditions have on the generated images}, but this can sometimes lead to less variety in the results. In other words, we use weight to control how much the model should pay attention to the conditioning signal.
 
@@ -293,11 +295,10 @@ Key points \& main contributions of the DDIM paper:
 DDIM introduces a generalized forward process:
 
 \[
-q_\sigma (x_{t-1} | x_t, x_0) = \mathcal{N} \left( \sqrt{\alpha_{t-1}} x_0 + \sqrt{1 - \alpha_{t-1} - \sigma_t^2} \cdot \frac{x_t - \sqrt{\alpha_t} x_0}{\sqrt{1 - \alpha_t}}, \sigma_t^2 I \right),
+q_\sigma (x_{t-1} | x_t, x_0) = \mathcal{N} \left( \sqrt{\alpha_{t-1}} x_0 + \sqrt{1 - \alpha_{t-1} - \sigma_t^2} \cdot \frac{x_t - \sqrt{\alpha_t} x_0}{\sqrt{1 - \alpha_t}}, \sigma_t^2 I \right)
 \]
 
-where $\sigma \in \mathbb{R}^T_{\geq 0}$ controls the stochasticity of the forward process:
-- For $\sigma \rightarrow 0$, the process becomes fully deterministic, as $x_{t-1}$ is uniquely determined by $x_t$ and $x_0$.
+where $\sigma \in \mathbb{R}^T_{\geq 0}$ controls the stochasticity of the forward process. When $\sigma \rightarrow 0$, the process becomes fully deterministic, as $x_{t-1}$ is uniquely determined by $x_t$ and $x_0$.
 
 \begin{figure}
     \centering
@@ -355,7 +356,7 @@ This loss function is similar to the loss function of DDPM (equation \ref{eq:ddp
 
 \subsection{Implementation of $\tau_\theta$ transformer for conditional LDMs}
 
-The researchers provded high level overview of the implementation of the conditional encoder for text $\tau_\theta$, consisted of $N$ transformer blocks:
+The researchers provded high level overview of the implementation of the conditional encoder for text $\tau_\theta$, consisted of $N$ transformer blocks (appendix E.2 of \cite{stable_diffusion}):
 
 \begin{align*}
     &\zeta \leftarrow \text{TokEmb}(y) + \text{PosEmb}(y) \\
