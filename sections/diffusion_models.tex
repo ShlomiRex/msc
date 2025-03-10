@@ -54,8 +54,10 @@ where $q(x_{1:T} | x_0)$ is the reverse diffusion process over the latent variab
     \centering
     \includegraphics[width=1\textwidth]{images/diffusion_models/ddpm_denoise.png}
     \caption{Progressive generation (left to right) of unconditional CIFAR10 dataset in DDPM \cite{ddpm}.}
+    \label{fig:ddpm_progressive_generation}
 \end{figure}
 
+In figure \ref{fig:ddpm_progressive_generation} we see the progressive denoising of the noised image (on the left) in steps, until we generate an image (on the right). This is the reverse diffusion process.
 
 \begin{figure}
     \centering
@@ -64,6 +66,7 @@ where $q(x_{1:T} | x_0)$ is the reverse diffusion process over the latent variab
     \label{fig:ddpm_process}
 \end{figure}
 
+In figure \ref{fig:ddpm_process} we see the forward and reverse diffusion process in DDPMs. The forward diffusion process $q$ adds noise to the image, and the reverse diffusion process $p$ removes noise from the image. The next step in the diffusion process depends conditionally on the previous steps, hence the conditional probability.
 
 
 
@@ -104,7 +107,10 @@ where $q(x_{1:T} | x_0)$ is the reverse diffusion process over the latent variab
         \includegraphics[width=\textwidth]{images/diffusion_models/noise_to_image_gif/7.png}
     \end{minipage}
     \caption{Progressive denoising of latents in DDPM. Images taken from the \href{https://scholar.harvard.edu/binxuw/classes/machine-learning-scratch/materials/stable-diffusion-scratch}{harvard university} website.}
+    \label{fig:ddpm_progressive_denoising}
 \end{figure}
+
+And finally in figure \ref{fig:ddpm_progressive_denoising} we see the progressive denoising of latents in DDPMs. We see at the beginning seemingly random noised image, however it is not completely random. It has some patterns to it, indicating this latent (image) is conditioned on something before creating it. As we progress through the steps, we see the image getting clearer and clearer, until we get the generated image.
 
 
 
