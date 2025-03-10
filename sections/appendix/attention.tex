@@ -84,9 +84,9 @@ def forward(self, X):
 
 \subsubsection{Multi-head attention}
 
-Multi-head attention is a concatenation of multiple self-attention heads, each with its own set of weights $W_i^Q$, $W_i^K$, $W_i^V$. Each attention head can learn different relationships between the same elements in the same sequence. After concatenation we apply dot product with the output weights matrix $W^O$:
+Multi-head attention is a concatenation of multiple self-attention heads, each with its own set of weights $W_i^Q$, $W_i^K$, $W_i^V$. Each attention head can learn different relationships between the same elements in the same sequence. After concatenation, we apply dot product with the output weights matrix $W^O$:
 
-The input matrices (Q,K,V) derive from the \textbf{same input sequence}. In comparison, in cross-attention, we relate two different sequences. Cross-attention is particularly useful in tasks that requires alignment between different sequences, like in translation tasks, whereas in self-attention and multi-head attention we are looking for relationships within the same sequence, like in sentiment analysis.
+The input matrices (Q, K, V) derive from the \textbf{same input sequence}. In comparison, in cross-attention, we relate two different sequences. Cross-attention is particularly useful in tasks that requires alignment between different sequences, like in translation tasks, whereas in self-attention and multi-head attention we are looking for relationships within the same sequence, like in sentiment analysis.
 
 Multi-head attention is defined as concatenation of different attention heads:
 
@@ -189,6 +189,6 @@ Axial attention \cite{axial_attention}, used in VideoGPT \cite{videogpt}, addres
     \label{fig:axial_attention}
 \end{figure}
 
-This axial attention masking can be seen in figure \ref{fig:axial_attention}. The order of pixels that are go from top-left to bottom-right and as an autoregressive pixel prediction model, which uses axial attention, will be predicting the pixel $p_{i, j}$ and not $p_{i+1, j}$ or $p_{i, j+1}$, which depends only on previous pixels.
+This axial attention masking can be seen in figure \ref{fig:axial_attention}. The order of pixels that are from top-left to bottom-right and as an autoregressive pixel prediction model, which uses axial attention, will be predicting the pixel $p_{i, j}$ and not $p_{i+1, j}$ or $p_{i, j+1}$, which depends only on previous pixels.
 
 Although axial transformer is not attending to every pixel, it still captures spatial global context more efficiently.

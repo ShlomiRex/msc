@@ -18,13 +18,13 @@ In the forward process we can take step-by-step approach (adding noise at each s
 
 where $\alpha \in (0, 1]$ is the scaling factor of the noise scheduler, $\alpha_t$ is the noise added at timestep $t$.
 
-However in the DDPM paper \cite{ddpm} they showed that we can go from $x_0$ (the original image without any noise added) to $x_T$ (pure Gaussian noise) (or to that matter any arbitrary step $t$) in one step:
+However, in the DDPM paper \cite{ddpm} they showed that we can go from $x_0$ (the original image without any noise added) to $x_T$ (pure Gaussian noise) (or to that matter any arbitrary step $t$) in one step:
 
 \[ q(x_t | x_0) := \mathcal{N} \left( x_t; \sqrt{\bar{\alpha}_t} x_0, (1 - \bar{\alpha}_t) I \right) \]
 
 where $\bar{\alpha}_t = \prod_{s=1}^{t} \alpha_s$.
 
-Because its not straightforward to implement, they used the reparameterization trick:
+Because it is not straightforward to implement, they used the reparameterization trick:
 
 \begin{equation}
     x_t = \sqrt{\alpha_t} x_0 + \sqrt{1 - \alpha_t} \epsilon
@@ -46,7 +46,7 @@ In reverse diffusion process we go from noisy image and denoise it iteratively t
 
 \[ p_\theta (x_{0:T}) := p(x_T) \prod_{t=1}^{T} p_\theta (x_{t-1} | x_t) \]
 
-where $p(x_T)$ is the sampled noisy image (Gaussian noise) and we iteratively multiply by the denoising procesure where each step depends on the previous step.
+where $p(x_T)$ is the sampled noisy image (Gaussian noise) and we iteratively multiply by the denoising procedure where each step depends on the previous step.
 
 
 
@@ -121,9 +121,9 @@ q_\sigma (x_{t-1} | x_t, x_0) = \mathcal{N} \left(
 
 In other words, we can achieve $x_100$ if we have $x_101, x_0$; we can achieve $x_99$ if we have $x_100, x_0$ and so on.
 
-The underbrace term is the reparameterization trick (equation \ref{eq:appendix_ddpm_reparam_trick}). We can see that this equation is similar, the only difference is the noise term $\epsilon$: instead of stochastically sampling noise from normal distribution, its now dependent on $x_0$ and $x_T$ and is deterministic (the term $\textcolor{magenta}{\frac{x_t - \sqrt{\alpha_t} x_0}{\sqrt{1 - \alpha_t}}}$).
+The underbrace term is the reparameterization trick (equation \ref{eq:appendix_ddpm_reparam_trick}). We can see that this equation is similar, the only difference is the noise term $\epsilon$: instead of stochastically sampling noise from normal distribution, it is now dependent on $x_0$ and $x_T$ and is deterministic (the term $\textcolor{magenta}{\frac{x_t - \sqrt{\alpha_t} x_0}{\sqrt{1 - \alpha_t}}}$).
 
-Another difference between equations \ref{eq:appendix_ddim_q} and \ref{eq:appendix_ddpm_reparam_trick} is the $\sigma_t^2$ term; the role of this term is to add stochasticity. If we set $\sigma_t^2 = 0$ then we have no variance and we deterministically traverse every intermediate noisy image $x_t$.
+Another difference between equations \ref{eq:appendix_ddim_q} and \ref{eq:appendix_ddpm_reparam_trick} is the $\sigma_t^2$ term; the role of this term is to add stochasticity. If we set $\sigma_t^2 = 0$ then we have no variance, and we deterministically traverse every intermediate noisy image $x_t$.
 
 Using DDIM sampler the \textbf{forward process} can be derived from Bayes' rule:
 
@@ -148,7 +148,7 @@ To summarize, the sampling process is described as follows:
 \end{equation}
 
 \begin{itemize}
-    \item The first term: the neural network first predicts the noise and then it uses the noise prediction to derive to $x_0$ from $x_t$ (possibly with a lot of error / loss).
+    \item The first term: the neural network first predicts the noise, and then it uses the noise prediction to derive to $x_0$ from $x_t$ (possibly with a lot of error / loss).
     \item The second term: the same noise prediction $\epsilon_{\theta}^{(t)}$ is added to $x_t$ but with less severity.
     \item The third term: similar to $\sigma_t^2$ in equation \ref{eq:appendix_ddim_q}; it adds stochasticity to the sampling process.
 \end{itemize}

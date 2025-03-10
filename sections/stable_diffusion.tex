@@ -10,7 +10,7 @@
 \end{figure}
 
 
-In the Stable Diffusion paper \cite{stable_diffusion} the authors suggested that computing gradients directly in DDPMs on the pixel space is inefficient, since this space is highly-dimensional and includes undesired high-frequency details. They suggest to convert the input images to a lower-dimensional latent representations and then apply the diffusion processes. The authors showed that this approach \textbf{scales better} and is more compute efficient \footnote{In the Stable Diffusion paper \cite{stable_diffusion} the authors showed that the model can be trained on a single GPU with 16GB of memory on images of $256\times 256$ resolution using CelebA-HQ dataset with 30 diffusion steps.} compared to working in pixel space. Moreover, the authors introduced general purpose \textbf{conditioning mechanism based on cross-attention} which allows multi-modal training.
+In the Stable Diffusion paper \cite{stable_diffusion} the authors suggested that computing gradients directly in DDPMs on the pixel space is inefficient, since this space is highly-dimensional and includes undesired high-frequency details. They suggest converting the input images to a lower-dimensional latent representations and then apply the diffusion processes. The authors showed that this approach \textbf{scales better} and is more compute efficient \footnote{In the Stable Diffusion paper \cite{stable_diffusion} the authors showed that the model can be trained on a single GPU with 16 GB of memory on images of $256\times 256$ resolution using CelebA-HQ dataset with 30 diffusion steps.} compared to working in pixel space. Moreover, the authors introduced general purpose \textbf{conditioning mechanism based on cross-attention} which allows multi-modal training.
 
 A 2021 paper released by OpenAI \cite{openai_diffusion_beats_gans} shows that \textbf{diffusion models can outperform GANs} in terms of image fidelity by trading off diversity.
 
@@ -56,7 +56,7 @@ To get the embeddings, the timestep is first projected into a \textbf{sinusoidal
 \begin{figure}[h]
     \centering
     \includegraphics[width=0.25\textwidth]{images/diffusion_models/stable_diffusion/positional_encodings.png}
-    \caption{Sinusoidal positional embeddings used in a transformers \cite{understanding_deep_learning_book_2024}. \textit{X axis}: the input scalar (position in a transformer or timestep in diffusion model). \textit{Y axis}: the embeddings dimensions \cite{understanding_deep_learning_book_2024}.}
+    \caption{Sinusoidal positional embeddings used in a transformers \cite{understanding_deep_learning_book_2024}. \textit{X-axis}: the input scalar (position in a transformer or timestep in diffusion model). \textit{Y-axis}: the embeddings dimensions \cite{understanding_deep_learning_book_2024}.}
     \label{fig:sinusoidal_embeddings}
 \end{figure}
 
@@ -160,12 +160,9 @@ where $p$ is the reverse diffusion process that removes noise in image $x_t$ in 
 When training a diffusion model to generate images based on specific conditional information, there's a risk that the model might not fully consider or even ignore these conditions, using this vanilla formulation. To address this, a technique called "guidance" is used. Guidance allows us to explicitly control \textbf{how much influence the conditions have on the generated images}, but this can sometimes lead to less variety in the results. In other words, we use weight to control how much the model should pay attention to the conditioning signal.
 
 
-Conditioning a generative model can be achieved through two methods: 
+Conditioning a generative model can be achieved through two methods: \textbf{classifier guidance} and \textbf{classifier-free guidance}. 
 
-\begin{itemize}
-    \item classifier guidance
-    \item and classifier-free guidance.
-\end{itemize}
+
 
 
 
@@ -175,7 +172,7 @@ Conditioning a generative model can be achieved through two methods:
 
 Classifier guidance \cite{openai_diffusion_beats_gans} involves \textbf{training a separate model} to condition the output, and is based on score-based diffusion models \cite{score_based_generative_modeling}. 
 
-Classifier guidance formulation is given as:
+The formulation of classifier guidance is given as:
 
 \[
 \nabla \log p(x_t | y) = \underbrace{\nabla \log p(x_t)}_{\text{unconditional score}} + \underbrace{\gamma \nabla \log p(y | x_t)}_{\text{adversarial gradient}}
@@ -238,7 +235,7 @@ The \textbf{CLIPTokenizer}, which is part of the CLIP model, converts text promp
 \begin{figure}
     \centering
     \includegraphics[width=0.7\textwidth]{images/diffusion_models/stable_diffusion/clip.png}
-    \caption{(1) Contrastive pre-training stage of a CLIP model (training stage). (2) and (3): after the model has been pre-trained, its used as a zero-shot image classifier \cite{openai_clip}.}
+    \caption{(1) Contrastive pre-training stage of a CLIP model (training stage). (2) and (3): after the model has been pre-trained, it is used as a zero-shot image classifier \cite{openai_clip}.}
     \label{fig:openai_clip}
 \end{figure}
 
@@ -247,7 +244,7 @@ In figure \ref{fig:openai_clip},  $I_1, ..., I_N$ are the images, and $T_1, ...,
 The CLIP network is compromised of:
 
 \begin{itemize}
-    \item \textbf{Image encoder}: converts images to image embeddings. Its typically a vision transformer (ViT) \cite{vision_transformer} (appendix \ref{appendix:vision_transformer}) or a ResNet \cite{resnet} model.
+    \item \textbf{Image encoder}: converts images to image embeddings. It is typically a vision transformer (ViT) \cite{vision_transformer} (appendix \ref{appendix:vision_transformer}) or a ResNet \cite{resnet} model.
     \item \textbf{Text encoder}: converts text descriptions to text embeddings. Its typically implemented as a transformer, or less common as a continuous bag of words \cite{cbow_word2vec} (known as Word2Vec model by Google, 2013 \cite{cbow_word2vec}).
     \item \textbf{Training objective}: the CLIP model is trained using a contrastive objective (commonly referred to as CLIP objective), where the goal is to minimize the cosine distance in the main diagonal and maximize the distance for non-matching image-text pairs (off diagonal).
 \end{itemize}
@@ -312,7 +309,7 @@ where $\sigma \in \mathbb{R}^T_{\geq 0}$ (a real vector of $T$ dimension, each e
 \begin{figure}
     \centering
     \includegraphics[width=0.7\textwidth]{images/diffusion_models/stable_diffusion/ddim_sample_quality.png}
-    \caption{DDIM gives almost the same sample quality compared to DDPM sampler, and requires less compute since we skip some of the diffusion steps. The stochasticity of the model is controlled by $\eta \in [0, 1]$ \cite{ddim} (the equations where $\eta$ is used are not shown in this work for simplicity).}
+    \caption{DDIM gives almost the same sample quality compared to DDPM sampler, and requires less compute since we skip some diffusion steps. The stochasticity of the model is controlled by $\eta \in [0, 1]$ \cite{ddim} (the equations where $\eta$ is used are not shown in this work for simplicity).}
     \label{fig:ddim_sample_quality}
 \end{figure}
 
@@ -380,7 +377,7 @@ where:
     \item PosEmb is the positional embeddings.
     \item LayerNorm is the layer normalization (appendix \ref{appendix:blocks_norm}).
     \item MultiHeadSelfAttention is the multi-head self-attention mechanism (appendix \ref{appendix:attention}).
-    \item and MLP is the multi-layer perceptron (appendix \ref{appendix:blocks}) block.
+    \item MLP is the multi-layer perceptron (appendix \ref{appendix:blocks}) block.
 \end{itemize}
 
 

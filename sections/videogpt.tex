@@ -24,7 +24,7 @@ The researchers used EMA (exponential moving average which is described in the V
     \label{fig:videogpt_res_atten_block}
 \end{figure}
 
-To train the VQ-VAE model (to learn the latent codes), the authors trained the VQ-VAE on video data. The encoder consists of a downsample 3D convolutions followed by attention residual blocks (figure \ref{fig:videogpt_res_atten_block}), and \texttt{LayerNorm}. The \texttt{LayerNorm} layers are described in appendix \ref{appendix:blocks_norm}. The position embeddings is not explained in the paper; but we can infer them as the frame position (i.e. frame 0, 1, ... in the video), which is added element-wise.
+To train the VQ-VAE model (to learn the latent codes), the authors trained the VQ-VAE on video data. The encoder consists of a downsample 3D convolutions followed by attention residual blocks (figure \ref{fig:videogpt_res_atten_block}), and \texttt{LayerNorm}. The \texttt{LayerNorm} layers are described in appendix \ref{appendix:blocks_norm}. The position embeddings are not explained in the paper; but we can infer them as the frame position (i.e. frame 0, 1, ... in the video), which is added element-wise.
 
 The architecture of the decoder is the reverse of the encoder (residual attention blocks followed by upscale 3D convolutions).
 

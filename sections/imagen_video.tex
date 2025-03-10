@@ -196,7 +196,7 @@ In progressive distillation we duplicate a model that we desire to distill, whic
                 \State \colorbox{lime}{{\textbf{\# 2 steps of DDIM with teacher}}}
                 \State \colorbox{lime}{{$t' = t - 0.5/N, \quad t'' = t - 1/N$}}
                 \State \colorbox{lime}{{$\mathbf{z}_{t'} = \alpha_{t'} \hat{\mathbf{x}}_{\eta}(\mathbf{z}_t) + \frac{\sigma_{t'}}{\sigma_t} (\mathbf{z}_t - \alpha_t \hat{\mathbf{x}}_{\eta}(\mathbf{z}_t))$}}
-                \State \colorbox{lime}{{$\mathbf{z}_{t''} = \alpha_{t''} \hat{\mathbf{x}}_{\eta}(\mathbf{z}_{t'}) + \frac{\sigma_{t''}}{\sigma_{t'}} (\mathbf{z}_{t'} - \alpha_{t'} \hat{\mathbf{x}}_{\eta}(\mathbf{z}_{t'})$)}}
+                \State \colorbox{lime}{{$\mathbf{z}_{t''} = \alpha_{t''} \hat{\mathbf{x}}_{\eta}(\mathbf{z}_{t'}) + \frac{\sigma_{t''}}{\sigma_{t'}} (\mathbf{z}_{t'} - \alpha_{t'} \hat{\mathbf{x}}_{\eta}(\mathbf{z}_{t'}))$}}
                 \State \colorbox{lime}{{$\tilde{\mathbf{x}} = \frac{\mathbf{z}_{t''} - (\sigma_{t''}/\sigma_t) \mathbf{z}_t}{\alpha_{t''} - (\sigma_{t''}/\sigma_t) \alpha_t}$}} \Comment{Teacher $\hat{\mathbf{x}}$ target}
                 
                 \State $\lambda_t = \log[\alpha_t^2/\sigma_t^2]$
@@ -237,7 +237,7 @@ We can see in figure \ref{fig:samplers_comparison} that using a distilled model,
     \label{fig:imagen_video_epsilon_prediction_vs_v_prediction}
 \end{figure}
 
-At higher resolutions, v-prediction avoids temporal color shifting artifacts compared to $\epsilon$-prediction. We can see that in figure \ref{fig:imagen_video_epsilon_prediction_vs_v_prediction}. The researchers say the reason is that in distillation we have to work at higher noise levels to the point where the signal-to-noise ratio (SNR) drops down to zero, at which point predicting the noise becomes a lot harder.
+At higher resolutions, v-prediction avoids temporal color shifting artifacts compared to $\epsilon$-prediction. We can see that in figure \ref{fig:imagen_video_epsilon_prediction_vs_v_prediction}. The researchers say the reason is that in distillation we have to work at higher noise levels to the point where the signal-to-noise ratio (SNR) drops to zero, at which point predicting the noise becomes a lot harder.
 
 
 
@@ -276,7 +276,7 @@ where:
     \item $\lambda_t$ is the guidance scale (not really important)
     \item $\omega(\lambda_t)$ is the weighting function (also not really important)
     \item $\hat{x}_{\eta_1}$ is the student model (which is conditioned on the guidance weight $w$ as input: $\hat{x}_{\eta_1}(z_t, \textcolor{red}{w})$). Also notice the notation: $\hat{x}_{\eta_\mathbf{\textcolor{red}{1}}}$, which means that this is the first distillation iteration.
-    \item $\hat{x}_{\theta}^w$ is the teacher model. Notice in the notation, its using the guidance weight in CFG (its not given as input): $\hat{x}_{\theta}^\mathbf{\textcolor{red}{w}}(z_t)$
+    \item $\hat{x}_{\theta}^w$ is the teacher model. Notice in the notation, it is using the guidance weight in CFG (it is not given as input): $\hat{x}_{\theta}^\mathbf{\textcolor{red}{w}}(z_t)$
 \end{itemize}
 
 Also notice that the teacher model's parameters ($\eta$) are different to the student model's parameters ($\theta$), since they change at each distillation step (the student is a copy of the teacher but to differentiate between the parameters after the distillation process they chose to differentiate the parameters notations).
@@ -289,7 +289,7 @@ In the \cite{meng2023distillation} paper we optimize the student's objective:
     \underbrace{w \hat{x}_\theta (z_t)}_{\text{unconditional score}}
 \]
 
-where $c$ is the teacher model's conditioning (for example, text prompt) \footnote{Thanks to \href{https://www.youtube.com/watch?v=ZXuK6IRJlnk}{this youtube tutorial} for explaining both papers}.
+where $c$ is the teacher model's conditioning (for example, text prompt)\footnote{Thanks to \href{https://www.youtube.com/watch?v=ZXuK6IRJlnk}{this youtube tutorial} for explaining both papers}.
 
 To summarize, Using the work of \cite{meng2023distillation}, Imagen-Video researchers successfully distilled 7 video diffusion models with CFG to just 8 sampling steps without any noticeable loss in perceptual quality in the pipeline.
 
@@ -326,7 +326,7 @@ In their experiments, they sampled video clips at $192\times 320$ resolution @ 2
     \label{fig:imagen_video_scaling}
 \end{figure}
 
-\textbf{Scaling}: In figure \ref{fig:imagen_video_scaling} we can see interesting result which contradicts the findings of Imagen \cite{imagen} paper. They found that increasing the U-Net size doesn't scale the sample quality as much as increasing the text encoder size. They conclude that video modeling task for which the performance is not yet saturated at current model sizes \footnote{This finding could hint that transformers, which benefit from scaling on large datasets, could provide the necessary scaling capabilities that video modeling task demands.}.
+\textbf{Scaling}: In figure \ref{fig:imagen_video_scaling} we can see interesting result which contradicts the findings of Imagen \cite{imagen} paper. They found that increasing the U-Net size doesn't scale the sample quality as much as increasing the text encoder size. They conclude that video modeling task for which the performance is not yet saturated at current model sizes\footnote{This finding could hint that transformers, which benefit from scaling on large datasets, could provide the necessary scaling capabilities that video modeling task demands.}.
 
 \begin{figure}
     \centering

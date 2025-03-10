@@ -26,7 +26,7 @@ Let us denote the spatial layers $l^i_{\theta}$ where $\theta$ are the model's p
     \label{fig:video_ldm_stack}
 \end{figure}
 
-The architecture of Video-LDM is similar to Stable Diffusion with the exception of added temporal layers, and the addition of AE for latent encoding/decoding and the discriminator which helps photorealism in the decoder network. The model's stack is shown in figure \ref{fig:video_ldm_stack}.
+The architecture of Video-LDM is similar to Stable Diffusion except for the added temporal layers, and the addition of AE for latent encoding/decoding and the discriminator which helps photorealism in the decoder network. The model's stack is shown in figure \ref{fig:video_ldm_stack}.
 
 \begin{figure}
     \centering
@@ -53,7 +53,7 @@ In figure \ref{fig:video_ldm_image_to_video_tuning} we see the temporal fine-tun
     \label{fig:video_ldm_enc_dec_denoise_process}
 \end{figure}
 
-In figure \ref{fig:video_ldm_enc_dec_denoise_process} we can see the frozen encoder compresses video frames into 3D latents and the decoder learns to reconstruct them. On the right, we can see the patch-based discriminator $\mathcal{H}$ which is used to increase photorealism of the decoder. Its trained on the adversarial objective which is added to the AE reconstruction score like in PatchGAN \cite{isola2017image} (which tries to classify if $N \times N$ patch is real or fake). On the bottom we can see the generative denoising process, where each embedding corresponds to different image latent in the decoder $\mathcal{D}$.
+In figure \ref{fig:video_ldm_enc_dec_denoise_process} we can see the frozen encoder compresses video frames into 3D latents and the decoder learns to reconstruct them. On the right, we can see the patch-based discriminator $\mathcal{H}$ which is used to increase photorealism of the decoder. It is trained on the adversarial objective which is added to the AE reconstruction score like in PatchGAN \cite{isola2017image} (which tries to classify if $N \times N$ patch is real or fake). On the bottom we can see the generative denoising process, where each embedding corresponds to different image latent in the decoder $\mathcal{D}$.
 
 \begin{figure}
     \centering
@@ -62,9 +62,9 @@ In figure \ref{fig:video_ldm_enc_dec_denoise_process} we can see the frozen enco
     \label{fig:video_ldm_spatial_temporal_mixing_layers}
 \end{figure}
 
-In figure \ref{fig:video_ldm_spatial_temporal_mixing_layers} we can see on the the pre-trained LDM is turned into a video generator (on the right) by adding temporal layers $l_\phi$ that learn to align images in a temporally consistent manner. The spatial layers $l_\theta$ are frozen and only the temporal layers are learned. On the right we can see closer look of spatial, temporal layers. In order to deal with the addition of the temporal dimension, they \textbf{rearranged the batch dimension} in LDM to be mixed with the temporal dimension for the next layer: $(b\ t)\ c\ h\ w \rightarrow b\ t\ c\ h\ w$. The $c_S$ represents a context vector used for conditioning the model.
+In figure \ref{fig:video_ldm_spatial_temporal_mixing_layers} we can see on the pre-trained LDM is turned into a video generator (on the right) by adding temporal layers $l_\phi$ that learn to align images in a temporally consistent manner. The spatial layers $l_\theta$ are frozen and only the temporal layers are learned. On the right we can see closer look of spatial, temporal layers. In order to deal with the addition of the temporal dimension, they \textbf{rearranged the batch dimension} in LDM to be mixed with the temporal dimension for the next layer: $(b\ t)\ c\ h\ w \rightarrow b\ t\ c\ h\ w$. The $c_S$ represents a context vector used for conditioning the model.
 
-The input of the spatial layers $l_\theta^i$ is of the dimension $b\ c\ h\ w$ whereas the input dimension of temporal layers is of the dimension $b\ t\ c\ h\ w$. This notation is called \texttt{Einops} (einstein operations) and is further discussed in the Einops paper \cite{einops}. The spatial layers interpret the video as a batch of images by shifting the temporal axis into the batch dimension (the spatial layers treat all $B \cdot T$ encoded video frames in the batch dimension $b$). Its important to note that the rearrange operation doesn't change the tensor values; rather it rearranges the dimensions.
+The input of the spatial layers $l_\theta^i$ is of the dimension $b\ c\ h\ w$ whereas the input dimension of temporal layers is of the dimension $b\ t\ c\ h\ w$. This notation is called \texttt{Einops} (einstein operations) and is further discussed in the Einops paper \cite{einops}. The spatial layers interpret the video as a batch of images by shifting the temporal axis into the batch dimension (the spatial layers treat all $B \cdot T$ encoded video frames in the batch dimension $b$). It is important to note that the rearrange operation doesn't change the tensor values; rather it rearranges the dimensions.
 
 For the 3D convolution (temporal layer), they reshape the input back to video dimensions (they process entire videos in new temporal dimension $t$): 
 
@@ -104,7 +104,7 @@ As for the temporal attention layer (temporal layer), they reshaped the input ba
         \scalebox{0.5}{
             \input{figures/video_ldm/all_dimensions.tex}
         }
-        \caption{All of the $b\ t\ c\ h\ w$ dimensions. }
+        \caption{All the $b\ t\ c\ h\ w$ dimensions.}
     \end{subfigure}
 
     \caption{Representation of video dimensions $b\ t\ c\ h\ w$ which corresponds to batch, temporal, channel, height, width dimensions.}
@@ -118,7 +118,7 @@ As for the temporal attention layer (temporal layer), they reshaped the input ba
 
 \[ \underbrace{\alpha_\phi^i z_{i} + (1 - \alpha_\phi^i) z_{i}'}_{\text{Mixing factor}} \] 
 
-where $\alpha_\phi^i \in [0, 1]$ and is a learnable parameter. If we set $\alpha = 1$ for each layer skip the temporal score and we retain the native image generation capability. This mixing operation is similar to CFG (mixing between conditional score and unconditional score).
+where $\alpha_\phi^i \in [0, 1]$ and is a learnable parameter. If we set $\alpha = 1$ for each layer skip the temporal score, and we retain the native image generation capability. This mixing operation is similar to CFG (mixing between conditional score and unconditional score).
 
 \textbf{Temporal mixing layers}: two types of temporal mixing layers in use (see figure \ref{fig:video_ldm_spatial_temporal_mixing_layers}) are the \textit{temporal attention} and \textit{Conv3D} layer.
 
@@ -132,7 +132,7 @@ where $\tau$ is the diffusion time step, $y$ is the target noise vector. The tar
 
 \textbf{Adding temporal layers to the decoder:} the researchers add temporal layers to the decoder of the AE which they found this step to be critical for achieving good results. The reason is that the AE is trained on images and flickering artifacts are present in the generated videos (because training on images doesn't teach the model temporal dynamics). So the researchers fine-tune the decoder on video data with a \textbf{patch-wise temporal discriminator built from 3D convolutions}. The encoder, however, remains unchanged.
 
-\textbf{Patch-wise temporal discriminator:} The patch-wise temporal discriminator $\mathcal{H}$, which is built from 3D convolutions, is used to fine-tune the decoder. Its trained on video data and returns "real" or "fake" prediction on patches of the video clip.
+\textbf{Patch-wise temporal discriminator:} The patch-wise temporal discriminator $\mathcal{H}$, which is built from 3D convolutions, is used to fine-tune the decoder. It is trained on video data and returns "real" or "fake" prediction on patches of the video clip.
 
 
 \begin{figure}
@@ -193,7 +193,7 @@ Compared to Imagen (11.6 billion parameters) and CogVideo (9 billion parameters)
     \label{fig:video_ldm_vs_lvg_on_rds}
 \end{figure}
 
-In figure \ref{fig:video_ldm_vs_lvg_on_rds} we see comparison of Video-LDM and Long Video GAN (LVG) on RDS dataset. \texttt{Cond.} means the model was conditioned on day/night and crowdedness \footnote{In their experiments, they observed that adding conditional information reduces FID and FVD metrics.}. On the right we see FVD and FID evaluations on different diffusion architectures (pixel-space diffusion model, end-to-end LDM that was not pre-trained on images [which is why the results are bad], and attention-only temporal model). Their model uses 3D temporal convolutions which is better than the attention-only diffusion model.
+In figure \ref{fig:video_ldm_vs_lvg_on_rds} we see comparison of Video-LDM and Long Video GAN (LVG) on RDS dataset. \texttt{Cond.} means the model was conditioned on day/night and crowdedness\footnote{In their experiments, they observed that adding conditional information reduces FID and FVD metrics.}. On the right we see FVD and FID evaluations on different diffusion architectures (pixel-space diffusion model, end-to-end LDM that was not pre-trained on images [which is why the results are bad], and attention-only temporal model). Their model uses 3D temporal convolutions which is better than the attention-only diffusion model.
 
 \begin{figure}
     \centering
@@ -239,7 +239,7 @@ The researchers used the following datasets:
     \item \textbf{Mountain Bike Dataset} \cite{brooks2022generating}: Introduced by LVG, it contains 1,202 clips ($\geq 5$ seconds @ 30 fps).
 \end{itemize}
 
-\textbf{Evaluation metrics}: they used FID to evaluate quality of individual frames. They also used FVD and human evaluation on video clips and compared to LVG. The human evaluation contained 100 videos @ 4 seconds; given pair of videos (one from Video-LDM and one from LVG), participants select the most favorable.
+\textbf{Evaluation metrics}: they used FID to evaluate quality of individual frames. They also used FVD and human evaluation on video clips and compared to LVG. The human evaluation contained 100 videos @ 4 seconds; given a pair of videos (one from Video-LDM and one from LVG), participants select the most favorable.
 
 \textbf{Video synthesis on RDS dataset}: for video synthesis on RDS dataset, they first generate a single frame using the image LDM, then they run the prediction model on a single frame and generated a sequence of keyframes. Next they performed two steps of the interpolation model which increases the FPS from 1.875 to 7.5 and from 7.5 to 30 fps. And then they ran the temporal upsampler which is run over portions of 8 video frames (the upsampler is also temporally aligned). In their experiments, the researchers successfully generated long, temporally coherent, high-resolution driving videos (up to 5 minutes), trained on the RDS dataset.
 

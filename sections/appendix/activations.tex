@@ -139,7 +139,7 @@ ReLU (Rectified Linear Unit) (figure \ref{fig:appendix_activations_relu_and_gelu
 
 \subsection*{Softmax}
 
-Softmax is an activation function, usually used in the output layer of a neural network. Its used to compress multiple input values into a range between [0,1] similarly to sigmoid, but softmax can be thought as a probability distribution, where multiple values are mapped to a probability. Softmax is often used in multi-class classification. It is defined as:
+Softmax is an activation function, usually used in the output layer of a neural network. It is used to compress multiple input values into a range between [0,1] similarly to sigmoid, but softmax can be thought as a probability distribution, where multiple values are mapped to a probability. Softmax is often used in multi-class classification. It is defined as:
 
 \begin{equation*}
     \text{Softmax}(x_i) = \frac{e^{x_i}}{\sum_{j=1}^{n} e^{x_j}}
@@ -178,5 +178,5 @@ Swish (figure \ref{fig:appendix_activations_swish}) is an activation function us
 
 where $\sigma(x)$ is the sigmoid activation function.
 
-Swish is similar to ReLU activation function but it allows smoother gradients during training, and often it outperforms ReLU in some deep learning tasks.
+Swish is similar to ReLU activation function, but it allows smoother gradients during training, and often it outperforms ReLU in some deep learning tasks.
 

@@ -30,7 +30,7 @@ Other notations are used as well: $p_\theta(x_i), q_\phi(x_i)$. Most of the time
 
 which is also sometimes called \textbf{log-likelihood ratio}.
 
-In reality we are only interested in the \textbf{average difference} between $p_\theta$ and $q_\phi$. Because we are dealing with random variables $x \in X$, instead of average we say \textbf{expected value} of a random variable. Weighted average of instances of random variables is:
+In reality, we are only interested in the \textbf{average difference} between $p_\theta$ and $q_\phi$. Because we are dealing with random variables $x \in X$, instead of average we say \textbf{expected value} of a random variable. Weighted average of instances of random variables is:
 
 \begin{equation*}
     \mathbb{E}_{p_\theta} [X] = \sum_{i=1}^{\infty} x_i p_\theta(x_i)
@@ -48,7 +48,7 @@ where $h(X), h(x_i)$ is a function of random variable $x_i \in X$. This formulat
     \mathbb{E}_{p_\theta} [h(X)] = \int_{\mathbb{R}} h(x) p_\theta(x) dx
 \end{equation*}
 
-Lets get back to the average likelihood (equation \ref{eq:log-likelihood}), we can set $h(X) = log\ [\frac{p_\theta(x_i)}{q_\phi(x_i)}]$ and we get:
+Let's get back to the average likelihood (equation \ref{eq:log-likelihood}), we can set $h(X) = log\ [\frac{p_\theta(x_i)}{q_\phi(x_i)}]$, and we get:
 
 \begin{equation*}
     \sum_{i=1}^{\infty} p_\theta(x_i) log\ [\frac{p_\theta(x_i)}{q_\phi(x_i)}]
@@ -76,7 +76,7 @@ In short, this is the expected value of the log-likelihood ratio (of discrete ra
     D_{KL} (p_\theta || q_\phi)
 \end{equation}
 
-One problem we are dealing with is the infinity space in both equations.  To get around it we can use the \textbf{law of large numbers} which says:
+One problem we are dealing with is the infinity space in both equations.  To get around it, we can use the \textbf{law of large numbers} which says:
 
 \begin{equation*}
     \frac{1}{N} \sum_{i=1}^N h(x_i) \approx \mathbb{E}_p [h(X)]

@@ -34,7 +34,7 @@ The paper has 5 main key takeaways and observations:
 \subsection{Text-to-Text Transfer Transformer (T5)}
 \label{subsec:t5}
 
-\textbf{T}ext-\textbf{t}o-\textbf{T}ext \textbf{T}ransfer \textbf{T}ransformer (T5) \cite{t5_model} by Google Research is a language model that treats tasks as a text-to-text (T2T) problems. For example we could prompt the model:
+\textbf{T}ext-\textbf{t}o-\textbf{T}ext \textbf{T}ransfer \textbf{T}ransformer (T5) \cite{t5_model} by Google Research is a language model that treats tasks as a text-to-text (T2T) problems. For example, we could prompt the model:
 
 \begin{itemize}
     \item \textbf{Summarization}: "Translate the following text to a summary: ..."
@@ -47,7 +47,7 @@ as well as other T2T tasks. In short, this knowledge can be viewed as developing
 
 The T5 model is open-source and was trained on large corpora of textual data. The base version of the model (T5-base) consists of 220 million parameters, while the largest version of the model (T5-XXL) consists of \textbf{11 billion parameters}. In the context of Imagen, \textbf{the Imagen model uses a frozen version of T5-XXL model} to encode conditional text prompts.
 
-\textbf{Pre-training}: Unsupervised learning is appealing because unlabeled text data is abundant and available on the Internet. For example, the Common Crawl project \cite{common_crawl_project} is a non-profit organization that crawls the internet and provides free access to its achieved datasets to the public. A lot of research has been done on LLM models on large scale datasets, and the consensus is that \textbf{the larger the dataset, the better the model performs} \cite{radford2019language} \cite{jozefowicz2016exploring} \cite{hestness2017deep}. The T5 models were trained on the "Colossal Clean Crawled Corpus" (C4) dataset, which consists of 750GB of English text data scraped from the web.
+\textbf{Pre-training}: Unsupervised learning is appealing because unlabeled text data is abundant and available on the Internet. For example, the Common Crawl project \cite{common_crawl_project} is a non-profit organization that crawls the internet and provides free access to its achieved datasets to the public. A lot of research has been done on LLM models on large scale datasets, and the consensus is that \textbf{the larger the dataset, the better the model performs} \cite{radford2019language} \cite{jozefowicz2016exploring} \cite{hestness2017deep}. The T5 models were trained on the "Colossal Clean Crawled Corpus" (C4) dataset, which consists of 750 GB of English text data scraped from the web.
 
 \textbf{The training objective} of T5 model is called \textbf{span corruption}, which is stronger version of \textbf{masked language modeling}. Given a sentence, some words and some contiguous words are masked (in masked language modeling, only single words are masked), and the model should predict those words. For example: "Thank you for inviting me to your party last week", where the masked words are "for inviting" and "last". And the model should predict those words in the following sentence: "Thank you [MASKED] me to your party [MASKED] week". The model should learn to reconstruct the missing tokens.
 
@@ -113,7 +113,7 @@ More formally, in CFG, sampling is performed weighting the conditional and uncon
 
 where $\epsilon_\theta$ is the noise prediction with the learned parameters $\theta$, $w$ is the guidance weight, $c$ is the condition, and $z_t$ is the latent variable at timestep $t$.
 
-Imagen depends on CFG for effective text conditioning. They found that increasing the guidance weight improves image-text alignment but reduces image fidelity. Its caused by \textbf{train-test mismatch}: looking at equation \ref{eq:classifier_free_guidance} if we set $w$ to 1, then we disable CFG, and then the model won't be trained on unconditional samples (only on conditional signals). This causes the model to generate outputs that exceed the noise prediction in the normalized range of [-1, 1]. And when iteratively applying the model to its own outputs at each step, errors caused by this mismatch accumulate, which causes unnatural artifacts in output images. When we set $w>1$ then it improves the model's image-text alignment, but damages image fidelity.
+Imagen depends on CFG for effective text conditioning. They found that increasing the guidance weight improves image-text alignment but reduces image fidelity. It is caused by \textbf{train-test mismatch}: looking at equation \ref{eq:classifier_free_guidance} if we set $w$ to 1, then we disable CFG, and then the model won't be trained on unconditional samples (only on conditional signals). This causes the model to generate outputs that exceed the noise prediction in the normalized range of [-1, 1]. And when iteratively applying the model to its own outputs at each step, errors caused by this mismatch accumulate, which causes unnatural artifacts in output images. When we set $w>1$ then it improves the model's image-text alignment, but damages image fidelity.
 
 For this reason they investigated static thresholding and dynamic thresholding:
 
@@ -243,7 +243,7 @@ In figure \ref{fig:imagen_cdm_architecture} we see CDM upsamples the low-resolut
 
 An overview of Imagen architecture is shown in figure \ref{fig:imagen_architecture}.
 
-The researchers conducted experiments with frozen LLMs such as BERT \cite{bert}, T5 \cite{t5_model}, and CLIP \cite{openai_clip} and found that humans prefer T5-XXL over CLIP. T5-XXL (T5-Extra Extra Large) text encoder maps text prompts to embeddings. The T5-XXL model has 11 billion parameters, and its the largest version of the T5 model. All the diffusion models are conditioned on the same text embeddings.
+The researchers conducted experiments with frozen LLMs such as BERT \cite{bert}, T5 \cite{t5_model}, and CLIP \cite{openai_clip} and found that humans prefer T5-XXL over CLIP. T5-XXL (T5-Extra Extra Large) text encoder maps text prompts to embeddings. The T5-XXL model has 11 billion parameters, and it is the largest version of the T5 model. All the diffusion models are conditioned on the same text embeddings.
 
 \textbf{Base model}: the base model is a $64\times 64$ T2I diffusion model. The network is conditioned on text embeddings (via cross-attention and layer normalization layers), as well as with diffusion timestep embeddings, similar to the class embedding conditioning in the CDM paper \cite{cascaded_diffusion_models}.
 

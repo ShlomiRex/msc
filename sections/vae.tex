@@ -57,7 +57,7 @@ The denominator in eq. \ref{eq:vae_posterior} is \textbf{intractable} because it
 
 \subsection{The Reparameterization Trick}
 
-To enable backpropagation through the sampling process, VAEs use the reparameterization trick. This trick involves expressing the sampled latent variables $z$ as a deterministic function of the encoder's output and some random noise.\textbf{Without this technique, backpropagation would not be possible}, because sampling from a distribution is a stochastic process (involves randomness) and is a non-differentiable operation and the gradients can't be computed with respect to the parameters of the encoder. 
+To enable backpropagation through the sampling process, VAEs use the reparameterization trick. This trick involves expressing the sampled latent variables $z$ as a deterministic function of the encoder's output and some random noise. \textbf{Without this technique, backpropagation would not be possible}, because sampling from a distribution is a stochastic process (involves randomness) and is a non-differentiable operation and the gradients can't be computed with respect to the parameters of the encoder. 
 
 To make the sampling operation differentiable and thus allow gradients to flow through the network, the reparameterization trick is used. Specifically, if $\mu$ and $\sigma$ are the mean and standard deviation vectors outputted by the encoder, we can write:
 
