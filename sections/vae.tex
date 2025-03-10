@@ -3,7 +3,7 @@
 
 Variational Autoencoder (VAE) \cite{vae} is a generative model used to learn the underlying distribution of data and generate new samples (similar to the dataset). The model consists of 3 main components: an \textbf{encoder}, \textbf{latent space} (sometimes called 'code vectors' or 'bottleneck layer') and a \textbf{decoder}. The main idea behind VAE is to use the autoencoder model \cite{autoencoder} \cite{autoencoder2} (figure \ref{figure:autoencoder_architecture}) to compress large dimensional space (in our case, images) into smaller, lower dimension vectors that represent the underlying hidden features. These code vectors are then fed into a decoder network which reconstructs the image (maps latent vectors to high-dimensional space).
 
-Compared to the AE, VAEs gives significant control over how we want to model our latent distribution, which in turn gives \textbf{precise control over the output samples}. This kind of control doesn't exist in the usual autoencoder framework.
+Compared to the AE, VAEs gives significant control over how we want to model our latent distribution, which in turn gives \textbf{precise control over the output samples} (see figure \ref{fig:vae_control_latent_space}). This kind of control doesn't exist in the usual autoencoder framework.
 
 \input{figures/autoencoder}
 
@@ -11,6 +11,7 @@ Compared to the AE, VAEs gives significant control over how we want to model our
     \centering
     \includegraphics[scale=0.5]{images/vae.png}
     \caption{Visualization a VAE modeled 2D latent space of learned data \cite{vae}, learned on two different datasets. The variational aspect makes it possible to control the generated output. \href{https://ar5iv.labs.arxiv.org/html/1804.00140}{Source}.}
+    \label{fig:vae_control_latent_space}
 \end{figure}
 
 More formally, the encoder network takes an input data point $x$ and maps it to a latent space representation $z$, which is a compressed representation of $x$. The input is a vector, therefor an image must be flattened from 2D to 1D vector. This flattening will become an issue later in image generation, as this action removes important spatial information and hidden structures in the image. Because of this, modifications were made to the VAE model which allows the capture of spatial information by using a CNN (Convolutional Neural Network) \cite{cnn} layers \cite{vae_cnn_example}, max pooling layers, and other different types of spatial layers. After compression, the latent vector $z$ is then passed onto the decoder for reconstruction. 
