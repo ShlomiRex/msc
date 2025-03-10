@@ -206,7 +206,7 @@ The CDM paper \cite{cascaded_diffusion_models} outperformed VQ-VAE 2 \cite{vqvae
 
 A big strength of CDMs is the ability to train and fine tune each model individually.
 
-\textbf{Conditioning augmentation} is the main and critical part of the paper \cite{cascaded_diffusion_models}, which allows to generate images with higher FID, compared to without conditioning augmentation. Conditioning augmentation involves using data augmentation techniques on the low-resolution input image for each SR model in the cascaded pipeline. Augmentations such as Gaussian noise and Gaussian blur are applied to the  to the image which helps prevent each SR model from overfitting to the low-resolution input.
+\textbf{Conditioning augmentation} is the main and critical part of the paper \cite{cascaded_diffusion_models}, which allows generating images with higher FID, compared to without conditioning augmentation. Conditioning augmentation involves using data augmentation techniques on the low-resolution input image for each SR model in the cascaded pipeline. Augmentations such as Gaussian noise and Gaussian blur are applied to the image which helps prevent each SR model from overfitting to the low-resolution input.
 
 \begin{figure}
     \centering
@@ -214,6 +214,8 @@ A big strength of CDMs is the ability to train and fine tune each model individu
     \caption{CDM upsamples low-resolution image in the pipeline, conditioned on labels \cite{cascaded_diffusion_models}.}
     \label{fig:imagen_cdm_architecture}
 \end{figure}
+
+In figure \ref{fig:imagen_cdm_architecture} we see CDM upsamples the low-resolution image in multiple steps with class conditional super-resolution; the condition is class ID = "Cheeseburger" which guides the generation pipeline to upsample correctly.
 
 
 
@@ -334,7 +336,7 @@ In figure \ref{fig:imagen_resnetblock} we can see the \texttt{ResNetBlock} which
 
 The COCO dataset \cite{coco_dataset} is a standard benchmark for evaluating T2I models. The standard performance metrics used are FID \cite{fid_score} which measure image fidelity (but is not fully aligned with perceptual quality \cite{perceptual_quality}), and CLIP score \cite{openai_clip} which measures image-text alignment (but is bad at counting objects in an image).
 
-Due to these limitations, the researchers created new benchmark called \textbf{DrawBench} that uses human evaluation to assess image quality by asking the question "Which image is more photorealistic (looks more real)?" and text-image alignment by asking the question "Does the caption accurately describe the above image?". For both cases they used 200 randomly chosen image-caption pairs from COCO dataset.
+Due to these limitations, the researchers created new benchmark called \textbf{DrawBench} that uses human evaluation to assess image quality by asking "Which image is more photorealistic (looks more real)?" and text-image alignment by asking "Does the caption accurately describe the above image?". For both cases they used 200 randomly chosen image-caption pairs from COCO dataset.
 
 \begin{figure}
     \centering
@@ -371,7 +373,7 @@ DrawBench has 11 categories of prompts which test different capabilities of mode
     \begin{subfigure}{0.4\textwidth}
         \centering
         \includegraphics[width=0.6\linewidth]{images/imagen/imagen_coco_human_eval.png}
-        \caption{Human evaluation on 256x256 COCO. Imagen splits to two categories: no filters, and human filters. Imagen struggles a little bit with photorealistic people.}
+        \caption{Human evaluation on 256x256 COCO. Imagen splits to two categories: no filters, and human filters. Imagen struggles a little with photorealistic people.}
         \label{fig:imagen_coco_human_eval}
     \end{subfigure}
     \caption{Results of Imagen on COCO dataset \cite{imagen}.}
@@ -380,7 +382,7 @@ DrawBench has 11 categories of prompts which test different capabilities of mode
 \begin{figure}
     \centering
     \includegraphics[width=0.6\textwidth]{images/imagen/alignment_fidelity_imagen_vs_models.png}
-    \caption{Imagen beats all other models (DALL-E 2 \cite{dalle_2}, GLIDE \cite{glide}, VQGAN+CLIP \cite{vqgan_clip} and Latent Diffusion (Stable Diffusion) \cite{stable_diffusion} (section \ref{sec:stable_diffusion})) in terms of image-text alignment and image fidelity \cite{imagen}.}
+    \caption{Imagen beats all other models (DALL-E 2 \cite{dalle_2}, GLIDE \cite{glide}, VQ-GAN+CLIP \cite{vqgan_clip} and Latent Diffusion (Stable Diffusion) \cite{stable_diffusion} (section \ref{sec:stable_diffusion})) in terms of image-text alignment and image fidelity \cite{imagen}.}
     \label{fig:imagen_alignment_fidelity_vs_other_models}
 \end{figure}
 
@@ -388,4 +390,4 @@ In figure \ref{fig:imagen_coco_zeroshot} we can see that although Imagen was not
 
 In figure \ref{fig:imagen_coco_human_eval} we can see that Imagen achieves a respectable 43.9\% fool rate on $256\times 256$ COCO human faces, indicating limited ability of Imagen to generate photorealistic people.
 
-In figure \ref{fig:imagen_alignment_fidelity_vs_other_models} we can see that Imagen outperforms all other state-of-the-art models in terms of image fidelity and text-image alignment.
+And in figure \ref{fig:imagen_alignment_fidelity_vs_other_models} we can see that Imagen outperforms all other state-of-the-art models in terms of image fidelity and text-image alignment.
