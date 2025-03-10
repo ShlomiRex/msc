@@ -49,7 +49,7 @@ In figure \ref{fig:unet_architecture} the U-Net is shaped like a 'U' in which th
 \subsection{Sinusoidal embeddings}
 \label{subsec:sinusoidal_embeddings}
 
-The diffusion process uses \textbf{timestep embeddings} which is the embeddings representing the current diffusion timestep: $t \in [0, T]$. Instead of directly using timestep scalar, we first convert it to embeddings. This way the model knows if it is in the beginning of the diffusion or at the later stages, which is essential for removing noise (because noise schedulers depend on the current timestep).
+The diffusion process uses \textbf{timestep embeddings} which is the embeddings representing the current diffusion timestep: $t \in [0, T]$. Instead of directly using timestep scalar, we first convert it to embeddings. This way the model knows if it's in the beginning of the diffusion or at the later stages, which is essential for removing noise (because noise schedulers depend on the current timestep).
 
 To get the embeddings, the timestep is first projected into a \textbf{sinusoidal embedding}, similar to the way positional encodings are used in transformers.
 
@@ -245,7 +245,7 @@ The CLIP network is compromised of:
 
 \begin{itemize}
     \item \textbf{Image encoder}: converts images to image embeddings. It is typically a vision transformer (ViT) \cite{vision_transformer} (appendix \ref{appendix:vision_transformer}) or a ResNet \cite{resnet} model.
-    \item \textbf{Text encoder}: converts text descriptions to text embeddings. Its typically implemented as a transformer, or less common as a continuous bag of words \cite{cbow_word2vec} (known as Word2Vec model by Google, 2013 \cite{cbow_word2vec}).
+    \item \textbf{Text encoder}: converts text descriptions to text embeddings. It is typically implemented as a transformer, or less common as a continuous bag of words \cite{cbow_word2vec} (known as Word2Vec model by Google, 2013 \cite{cbow_word2vec}).
     \item \textbf{Training objective}: the CLIP model is trained using a contrastive objective (commonly referred to as CLIP objective), where the goal is to minimize the cosine distance in the main diagonal and maximize the distance for non-matching image-text pairs (off diagonal).
 \end{itemize}
 

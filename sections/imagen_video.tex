@@ -16,7 +16,7 @@
 
 Imagen-Video by Google \cite{imagen_video} is a T2V cascading diffusion model, based on Imagen (section \ref{sec:imagen}). Imagen-Video has 7 sub-models in a cascading pipeline (figure \ref{fig:imagen_video_pipeline}). It generates high definition $1280\times 768$ videos @ 24 fps, for 5.3 seconds. A big downside compared to Video-LDM is that Imagen-Video works in the pixel-space, whereas Video-LDM works in latent space. In addition, Imagen-Video is a much larger model and uses more compute resources than Video-LDM, however Google is able to achieve good scaling results through training on massive datasets.
 
-Like Imagen, Imagen-Video uses the same large frozen text-encoder T5-XXL (section \ref{subsec:t5}) in its pipeline. The benefit of cascading pipeline is the ability to independently train each model, allowing the parallel training of all 7 models.
+Like Imagen, Imagen-Video uses the same large frozen text-encoder T5-XXL (section \ref{subsec:t5}) in it is pipeline. The benefit of cascading pipeline is the ability to independently train each model, allowing the parallel training of all 7 models.
 
 \begin{figure}
     \centering
@@ -253,7 +253,7 @@ At higher resolutions, v-prediction avoids temporal color shifting artifacts com
 
 \subsubsection*{Distillation with classifier-free guidance}
 
-The paper \cite{meng2023distillation} by Google Research and Stability AI extends \cite{v_prediction} by applying distillation to models trained with CFG, marking its first use in video domain. In this work, the teacher model (trained with CFG, before distillation) takes two DDIM steps, and the student model, denoted in the paper as a $w$-conditioned model, learns to match the teacher's output while being conditioned on the guidance scale. This conditioning incorporates the guidance weight into the model backbone, similar to timestep conditioning in \cite{kingma2021variational}. The student model is optimized with the following objective \cite{meng2023distillation}:
+The paper \cite{meng2023distillation} by Google Research and Stability AI extends \cite{v_prediction} by applying distillation to models trained with CFG, marking it is first use in video domain. In this work, the teacher model (trained with CFG, before distillation) takes two DDIM steps, and the student model, denoted in the paper as a $w$-conditioned model, learns to match the teacher's output while being conditioned on the guidance scale. This conditioning incorporates the guidance weight into the model backbone, similar to timestep conditioning in \cite{kingma2021variational}. The student model is optimized with the following objective \cite{meng2023distillation}:
 
 \begin{equation*}
 \mathbb{E}_{w \sim p_w, t \sim U[0, 1], x \sim p_{\text{data}}(x)} 

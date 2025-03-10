@@ -3,7 +3,7 @@
 
 The transformer \cite{transformer}, built on self-attention (appendix \ref{appendix:attention}), is widely used in NLP tasks like translation, text generation, and classification. It consists of an encoder for input processing and a decoder for output generation, trained via maximum likelihood estimation (appendix \ref{appendix:likelihood_function}).
 
-Its versatility in sequence-to-sequence tasks has expanded its applications to image and video synthesis models.
+It is versatility in sequence-to-sequence tasks has expanded its applications to image and video synthesis models.
 
 
 
@@ -51,7 +51,7 @@ The encoder processes a sequence of tokens, converted from text by a tokenizer (
 
 \textbf{Masked multi-head attention}: Prevents the model from attending to future tokens by masking, ensuring each token only considers itself and previous tokens.
 
-\textbf{Multi-head cross-attention}: Allows the decoder to attend to encoder outputs (which is projected as K, V) and its previous layer outputs (projected as Q), enabling interaction between input and output sequences. Sometimes its called "Encoder-Decoder Attention".
+\textbf{Multi-head cross-attention}: Allows the decoder to attend to encoder outputs (which is projected as K, V) and its previous layer outputs (projected as Q), enabling interaction between input and output sequences. Sometimes it is called "Encoder-Decoder Attention".
 
 \textbf{Linear \& Softmax}: The decoder output passes through a linear layer and softmax to produce a probability distribution over the words' vocabulary. The most probable token is selected and fed back for the next step. In more advanced models, the output sometimes is not the most probable to allow more creative outputs. This is controlled by a 'temperature' parameter in the softmax function.
 

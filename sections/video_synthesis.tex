@@ -25,7 +25,7 @@ Video synthesis can be based on four main methods:
 \begin{enumerate}
     \item \textbf{Diffusion}: diffusion models for video generation extend the iterative refinement process used in image-based diffusion models, such as LDMs, to handle temporal dynamics required for videos. The key idea is to generate not just a sequence of independent images, but a continuous video where both the spatial content of each frame and the temporal coherence between frames are learned and generated simultaneously.
     \item \textbf{Spatial autoregressive}: spatial autoregressive models for video generation, as described in \cite{graves2013generating}, synthesize video by sequentially generating content in a patch-based fashion, where each patch in a frame is conditioned on previously generated patches. This method builds video frame-by-frame, ensuring spatial and temporal coherence.
-    \item \textbf{GAN}: similar to diffusion models, GANs can also be leveraged for video synthesis. However, its used seldom because of unstable training, partly due to the adversarial loss objective.
+    \item \textbf{GAN}: similar to diffusion models, GANs can also be leveraged for video synthesis. However, it is used seldom because of unstable training, partly due to the adversarial loss objective.
     \item \textbf{Mask modeling}: mask modeling in video generation uses the technique of selectively masking parts of video frames. The model is tasked with predicting and reconstructing the missing parts, forcing it to better understand the underlying structure and motion in the video.
 \end{enumerate}
 

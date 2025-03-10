@@ -74,14 +74,14 @@ When we do backpropagation with respect to the generator gradients, the \textbf{
         \State \quad \textbf{for} $k$ steps \textbf{do}
         \Statex \qquad $\bullet$ Sample minibatch of $m$ noise samples $\{ \mathbf{z}^{(1)}, \dots, \mathbf{z}^{(m)} \}$ from noise prior $p_g(\mathbf{z})$.
         \Statex \qquad $\bullet$ Sample minibatch of $m$ examples $\{ \mathbf{x}^{(1)}, \dots, \mathbf{x}^{(m)} \}$ from data generating distribution $p_{\text{data}}(\mathbf{x})$.
-        \Statex \qquad $\bullet$ Update the discriminator by ascending its stochastic gradient:
+        \Statex \qquad $\bullet$ Update the discriminator by ascending it is stochastic gradient:
         \Statex
         \[
         \nabla_{\theta_d} \frac{1}{m} \sum_{i=1}^{m} \left[ \log D \left( \mathbf{x}^{(i)} \right) + \log \left( 1 - D \left( G \left( \mathbf{z}^{(i)} \right) \right) \right) \right] .
         \]
         \State \quad \textbf{end for}
         \Statex \quad $\bullet$ Sample minibatch of $m$ noise samples $\{ \mathbf{z}^{(1)}, \dots, \mathbf{z}^{(m)} \}$ from noise prior $p_g(\mathbf{z})$.
-        \Statex \quad $\bullet$ Update the generator by descending its stochastic gradient:
+        \Statex \quad $\bullet$ Update the generator by descending it is stochastic gradient:
         \Statex
         \[
         \nabla_{\theta_g} \frac{1}{m} \sum_{i=1}^{m} \log \left( 1 - D \left( G \left( \mathbf{z}^{(i)} \right) \right) \right) .
@@ -117,7 +117,7 @@ One of the main challenges of training GANs is mode collapse. Mode collapse occu
 \begin{figure}
     \centering
     \includegraphics[width=0.6\textwidth]{images/gan/gan_mode_collapse.png}
-    \caption{Mode collapse in GANs \cite{gan_mode_collapse_image_source}. \textit{Top row} the model fails to diversify its output, leading it to focus on specific mode of the dataset. \textit{Bottom row}: no mode collapse; the model successfully trained to diversify its output \cite{gan_mode_collapse_image_source}.}
+    \caption{Mode collapse in GANs \cite{gan_mode_collapse_image_source}. \textit{Top row} the model fails to diversify it is output, leading it to focus on specific mode of the dataset. \textit{Bottom row}: no mode collapse; the model successfully trained to diversify it is output \cite{gan_mode_collapse_image_source}.}
     \label{fig:gan_mode_collapse}
 \end{figure}
 

@@ -108,7 +108,7 @@
 
 \subsection*{Sigmoid}
 
-Sigmoid (figure \ref{fig:appendix_activations_sigmoid}) is an activation function used in many neural networks. Its one of the most common activation functions. It normalizes the output in the range [0,1] and is usually used in binary classification or logistic regression tasks. In binary classification task it can be used as the last layer of the neural network, which would output a single probability output. It is defined as:
+Sigmoid (figure \ref{fig:appendix_activations_sigmoid}) is an activation function used in many neural networks. It is one of the most common activation functions. It normalizes the output in the range [0,1] and is usually used in binary classification or logistic regression tasks. In binary classification task it can be used as the last layer of the neural network, which would output a single probability output. It is defined as:
 
 \begin{equation*}
     \sigma(x) = \frac{1}{1 + e^{-x}}
@@ -154,7 +154,7 @@ where $x_i$ is the $i$-th element of the input vector $x$ and $n$ is the number 
 
 \subsection*{Tanh}
 
-Tanh (figure \ref{fig:appendix_activations_tanh}) is often used in RNNs (Recurrent Neural Networks) and LSTMs (Long Short-Term Memory) gates. Although these models are out of scope in this work, it is still worth mentioning as this activation function is used in many models, such as GANs. The output range is [-1, 1] and its zero centered. It is defined as:
+Tanh (figure \ref{fig:appendix_activations_tanh}) is often used in RNNs (Recurrent Neural Networks) and LSTMs (Long Short-Term Memory) gates. Although these models are out of scope in this work, it is still worth mentioning as this activation function is used in many models, such as GANs. The output range is [-1, 1] and it is zero centered. It is defined as:
 
 \begin{equation*}
     \tanh(x) = \frac{e^{x} - e^{-x}}{e^{x} + e^{-x}}

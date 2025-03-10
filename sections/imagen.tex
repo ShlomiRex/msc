@@ -6,7 +6,7 @@ Imagen \cite{imagen} is a T2I diffusion model that builds on the power of large 
 The paper has 5 main key takeaways and observations:
 
 \begin{enumerate}
-    \item \textbf{Effectiveness of large frozen text encoders}: one of the main observation in the paper that a large frozen language model trained only on text data have a significant impact on the fidelity of generated images compared to increasing the parameters of the diffusion image model. Scaling the language model is easy, since unlabeled text data is abundant and available on the internet.
+    \item \textbf{Effectiveness of large frozen text encoders}\footnote{Frozen text encoder means that the parameters of the text encoder are frozen; they won't change in training. It is done usually when we want to use a pre-trained model (text encoder) while training our own model. It is also faster to train since gradient calculation will skip this frozen model.}: one of the main observation in the paper that a large frozen language model trained only on text data have a significant impact on the fidelity of generated images compared to increasing the parameters of the diffusion image model. Scaling the language model is easy, since unlabeled text data is abundant and available on the internet.
     \item \textbf{Dynamic thresholding}: is a new sampling technique (section \ref{subsec:imagen_diffusion_guidance_weight}) that improves image fidelity and text-image alignment, which improves upon static thresholding.
     \item \textbf{Effective U-Net}: a new U-Net architecture that is simpler and more memory efficient.
     \item \textbf{COCO FID score of 7.27}: imagen achieved a new state-of-the-art COCO FID score of 7.27, which outperforms all other previous works.
@@ -47,7 +47,7 @@ as well as other T2T tasks. In short, this knowledge can be viewed as developing
 
 The T5 model is open-source and was trained on large corpora of textual data. The base version of the model (T5-base) consists of 220 million parameters, while the largest version of the model (T5-XXL) consists of \textbf{11 billion parameters}. In the context of Imagen, \textbf{the Imagen model uses a frozen version of T5-XXL model} to encode conditional text prompts.
 
-\textbf{Pre-training}: Unsupervised learning is appealing because unlabeled text data is abundant and available on the Internet. For example, the Common Crawl project \cite{common_crawl_project} is a non-profit organization that crawls the internet and provides free access to its achieved datasets to the public. A lot of research has been done on LLM models on large scale datasets, and the consensus is that \textbf{the larger the dataset, the better the model performs} \cite{radford2019language} \cite{jozefowicz2016exploring} \cite{hestness2017deep}. The T5 models were trained on the "Colossal Clean Crawled Corpus" (C4) dataset, which consists of 750 GB of English text data scraped from the web.
+\textbf{Pre-training}: Unsupervised learning is appealing because unlabeled text data is abundant and available on the Internet. For example, the Common Crawl project \cite{common_crawl_project} is a non-profit organization that crawls the internet and provides free access to it is achieved datasets to the public. A lot of research has been done on LLM models on large scale datasets, and the consensus is that \textbf{the larger the dataset, the better the model performs} \cite{radford2019language} \cite{jozefowicz2016exploring} \cite{hestness2017deep}. The T5 models were trained on the "Colossal Clean Crawled Corpus" (C4) dataset, which consists of 750 GB of English text data scraped from the web.
 
 \textbf{The training objective} of T5 model is called \textbf{span corruption}, which is stronger version of \textbf{masked language modeling}. Given a sentence, some words and some contiguous words are masked (in masked language modeling, only single words are masked), and the model should predict those words. For example: "Thank you for inviting me to your party last week", where the masked words are "for inviting" and "last". And the model should predict those words in the following sentence: "Thank you [MASKED] me to your party [MASKED] week". The model should learn to reconstruct the missing tokens.
 
@@ -113,7 +113,7 @@ More formally, in CFG, sampling is performed weighting the conditional and uncon
 
 where $\epsilon_\theta$ is the noise prediction with the learned parameters $\theta$, $w$ is the guidance weight, $c$ is the condition, and $z_t$ is the latent variable at timestep $t$.
 
-Imagen depends on CFG for effective text conditioning. They found that increasing the guidance weight improves image-text alignment but reduces image fidelity. It is caused by \textbf{train-test mismatch}: looking at equation \ref{eq:classifier_free_guidance} if we set $w$ to 1, then we disable CFG, and then the model won't be trained on unconditional samples (only on conditional signals). This causes the model to generate outputs that exceed the noise prediction in the normalized range of [-1, 1]. And when iteratively applying the model to its own outputs at each step, errors caused by this mismatch accumulate, which causes unnatural artifacts in output images. When we set $w>1$ then it improves the model's image-text alignment, but damages image fidelity.
+Imagen depends on CFG for effective text conditioning. They found that increasing the guidance weight improves image-text alignment but reduces image fidelity. It is caused by \textbf{train-test mismatch}: looking at equation \ref{eq:classifier_free_guidance} if we set $w$ to 1, then we disable CFG, and then the model won't be trained on unconditional samples (only on conditional signals). This causes the model to generate outputs that exceed the noise prediction in the normalized range of [-1, 1]. And when iteratively applying the model to it is own outputs at each step, errors caused by this mismatch accumulate, which causes unnatural artifacts in output images. When we set $w>1$ then it improves the model's image-text alignment, but damages image fidelity.
 
 For this reason they investigated static thresholding and dynamic thresholding:
 
@@ -135,7 +135,7 @@ For this reason they investigated static thresholding and dynamic thresholding:
     \label{fig:imagen_static_vs_dynamic_thresholding}
 \end{figure}
 
-The implementation of static and dynamic thresholding is shown in figure \ref{fig:imagen_dynamic_thresholding}. The impact of dynamic thresholding is shown in figure \ref{fig:imagen_static_vs_dynamic_thresholding} where its shown that dynamic thresholding produces samples with higher image-text alignment (CLIP) and fidelity (FID) compared to static thresholding.
+The implementation of static and dynamic thresholding is shown in figure \ref{fig:imagen_dynamic_thresholding}. The impact of dynamic thresholding is shown in figure \ref{fig:imagen_static_vs_dynamic_thresholding} where it is shown that dynamic thresholding produces samples with higher image-text alignment (CLIP) and fidelity (FID) compared to static thresholding.
 
 
 
@@ -180,7 +180,7 @@ SR3 achieves close to a 50\% fool rate (47\%) \footnote{A 50\% fool rate means h
 \begin{figure}
     \centering
     \includegraphics[width=0.5\textwidth]{images/imagen/sr3_architecture.png}
-    \caption{SR3 $16\times 16 \rightarrow 128\times 128$ upsampling where $x$ is the input image, upscaled to the target resolution using bicubic interpolation, and then its concatenated with the noise $y$ \cite{sr3}.}
+    \caption{SR3 $16\times 16 \rightarrow 128\times 128$ upsampling where $x$ is the input image, upscaled to the target resolution using bicubic interpolation, and then it is concatenated with the noise $y$ \cite{sr3}.}
     \label{fig:sr3_architecture}
 \end{figure}
 
@@ -249,7 +249,7 @@ The researchers conducted experiments with frozen LLMs such as BERT \cite{bert},
 
 \textbf{SR models}: they used modified U-Net based on the improved DDPM paper \cite{openai_improved_ddpm} by OpenAI, By improving the U-Net they achieved 2-3x faster inference and convergence speed; they call this variant "\textbf{Efficient U-Net}". For the $256\times 256 \rightarrow 1024\times 1024$ SR model, they removed self-attention layers but keep the cross-attention layers.
 
-\textbf{Efficient U-Net}: is a new U-Net architectural variant for SR models. Its more memory efficient and \textbf{2-3x faster in training and inference time}. There are several modifications to the U-Net architecture:
+\textbf{Efficient U-Net}: is a new U-Net architectural variant for SR models. It is more memory efficient and \textbf{2-3x faster in training and inference time}. There are several modifications to the U-Net architecture:
 
 \begin{enumerate}
     \item \textbf{More residual blocks}: adding more residual blocks for lower resolutions, since lower-resolution images typically have more channels. They used 8 residual blocks at lower-resolution compared to typical 2-3 residual blocks used in a standard U-Net.
