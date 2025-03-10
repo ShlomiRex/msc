@@ -6,6 +6,7 @@
     \centering
     \includegraphics[width=0.6\textwidth]{images/diffusion_models/stable_diffusion/stable_diffusion.png}
     \caption{Stable diffusion scales better compared to other models \cite{stable_diffusion} (DALL-E, VQ-GAN) with less downsampling blocks ($f = 4$ instead of 16 as needed by VQ-GAN).}
+    \label{fig:stable_diffusion_less_downsampling_blocks}
 \end{figure}
 
 
@@ -13,6 +14,7 @@ In the Stable Diffusion paper \cite{stable_diffusion} the authors suggested that
 
 A 2021 paper released by OpenAI \cite{openai_diffusion_beats_gans} shows that \textbf{diffusion models can outperform GANs} in terms of image fidelity by trading off diversity.
 
+In figure \ref{fig:stable_diffusion_less_downsampling_blocks} we see that Stable Diffusion scales better than other methods (VQ-GAN, DALL-E) while using less downsampling blocks ($f = 4$ instead of 16 as needed by VQ-GAN). This is a significant improvement in terms of compute efficiency and memory usage.
 
 
 
@@ -314,6 +316,8 @@ where $\sigma \in \mathbb{R}^T_{\geq 0}$ (a real vector of $T$ dimension, each e
     \label{fig:ddim_sample_quality}
 \end{figure}
 
+In figure \ref{fig:ddim_sampling_process} we see the DDIM sampling process skips a single diffusion step. We can skip some diffusion steps and this process can be generalized to all the diffusion steps.
+
 In figure \ref{fig:ddim_sample_quality} DDIM gives almost the same sample quality in FID metric (equation \ref{eq:fid_score}, lower is better) compared to DDPM and require much less compute. The experiment was done on CIFAR10 and CelebA datasets, with 10,20,50,100,1000 steps. When $\eta = 0$ (blue) the model is deterministic (DDIM process), and when $\eta = 1$ (orange) the model is stochastic (DDPM process).
 
 
@@ -380,12 +384,14 @@ where:
 \end{itemize}
 
 
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.3\textwidth]{images/diffusion_models/stable_diffusion/transformer_block.png}
-    \caption{Architecture of the transformer block used in Stable Diffusion, where $n_h$ denotes the number of attention heads and $d$ the dimensionality per head \cite{stable_diffusion}.}
-\end{figure}
+% \begin{figure}[h]
+%     \centering
+%     \includegraphics[width=0.3\textwidth]{images/diffusion_models/stable_diffusion/transformer_block.png}
+%     \caption{Architecture of the transformer block used in Stable Diffusion, where $n_h$ denotes the number of attention heads and $d$ the dimensionality per head \cite{stable_diffusion}.}
+%     \label{fig:stable_diffusion_transformer_block_architecture}
+% \end{figure}
 
+% In figure \ref{fig:stable_diffusion_transformer_block_architecture} we can see the implementation of the transformer block used in Stable Diffusion. The transformer block is used in the domain specific encoder $\tau_\theta$ to encode the conditional information into tokens, which are then used in the cross-attention mechanism of the stable diffusion model. 
 
 
 
@@ -434,24 +440,27 @@ The full loss objective to train the autoencoder model $(\varepsilon, \mathcal{D
 
 \subsection{Experiments}
 
-The researchers conducted several experiments with different LDM downsampling factors, and compared the results with other state-of-the-art models (DALL-E, VQGAN, StyleGAN, ProjectedGAN, CogView, GLIDE, and others).
+The researchers conducted several experiments with different LDM downsampling factors, and compared the results with other state-of-the-art models (DALL-E, VQ-GAN, StyleGAN, ProjectedGAN, CogView, GLIDE, and others).
 
 \begin{figure}
     \centering
     \includegraphics[width=0.7\textwidth]{images/diffusion_models/stable_diffusion/experiments_1.png}
-    \caption{Unconditional image synthesis evaluation between LDM (Stable Diffusion) and other models across 4 datasets \cite{stable_diffusion}.}
+    \caption{Unconditional image synthesis evaluation between LDM (Stable Diffusion) and other models across 4 datasets \cite{stable_diffusion}. $\dagger$ refers to the DDIM sampler steps (500 top-left, 200 top-right, 200 bottom-left, 200 bottom-right).}
     \label{fig:stable_diffusion_experiments_unconditional}
 \end{figure}
 
-In figure \ref{fig:stable_diffusion_experiments_unconditional} we clearly see that LDM outperforms most of the state-of-the-art models, across multiple metrics and datasets. $\dagger$ refers to the DDIM sampler steps (500 top-left, 200 top-right, 200 bottom-left, 200 bottom-right).
+In figure \ref{fig:stable_diffusion_experiments_unconditional} we clearly see that LDM outperforms most of the state-of-the-art models, across multiple metrics and datasets.
 
 \begin{figure}
     \centering
     \includegraphics[width=0.6\textwidth]{images/diffusion_models/stable_diffusion/experiments_2.png}
-    \caption{Evaluation of text-conditioned image synthesis on MS-COCO dataset. LDM with 250-DDIM steps is on par with the most recent diffusion and autoregressive methods, \textbf{while using significantly less parameters} (1.45 billion) \cite{stable_diffusion}.}
+    \caption{Evaluation of text-conditioned image synthesis on MS-COCO dataset. LDM with 250-DDIM steps is on par with the most recent diffusion and autoregressive methods, \textbf{while using significantly fewer parameters} (1.45 billion) \cite{stable_diffusion}.}
+    \label{fig:stable_diffusion_mscoco}
 \end{figure}
 
-For text-to-image tasks, the researchers trained a 1.45B parameters model conditioned on language prompts on LAION-400M dataset. The model uses \textbf{BERT-Tokenizer} \footnote{Its important to note that the researchers used the BERT text tokenizer in the paper, however, in the \href{https://github.com/CompVis/latent-diffusion}{offical released implementation of Stable Diffusion} they used CLIP tokenizer. The reason is that in the Imagen paper \cite{imagen}, the researchers found out that using larger language models had more impact on generated image quality than larger image generation components. This fact is shown in figure \ref{fig:imagen_clip_score_bigger_llm}.} \cite{bert} and implement $\tau_\theta$ (the domain-specific conditional encoder) as a transformer.
+In figure \ref{fig:stable_diffusion_mscoco} we see comparison between different methods on the text conditional image synthesis task. While we desire lower FID and higher IS metrics, we also need to look at number of parameters: LDM with 250-DDIM steps is on par with the most recent diffusion and autoregressive methods, while using significantly fewer parameters (1.45 billion).
+
+For text-to-image tasks, the researchers trained a 1.45B parameters model conditioned on language prompts on LAION-400M dataset. The model uses \textbf{BERT-Tokenizer} \footnote{It is important to note that the researchers used the BERT text tokenizer in the paper, however, in the \href{https://github.com/CompVis/latent-diffusion}{offical released implementation of Stable Diffusion} they used CLIP tokenizer because in the Imagen paper \cite{imagen}, the researchers found out that using larger language models had more impact on generated image quality than larger image generation components. This finding is shown in figure \ref{fig:imagen_scaling_encoder_more_impactful_than_unet_scaling}.} \cite{bert} and implement $\tau_\theta$ (the domain-specific conditional encoder) as a transformer.
 
 \begin{figure}
     \centering
