@@ -175,7 +175,7 @@ In figure \ref{fig:make_a_video_pseudo_3d_conv_and_attention} we can see the pse
 
 Temporal attention is computationally expensive, so the researchers used stacked pseudo-3D temporal attention layers, inspired by \cite{video_diffusion_models} (Video U-Net) and Imagen-Video \cite{imagen_video}.
 
-Each pre-trained spatial attention layer is followed by a pseudo-3D temporal attention layer. The process involves flattening the spatial dimensions $h' \in \mathbb{R}^{B\times C\times F\times \mathbf{\textcolor{red}{HW}}}$ (\texttt{unflatten} is the inverse operation) and applying 2D and 1D attention sequentialy:
+Each pre-trained spatial attention layer is followed by a pseudo-3D temporal attention layer. The process involves flattening the spatial dimensions $h' \in \mathbb{R}^{B\times C\times F\times \mathbf{\textcolor{red}{HW}}}$ (\texttt{unflatten} is the inverse operation) and applying 2D and 1D attention sequentially:
 
 \[ \text{ATTN}_{\text{P3D}} (h) = \text{unflatten} 
 (\text{ATTN}_{\text{1D}} 

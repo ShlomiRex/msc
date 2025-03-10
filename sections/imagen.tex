@@ -152,7 +152,7 @@ The implementation of static and dynamic thresholding is shown in figure \ref{fi
 
 
 
-\subsection{Super-resolution via Repeated Refinment (SR3)}
+\subsection{Super-resolution via Repeated Refinement (SR3)}
 
 \label{subsec:imagen_sr3}
 
@@ -160,9 +160,9 @@ In a 2021 paper \cite{sr3}, the Google Research team introduced a new super-reso
 
 SR3 achieves close to a 50\% fool rate (47\%) \footnote{A 50\% fool rate means humans can't distinguish between a generated face image and an image of a real face.} on $16\times 16 \rightarrow 128\times 128$ faces, outperforming the previous state-of-the-art GAN models (FSRGAN and PULSE).
 
-\textbf{Iterative refinment}: Given low-resolution image $x_{low}$ the model applies \textbf{bicubic interpolation} \footnote{Bicubic interpolation is a method for resizing images that uses the closest 4x4 pixels grid to estimate new values, resulting in smoother transitions (compared to nearest-neighbor or bilinear interpolation) and fewer visual artifacts.} to upscale the image to the target resolution to get high-resolution image $x$ and then concatenates $x$ with pure Gaussian noise $y_t \sim \mathcal{N} (0, I)$ channel-wise (see figure \ref{fig:sr3_architecture}). Then the U-Net iteratively refines the image $(x, y_t)$ by denoising. The output of a single refinement step (from the U-Net) is $y_{t-1}$. Then in the next refinement step, $x$ is concatenated with $y_{t-1}$ and the process is repeated until we reach $y_0$. The final output is a high-resolution image $y_0$. Note that both $x$ (after the upsampling), $y_i$ are all on same resolution / dimension (see figure \ref{fig:sr3_architecture}).
+\textbf{Iterative refinement}: Given low-resolution image $x_{low}$ the model applies \textbf{bicubic interpolation} \footnote{Bicubic interpolation is a method for resizing images that uses the closest 4x4 pixels grid to estimate new values, resulting in smoother transitions (compared to nearest-neighbor or bilinear interpolation) and fewer visual artifacts.} to upscale the image to the target resolution to get high-resolution image $x$ and then concatenates $x$ with pure Gaussian noise $y_t \sim \mathcal{N} (0, I)$ channel-wise (see figure \ref{fig:sr3_architecture}). Then the U-Net iteratively refines the image $(x, y_t)$ by denoising. The output of a single refinement step (from the U-Net) is $y_{t-1}$. Then in the next refinement step, $x$ is concatenated with $y_{t-1}$ and the process is repeated until we reach $y_0$. The final output is a high-resolution image $y_0$. Note that both $x$ (after the upsampling), $y_i$ are all on same resolution / dimension (see figure \ref{fig:sr3_architecture}).
 
-\textbf{The archirecture of SR3} modified the diffusion U-Net: they replaced the original DDPM residual blocks with residual blocks from BigGAN \cite{biggan_deep}, rescaled skip connections by $\frac{1}{\sqrt{2}}$, increased the number of residual blocks, and increased the number of the channel multipliers \footnote{Channel multipliers in a U-Net are the scaling factors used to adjust the number of feature channels at different U-Net layers. In other words, they increased the depth of the features at the cost of decreasing resolution at the convolution layers (down convolution, up convolution layers)} at different resolutions.
+\textbf{The architecture of SR3} modified the diffusion U-Net: they replaced the original DDPM residual blocks with residual blocks from BigGAN \cite{biggan_deep}, rescaled skip connections by $\frac{1}{\sqrt{2}}$, increased the number of residual blocks, and increased the number of the channel multipliers \footnote{Channel multipliers in a U-Net are the scaling factors used to adjust the number of feature channels at different U-Net layers. In other words, they increased the depth of the features at the cost of decreasing resolution at the convolution layers (down convolution, up convolution layers)} at different resolutions.
 
 % \begin{table}[h!]
 %     \centering

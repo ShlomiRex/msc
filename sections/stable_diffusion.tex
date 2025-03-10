@@ -147,13 +147,13 @@ Classifier-free guidance (CFG) is used in Stable Diffusion to control the influe
 
 So far we have focused on modeling just the data distribution $p(x)$. However, we are often also interested in learning conditional distribution $p(x|y)$, which would enable us to explicitly control the data we generate through conditioning signal $y$.
 
-We can add conditioning information alongside the timestep information, at each iteration (appendix B equation 8 of \cite{ddpm}, appendix H equation 31 of \cite{openai_diffusion_beats_gans}):
+We can add conditioning information alongside the timestep information, at each iteration (appendix B equation 8 of \cite{ddpm}, appendix H equation 31 of \cite{openai_diffusion_beats_gans}, equation 1 in \cite{ddim}):
 
 \[
 p(x_{0:T}) = p(x_T) \prod_{t=1}^{T} p_\theta (x_{t-1} | x_{t, y})
 \]
 
-where $p$ is the reverse diffusion process that removes noise in image $x_t$ in steps $t = T, T-1, ..., 0$, $y$ is the conditioning information
+where $p$ is the reverse diffusion process that removes noise in image $x_t$ in timestep $t \in {T, T-1, ..., 0}$, and $y$ is the conditioning information. This equation shows that the reverse diffusion process depends on previous reverse diffusion steps (product of previous steps) and the initial image $x_0$.
 
 When training a diffusion model to generate images based on specific conditional information, there's a risk that the model might not fully consider or even ignore these conditions, using this vanilla formulation. To address this, a technique called "guidance" is used. Guidance allows us to explicitly control \textbf{how much influence the conditions have on the generated images}, but this can sometimes lead to less variety in the results. In other words, we use weight to control how much the model should pay attention to the conditioning signal.
 
@@ -245,7 +245,7 @@ In figure \ref{fig:openai_clip},  $I_1, ..., I_N$ are the images, and $T_1, ...,
 The CLIP network is compromised of:
 
 \begin{itemize}
-    \item \textbf{Image encoder}: converts images to image embeddings.Its typically a vision transformer (ViT) \cite{vision_transformer} (appendix \ref{appendix:vision_transformer}) or a ResNet \cite{resnet} model.
+    \item \textbf{Image encoder}: converts images to image embeddings. Its typically a vision transformer (ViT) \cite{vision_transformer} (appendix \ref{appendix:vision_transformer}) or a ResNet \cite{resnet} model.
     \item \textbf{Text encoder}: converts text descriptions to text embeddings. Its typically implemented as a transformer, or less common as a continuous bag of words \cite{cbow_word2vec} (known as Word2Vec model by Google, 2013 \cite{cbow_word2vec}).
     \item \textbf{Training objective}: the CLIP model is trained using a contrastive objective (commonly referred to as CLIP objective), where the goal is to minimize the cosine distance in the main diagonal and maximize the distance for non-matching image-text pairs (off diagonal).
 \end{itemize}
@@ -298,7 +298,7 @@ DDIM introduces a generalized forward process:
 q_\sigma (x_{t-1} | x_t, x_0) = \mathcal{N} \left( \sqrt{\alpha_{t-1}} x_0 + \sqrt{1 - \alpha_{t-1} - \sigma_t^2} \cdot \frac{x_t - \sqrt{\alpha_t} x_0}{\sqrt{1 - \alpha_t}}, \sigma_t^2 I \right)
 \]
 
-where $\sigma \in \mathbb{R}^T_{\geq 0}$ controls the stochasticity of the forward process. When $\sigma \rightarrow 0$, the process becomes fully deterministic, as $x_{t-1}$ is uniquely determined by $x_t$ and $x_0$.
+where $\sigma \in \mathbb{R}^T_{\geq 0}$ (a real vector of $T$ dimension, each element greater or equal to 0) controls the stochasticity of the forward process. When $\sigma \rightarrow 0$, the process becomes fully deterministic, as $x_{t-1}$ is uniquely determined by $x_t$ and $x_0$.
 
 \begin{figure}
     \centering
@@ -310,7 +310,7 @@ where $\sigma \in \mathbb{R}^T_{\geq 0}$ controls the stochasticity of the forwa
 \begin{figure}
     \centering
     \includegraphics[width=0.7\textwidth]{images/diffusion_models/stable_diffusion/ddim_sample_quality.png}
-    \caption{DDIM gives almost the same sample quality compared to DDPM sampler, and requires less compute since we skip some of the diffusion steps. The stochasticity of the model is controlled by $\eta$ \cite{ddim}.}
+    \caption{DDIM gives almost the same sample quality compared to DDPM sampler, and requires less compute since we skip some of the diffusion steps. The stochasticity of the model is controlled by $\eta \in [0, 1]$ \cite{ddim} (the equations where $\eta$ is used are not shown in this work for simplicity).}
     \label{fig:ddim_sample_quality}
 \end{figure}
 
@@ -356,7 +356,7 @@ This loss function is similar to the loss function of DDPM (equation \ref{eq:ddp
 
 \subsection{Implementation of $\tau_\theta$ transformer for conditional LDMs}
 
-The researchers provded high level overview of the implementation of the conditional encoder for text $\tau_\theta$, consisted of $N$ transformer blocks (appendix E.2 of \cite{stable_diffusion}):
+The researchers provided high level overview of the implementation of the conditional encoder for text $\tau_\theta$, consisted of $N$ transformer blocks (appendix E.2 of \cite{stable_diffusion}):
 
 \begin{align*}
     &\zeta \leftarrow \text{TokEmb}(y) + \text{PosEmb}(y) \\
