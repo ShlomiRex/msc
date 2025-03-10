@@ -1,4 +1,4 @@
-\subsection{Attention mechanism}
+\section{Attention mechanism}
 \label{appendix:attention}
 
 Attention mechanisms, introduced in the Transformer paper \cite{transformer}, are pivotal in modern deep learning. This section explores the core components of transformers and their role in image and video synthesis models.
@@ -8,7 +8,7 @@ Attention mechanisms, introduced in the Transformer paper \cite{transformer}, ar
 
 
 
-\subsubsection{Self-attention}
+\subsection{Self-attention}
 
 Self-attention allows us to model the weight of different parts of an input sequence. It gives indication on how much focus (\textbf{attention score}) to give to different elements in the sequence, and considers relationships between then. In self-attention, the same set of data elements provides the queries, keys and values, unlike cross-attention where we have two different sets of data elements.
 
@@ -82,7 +82,7 @@ def forward(self, X):
 
 
 
-\subsubsection{Multi-head attention}
+\subsection{Multi-head attention}
 
 Multi-head attention is a concatenation of multiple self-attention heads, each with its own set of weights $W_i^Q$, $W_i^K$, $W_i^V$. Each attention head can learn different relationships between the same elements in the same sequence. After concatenation, we apply dot product with the output weights matrix $W^O$:
 
@@ -110,7 +110,7 @@ Multi-head attention is defined as concatenation of different attention heads:
 
 
 
-\subsubsection{Cross-Attention}
+\subsection{Cross-Attention}
 
 \begin{figure}[ht]
     \centering
@@ -178,7 +178,7 @@ Notice lines 14, 15, 16 in listing \ref{lst:stable_diffusion_cross_attention}: t
 
 
 
-\subsubsection{Axial attention}
+\subsection{Axial attention}
 
 Axial attention \cite{axial_attention}, used in VideoGPT \cite{videogpt}, addresses the quadratic complexity of self-attention ($O(n^2)$) by attending to one axis at a time, reducing the complexity to $O(n\sqrt{n})$. Instead of processing the full input sequence, it alternately attends to masked rows and columns, saving computations while preserving global spatial context.
 

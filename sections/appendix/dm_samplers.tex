@@ -1,4 +1,4 @@
-\subsection{Diffusion models samplers}
+\section{Diffusion models samplers}
 \label{appendix:dm_samplers}
 
 Sampling from diffusion model can take thousands of denoising steps. In this section we will see common samplers used in the literature to sample from diffusion models for faster inference. First we need to establish basic mathematical grounds with the forward and reverse diffusion process as described in the DDPM paper \cite{ddpm} in the next two sections.
@@ -10,7 +10,7 @@ Sampling from diffusion model can take thousands of denoising steps. In this sec
 
 
 
-\subsubsection*{Forward process}
+\subsection*{Forward process}
 
 In the forward process we can take step-by-step approach (adding noise at each step, current step depends on previous step only):
 
@@ -40,7 +40,7 @@ where $\epsilon \sim \mathcal{N} (0, I)$.
 
 
 
-\subsubsection*{Backward process}
+\subsection*{Backward process}
 
 In reverse diffusion process we go from noisy image and denoise it iteratively to get the original denoised image:
 
@@ -56,7 +56,7 @@ where $p(x_T)$ is the sampled noisy image (Gaussian noise) and we iteratively mu
 
 
 
-\subsubsection{DDPM / Stochastic Sampler}
+\subsection{DDPM / Stochastic Sampler}
 
 % \begin{figure}
 %     \centering
@@ -100,7 +100,7 @@ The last term $\sigma_t z$ is the variance to vary the samples. For instance, if
 
 
 
-\subsubsection{DDIM Sampler}
+\subsection{DDIM Sampler}
 
 One problem of denoising an image is that there are multiple paths of the denoising steps to take; in two denoising steps, we can reach the same result but in different ways. The denoising diffusion implicit models (DDIM) paper \cite{ddim} suggest non-markovian deterministic approach to fast infer samples from the diffusion model:
 
