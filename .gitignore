@@ -17,3 +17,7 @@ main.bcf*
 *.log
 *.synctex*
 old.pdf
+
+
+# But don't ignore this specific one
+!hebrew_toc.toc

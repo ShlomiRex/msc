@@ -1,0 +1,6 @@
+\selectlanguage *[]{hebrew}
+\contentsline {section}{Contents}{1}{Doc-Start}%
+\contentsline {section}{\numberline {1}אבסטרקט}{4}{section.1}%
+\contentsline {section}{\numberline {2}הקדמה}{5}{section.2}%
+\contentsline {subsection}{\numberline {2.1}ניסוח מתמטי של מודלים גנרטיביים}{6}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}קירוב התפלגות הנתונים}{6}{subsection.2.2}%

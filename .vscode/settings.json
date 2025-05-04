@@ -32,9 +32,19 @@
     "latex-workshop.latex.autoBuild.run": "onFileChange",
     "latex-workshop.check.duplicatedLabels.enabled": true,
     "latex-workshop.linting.chktex.enabled": true,
-    "latex-workshop.linting.lacheck.enabled": true,
+    "latex-workshop.linting.lacheck.enabled": false,
     "latex-workshop.linting.run": "onSave",
+    "latex-workshop.linting.chktex.exec.args": [
+        "-wall",
+        "-n2",
+        "-n22",
+        "-n24",
+        "-n30",
+        "-n46",
+        "-e16",
+        "-q"
+    ],
 
-    
+
     "editor.wordWrap": "on",
 }
