@@ -2,7 +2,6 @@
 
 % Packages
 \usepackage{graphicx}
-\usepackage{biblatex}
 \usepackage{subfiles}
 \usepackage{standalone}
 \usepackage{import}
@@ -59,12 +58,6 @@
 \usepackage{pgfplots}
 \pgfplotsset{compat=newest}
 
-
-
-% References
-\newpage
-\addbibresource{references.bib}
-
 % Define general colors for use
 \definecolor{lightblue}{rgb}{0.678, 0.847, 0.902}
 \definecolor{lightgreen}{rgb}{0.678, 0.902, 0.847}
@@ -87,6 +80,18 @@
 \usepackage{float} % Specify [H] for figures
 \usepackage{algorithm} % For algorithm environment
 \usepackage{algpseudocode} % For algorithmic environment
+
+
+% Hebrew support
+\usepackage{polyglossia}
+\setmainlanguage{english}
+\setotherlanguage{hebrew}
+\newfontfamily\hebrewfont[Script=Hebrew]{Arial}
+
+% Must be loaded after polyglossia
+\usepackage{biblatex}
+\addbibresource{references.bib} % References
+
 
 \begin{document}
 
@@ -135,5 +140,8 @@
 % Appendix
 \newpage
 \input{sections/appendix/appendix.tex}
+
+% Hebrew sections
+\include{sections/hebrew/table_of_contents}
 
 \end{document}

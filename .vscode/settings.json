@@ -1,0 +1,40 @@
+{
+    "latex-workshop.latex.tools": [
+        {
+            "name": "xelatex",
+            "command": "xelatex",
+            "args": [
+                "-synctex=1",
+                "-interaction=nonstopmode",
+                "-file-line-error",
+                "%DOC%"
+            ]
+        },
+        {
+            "name": "biber",
+            "command": "biber",
+            "args": [
+                "%DOCFILE%"
+            ]
+        }
+    ],
+    "latex-workshop.latex.recipes": [
+        {
+            "name": "XeLaTeX ➞ Biber ➞ XeLaTeX_2",
+            "tools": [
+                "xelatex",
+                "biber",
+                "xelatex",
+                "xelatex"
+            ]
+        }
+    ],
+    "latex-workshop.latex.autoBuild.run": "onFileChange",
+    "latex-workshop.check.duplicatedLabels.enabled": true,
+    "latex-workshop.linting.chktex.enabled": true,
+    "latex-workshop.linting.lacheck.enabled": true,
+    "latex-workshop.linting.run": "onSave",
+
+    
+    "editor.wordWrap": "on",
+}
