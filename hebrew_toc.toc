@@ -1,6 +1,105 @@
-\selectlanguage *[]{hebrew}
-\contentsline {section}{Contents}{1}{Doc-Start}%
-\contentsline {section}{\numberline {1}אבסטרקט}{4}{section.1}%
-\contentsline {section}{\numberline {2}הקדמה}{5}{section.2}%
-\contentsline {subsection}{\numberline {2.1}ניסוח מתמטי של מודלים גנרטיביים}{6}{subsection.2.1}%
-\contentsline {subsection}{\numberline {2.2}קירוב התפלגות הנתונים}{6}{subsection.2.2}%
+\contentsline {section}{\numberline {1}\texthebrew{תקציר}}{4}{section.1}%
+\contentsline {section}{\numberline {2}\texthebrew{הקדמה}}{5}{section.2}%
+\contentsline {subsection}{\numberline {2.1}\texthebrew{ניסוח מתמטי של מודלים גנרטיביים}}{6}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}\texthebrew{קירוב התפלגות הנתונים}}{6}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}\texthebrew{דגימה}}{6}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}\texthebrew{מדדי הערכה}}{7}{subsection.2.4}%
+\contentsline {section}{\numberline {3}\texthebrew{מקודד אוטומטי וריאציוני}}{8}{section.3}%
+\contentsline {subsection}{\numberline {3.1}\texthebrew{טריק הפרמטריזציה}}{10}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}\texthebrew{אימון}}{11}{subsection.3.2}%
+\contentsline {section}{\numberline {4}\texthebrew{VQ-VAE}}{11}{section.4}%
+\contentsline {subsection}{\numberline {4.1}\texthebrew{קואנטיזציה וקטורית}}{11}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}\texthebrew{ארכיטקטורה}}{13}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}\texthebrew{אימון}}{13}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}\texthebrew{אומדן ישיר}}{14}{subsection.4.4}%
+\contentsline {subsection}{\numberline {4.5}\texthebrew{ניסוי יצירת וידאו}}{14}{subsection.4.5}%
+\contentsline {section}{\numberline {5}\texthebrew{רשתות גנרטיביות מתחרות (GANs)}}{14}{section.5}%
+\contentsline {subsection}{\numberline {5.1}\texthebrew{אימון} \& Adversarial loss}{15}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}\texthebrew{קריסת מצבים}}{17}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}\texthebrew{חילול מותנה}}{17}{subsection.5.3}%
+\contentsline {section}{\numberline {6}\texthebrew{VQ-GAN}}{18}{section.6}%
+\contentsline {subsection}{\numberline {6.1}\texthebrew{ארכיטקטורה}}{20}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}\texthebrew{אימון}}{20}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}\texthebrew{חילול מותנה}}{22}{subsection.6.3}%
+\contentsline {subsection}{\numberline {6.4}\texthebrew{טכניקת חלון נעה לחילול תמונות ברזולוציה גבוהה}}{22}{subsection.6.4}%
+\contentsline {section}{\numberline {7}\texthebrew{מודלים הסתברותיים להפחתת רעש דיפוזי (DDPMs)}}{23}{section.7}%
+\contentsline {subsection}{\numberline {7.1}\texthebrew{מודלים דיפוזיים (DMs)}}{23}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}\texthebrew{DDPMs}}{23}{subsection.7.2}%
+\contentsline {subsection}{\numberline {7.3}\texthebrew{מתזמני רעש}}{24}{subsection.7.3}%
+\contentsline {subsection}{\numberline {7.4}\texthebrew{מקודד}}{25}{subsection.7.4}%
+\contentsline {subsection}{\numberline {7.5}\texthebrew{מפענח}}{27}{subsection.7.5}%
+\contentsline {subsection}{\numberline {7.6}\texthebrew{פונקציית הפסד}}{27}{subsection.7.6}%
+\contentsline {subsection}{\numberline {7.7}\texthebrew{אימון}}{29}{subsection.7.7}%
+\contentsline {section}{\numberline {8}\texthebrew{Stable Diffusion (מודל דיפוזיה חבוי)}}{30}{section.8}%
+\contentsline {subsection}{\numberline {8.1}\texthebrew{מבנה U-Net}}{30}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}\texthebrew{הטמעות סינוסואידליות}}{31}{subsection.8.2}%
+\contentsline {subsection}{\numberline {8.3}\texthebrew{ארכיטקטורה}}{32}{subsection.8.3}%
+\contentsline {subsection}{\numberline {8.4}\texthebrew{התניה}}{32}{subsection.8.4}%
+\contentsline {subsection}{\numberline {8.5}\texthebrew{הנחיה דיפוזית ללא מסווג (CFG)}}{33}{subsection.8.5}%
+\contentsline {subsection}{\numberline {8.6}\texthebrew{קדם-אימון שפה-תמונה קונטרסטיבי (CLIP)}}{34}{subsection.8.6}%
+\contentsline {subsection}{\numberline {8.7}\texthebrew{דוגם DDIM}}{35}{subsection.8.7}%
+\contentsline {subsection}{\numberline {8.8}\texthebrew{אימון}}{36}{subsection.8.8}%
+\contentsline {subsection}{\numberline {8.9}\texthebrew{מימוש של טרנספורמר ‎$\tau _\theta$‎ עבור LDMs מותנים}}{37}{subsection.8.9}%
+\contentsline {subsection}{\numberline {8.10}\texthebrew{פרטים על מודלים של מקודדים אוטומטיים}}{37}{subsection.8.10}%
+\contentsline {subsection}{\numberline {8.11}\texthebrew{ניסויים}}{38}{subsection.8.11}%
+\contentsline {section}{\numberline {9}\texthebrew{Imagen}}{39}{section.9}%
+\contentsline {subsection}{\numberline {9.1}\texthebrew{טרנספורמר להעברת טקסט לטקסט (T5)}}{40}{subsection.9.1}%
+\contentsline {subsection}{\numberline {9.2}\texthebrew{מקודדי טקסט מאומנים מראש}}{40}{subsection.9.2}%
+\contentsline {subsection}{\numberline {9.3}\texthebrew{משקל הנחיית דיפוזיה}}{41}{subsection.9.3}%
+\contentsline {subsection}{\numberline {9.4}\texthebrew{שיפור רזולוציה באמצעות עידון חוזר (SR3)}}{42}{subsection.9.4}%
+\contentsline {subsection}{\numberline {9.5}\texthebrew{מודלים דיפוזיים מדורגים (CDMs)}}{43}{subsection.9.5}%
+\contentsline {subsection}{\numberline {9.6}\texthebrew{ארכיטקטורה}}{44}{subsection.9.6}%
+\contentsline {subsection}{\numberline {9.7}\texthebrew{DrawBench}}{47}{subsection.9.7}%
+\contentsline {subsection}{\numberline {9.8}\texthebrew{תוצאות}}{48}{subsection.9.8}%
+\contentsline {section}{\numberline {10}\texthebrew{סינתזת וידאו}}{49}{section.10}%
+\contentsline {subsection}{\numberline {10.1}\texthebrew{מדדי הערכה}}{52}{subsection.10.1}%
+\contentsline {subsection}{\numberline {10.2}\texthebrew{עבודות קודמות}}{53}{subsection.10.2}%
+\contentsline {subsection}{\numberline {10.3}\texthebrew{למידת מאפיינים מרחביים-זמניים}}{54}{subsection.10.3}%
+\contentsline {subsection}{\numberline {10.4}\texthebrew{שיטות וטכניקות בתחום הראייה}}{56}{subsection.10.4}%
+\contentsline {section}{\numberline {11}\texthebrew{VideoGPT}}{57}{section.11}%
+\contentsline {subsection}{\numberline {11.1}\texthebrew{ארכיטקטורה}}{58}{subsection.11.1}%
+\contentsline {subsection}{\numberline {11.2}\texthebrew{חילול וידאו}}{58}{subsection.11.2}%
+\contentsline {section}{\numberline {12}\texthebrew{Video-LDM}}{59}{section.12}%
+\contentsline {subsection}{\numberline {12.1}\texthebrew{ארכיטקטורה}}{59}{subsection.12.1}%
+\contentsline {subsection}{\numberline {12.2}\texthebrew{ניסויים}}{65}{subsection.12.2}%
+\contentsline {section}{\numberline {13}\texthebrew{Imagen}-Video}{67}{section.13}%
+\contentsline {subsection}{\numberline {13.1}\texthebrew{ארכיטקטורה} \& Method}{69}{subsection.13.1}%
+\contentsline {subsection}{\numberline {13.2}\texthebrew{אימון משותף של וידאו ותמונה}}{70}{subsection.13.2}%
+\contentsline {subsection}{\numberline {13.3}\texthebrew{חיזוי-v}}{71}{subsection.13.3}%
+\contentsline {subsection}{\numberline {13.4}\texthebrew{דיסטילציה הדרגתית עם הנחיה ודוגמים סטוכסטיים}}{71}{subsection.13.4}%
+\contentsline {subsection}{\numberline {13.5}\texthebrew{ניסויים}}{75}{subsection.13.5}%
+\contentsline {section}{\numberline {14}\texthebrew{Make-a-Video}}{76}{section.14}%
+\contentsline {subsection}{\numberline {14.1}\texthebrew{ארכיטקטורה} \& Method}{76}{subsection.14.1}%
+\contentsline {subsection}{\numberline {14.2}\texthebrew{המודל T2I}}{77}{subsection.14.2}%
+\contentsline {subsubsection}{\numberline {14.2.1}\texthebrew{DALL-E 2}}{78}{subsubsection.14.2.1}%
+\contentsline {subsection}{\numberline {14.3}\texthebrew{הרחבת מודל T2I לתחום הווידאו}}{79}{subsection.14.3}%
+\contentsline {subsubsection}{\numberline {14.3.1}\texthebrew{שכבות מרחביות-זמניות}}{79}{subsubsection.14.3.1}%
+\contentsline {subsubsection}{\numberline {14.3.2}\texthebrew{שכבות קונבולוציה מדומות-תלת-ממד}}{79}{subsubsection.14.3.2}%
+\contentsline {subsubsection}{\numberline {14.3.3}\texthebrew{שכבות תשומת לב מדומות-תלת-ממד}}{80}{subsubsection.14.3.3}%
+\contentsline {subsection}{\numberline {14.4}\texthebrew{רשת אינטרפולציית פריימים}}{80}{subsection.14.4}%
+\contentsline {subsection}{\numberline {14.5}\texthebrew{אימון}}{80}{subsection.14.5}%
+\contentsline {subsection}{\numberline {14.6}\texthebrew{ניסויים}}{81}{subsection.14.6}%
+\contentsline {subsubsection}{\numberline {14.6.1}Quantitative \texthebrew{תוצאות}}{81}{subsubsection.14.6.1}%
+\contentsline {subsubsection}{\numberline {14.6.2}Qualitative \texthebrew{תוצאות}}{82}{subsubsection.14.6.2}%
+\contentsline {section}{\numberline {15}\texthebrew{סיכום}}{82}{section.15}%
+\contentsline {section}{\texthebrew{ביבליוגרפיה}}{85}{section.15}%
+\contentsline {section}{\numberline {A}\texthebrew{נספח}}{92}{section.1}%
+\contentsline {section}{\numberline {A}\texthebrew{פונקציית הסתברות}}{92}{appendix.A}%
+\contentsline {section}{\numberline {B}\texthebrew{פונקציות הפעלה}}{92}{appendix.B}%
+\contentsline {section}{\numberline {C}\texthebrew{בלוקים נפוצים ברשתות נוירונים}}{94}{appendix.C}%
+\contentsline {subsection}{\numberline {C.1}\texthebrew{תפיסה מרובת שכבות (MLP)}}{94}{subsection.C.1}%
+\contentsline {subsection}{\numberline {C.2}\texthebrew{ResBlock}}{94}{subsection.C.2}%
+\contentsline {subsection}{\numberline {C.3}\texthebrew{שכבות נירמול}}{95}{subsection.C.3}%
+\contentsline {subsection}{\numberline {C.4}\texthebrew{קונבולוציות תלת-ממדיות}}{96}{subsection.C.4}%
+\contentsline {section}{\numberline {D}\texthebrew{מנגנון תשומת לב}}{97}{appendix.D}%
+\contentsline {subsection}{\numberline {D.1}\texthebrew{תשומת לב עצמית}}{97}{subsection.D.1}%
+\contentsline {subsection}{\numberline {D.2}\texthebrew{תשומת לב מרובת ראשים}}{99}{subsection.D.2}%
+\contentsline {subsection}{\numberline {D.3}\texthebrew{תשומת לב חוצה}}{99}{subsection.D.3}%
+\contentsline {subsection}{\numberline {D.4}\texthebrew{תשומת לב צירית}}{100}{subsection.D.4}%
+\contentsline {section}{\numberline {E}\texthebrew{טרנספורמרים}}{101}{appendix.E}%
+\contentsline {subsection}{\numberline {E.1}\texthebrew{ארכיטקטורה}}{101}{subsection.E.1}%
+\contentsline {section}{\numberline {F}\texthebrew{טרנספורמר חזותי (ViT)}}{102}{appendix.F}%
+\contentsline {section}{\numberline {G}\texthebrew{טרנספורמר דיפוזי (DiT)}}{104}{appendix.G}%
+\contentsline {section}{\numberline {H}\texthebrew{דוגמים של מודלים דיפוזיים}}{104}{appendix.H}%
+\contentsline {subsection}{\numberline {H.1}\texthebrew{דוגם דיפוזי / דוגם סטוכסטי}}{105}{subsection.H.1}%
+\contentsline {subsection}{\numberline {H.2}\texthebrew{דוגם DDIM}}{105}{subsection.H.2}%
