@@ -121,7 +121,7 @@ with open("main.toc", "r", encoding="utf-8") as f:
                 # If no hebrew text and title not found, exit
                 hebrew_toc.close()
                 raise ValueError("No hebrew text and title not found in line:", line)
-        print(line)
+        # print(line) # Printing in windows hebrew characters isnt working
         hebrew_toc.write(line + "\n")
 
 hebrew_toc.close()

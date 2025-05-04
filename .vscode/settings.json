@@ -37,7 +37,7 @@
             ]
         },
     ],
-    "latex-workshop.latex.autoBuild.run": "onFileChange",
+    "latex-workshop.latex.autoBuild.run": "never",
     "latex-workshop.check.duplicatedLabels.enabled": true,
     "latex-workshop.linting.chktex.enabled": true,
     "latex-workshop.linting.lacheck.enabled": false,
@@ -55,4 +55,9 @@
 
 
     "editor.wordWrap": "on",
+    "workbench.colorCustomizations": {
+        "activityBar.background": "#0F3423",
+        "titleBar.activeBackground": "#144931",
+        "titleBar.activeForeground": "#F3FCF8"
+    },
 }
