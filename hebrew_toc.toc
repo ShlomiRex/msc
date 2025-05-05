@@ -30,7 +30,7 @@
 \contentsline {subsection}{\numberline {7.5}\texthebrew{מפענח}}{27}{subsection.7.5}%
 \contentsline {subsection}{\numberline {7.6}\texthebrew{פונקציית הפסד}}{27}{subsection.7.6}%
 \contentsline {subsection}{\numberline {7.7}\texthebrew{אימון}}{29}{subsection.7.7}%
-\contentsline {section}{\numberline {8}\texthebrew{\textenglish{Stable Diffusion} (מודל דיפוזיה חבוי)}}{30}{section.8}%
+\contentsline {section}{\numberline {8}\texthebrew{\LR{Stable Diffusion}}}{30}{section.8}%
 \contentsline {subsection}{\numberline {8.1}\texthebrew{מבנה U-Net}}{30}{subsection.8.1}%
 \contentsline {subsection}{\numberline {8.2}\texthebrew{הטמעות סינוסואידליות}}{31}{subsection.8.2}%
 \contentsline {subsection}{\numberline {8.3}\texthebrew{ארכיטקטורה}}{32}{subsection.8.3}%
@@ -59,10 +59,10 @@
 \contentsline {section}{\numberline {11}\texthebrew{VideoGPT}}{57}{section.11}%
 \contentsline {subsection}{\numberline {11.1}\texthebrew{ארכיטקטורה}}{58}{subsection.11.1}%
 \contentsline {subsection}{\numberline {11.2}\texthebrew{חילול וידאו}}{58}{subsection.11.2}%
-\contentsline {section}{\numberline {12}\texthebrew{	extenglish{Video-LDM}}}{59}{section.12}%
+\contentsline {section}{\numberline {12}\texthebrew{Video-LDM}}{59}{section.12}%
 \contentsline {subsection}{\numberline {12.1}\texthebrew{ארכיטקטורה}}{59}{subsection.12.1}%
 \contentsline {subsection}{\numberline {12.2}\texthebrew{ניסויים}}{65}{subsection.12.2}%
-\contentsline {section}{\numberline {13}\texthebrew{Imagen}-Video}{67}{section.13}%
+\contentsline {section}{\numberline {13}\texthebrew{Imagen-Video}}{67}{section.13}%
 \contentsline {subsection}{\numberline {13.1}\texthebrew{ארכיטקטורה ושיטה}}{69}{subsection.13.1}%
 \contentsline {subsection}{\numberline {13.2}\texthebrew{אימון משותף של וידאו ותמונה}}{70}{subsection.13.2}%
 \contentsline {subsection}{\numberline {13.3}\texthebrew{חיזוי-v}}{71}{subsection.13.3}%

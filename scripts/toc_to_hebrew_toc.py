@@ -27,7 +27,7 @@ title_map = {
     "Encoder": "מקודד",
     "Decoder": "מפענח",
     "Loss function": "פונקציית הפסד",
-    "Stable Diffusion (Latent Diffusion Model)": "\\textenglish{Stable Diffusion} (מודל דיפוזיה חבוי)",
+    "Stable Diffusion (Latent Diffusion Model)": "\LR{Stable Diffusion}",
     "The U-Net backbone": "מבנה U-Net",
     "Sinusoidal embeddings": "הטמעות סינוסואידליות",
     "Conditioning": "התניה",
@@ -37,7 +37,6 @@ title_map = {
     "Implementation of $\\tau _\\theta $ transformer for conditional LDMs": "מימוש טרנספורמר ‎$\\tau _\\theta$‎ עבור LDMs מותנים",
     "Details on Autoencoders Models": "פרטים על מודלים של אוטואנקודרים",
     "Experiments": "ניסויים",
-    "Imagen": "Imagen",
     "Text-to-Text Transfer Transformer (T5)": "טרנספורמר טקסט-טקסט (T5)",
     "Pre-trained text encoders": "מקודדי טקסט מאומנים מראש",
     "Diffusion guidance weight": "משקל הנחיית דיפוזיה",
@@ -50,8 +49,8 @@ title_map = {
     "Practices \\& techniques in vision domain": "שיטות וטכניקות בתחום הראייה",
     "VideoGPT": "VideoGPT",
     "Video generation": "חילול וידאו",
-    "Video-LDM": "\textenglish{Video-LDM}",
-    "Imagen-Video": "\\textenglish{Imagen-Video}",
+    "Video-LDM": "Video-LDM",
+    "Imagen-Video": "Imagen-Video",
     "Architecture \& Method": "ארכיטקטורה ושיטה",
     "Video-image joint training": "אימון משותף של וידאו ותמונה",
     "v-prediction": "חיזוי-v",
@@ -92,6 +91,7 @@ title_map = {
     "Training": "אימון",
     "Results": "תוצאות",
     "Architecture": "ארכיטקטורה",
+    "Imagen": "Imagen",
 }
 with open("main.toc", "r", encoding="utf-8") as f:
     lines = f.readlines()
