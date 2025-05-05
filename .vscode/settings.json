@@ -30,14 +30,14 @@
             "name": "build-pdf",
             "tools": [
                 "xelatex",
-                // "biber",
-                // "xelatex",
-                // "build-hebrew-toc",
-                // "xelatex"
+                "biber",
+                "xelatex",
+                "build-hebrew-toc",
+                "xelatex"
             ]
         }
     ],
-    "latex-workshop.latex.autoBuild.run": "onSave",
+    "latex-workshop.latex.autoBuild.run": "never",
     "latex-workshop.check.duplicatedLabels.enabled": true,
     "latex-workshop.linting.chktex.enabled": true,
     "latex-workshop.linting.lacheck.enabled": false,
