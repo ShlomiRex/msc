@@ -10,14 +10,12 @@ title_map = {
     "Evaluation metrics": "מדדי הערכה",
     "Variational Autoencoder": "מקודד אוטומטי וריאציוני",
     "The Reparameterization Trick": "טריק הפרמטריזציה",
-    "Training": "אימון",
     "VQ-VAE": "VQ-VAE",
     "Vector Quantization": "קואנטיזציה וקטורית",
-    "Architecture": "ארכיטקטורה",
     "Straight Through Estimator (STE)": "אומדן ישיר",
-    "Video Generation Experiment": "ניסוי יצירת וידאו",
-    "Generative Adversarial Networks (GANs)": "רשתות גנרטיביות מתחרות (GANs)",
-    "Training & Adversarial loss": "אימון ופונקציית ההפסד",
+    "Video Generation Experiment": "ניסוי חילול וידאו",
+    "Generative Adversarial Networks (GANs)": "רשתות יריבות גנרטיביות (GANs)",
+    "Training \\& Adversarial loss": "אימון ופונקציית ההפסד",
     "Mode Collapse": "קריסת מצבים",
     "Conditional generation": "חילול מותנה",
     "VQ-GAN": "VQ-GAN",
@@ -29,39 +27,38 @@ title_map = {
     "Encoder": "מקודד",
     "Decoder": "מפענח",
     "Loss function": "פונקציית הפסד",
-    "Stable Diffusion (Latent Diffusion Model)": "Stable Diffusion (מודל דיפוזיה חבוי)",
+    "Stable Diffusion (Latent Diffusion Model)": "\\textenglish{Stable Diffusion} (מודל דיפוזיה חבוי)",
     "The U-Net backbone": "מבנה U-Net",
     "Sinusoidal embeddings": "הטמעות סינוסואידליות",
     "Conditioning": "התניה",
     "Classifier-free diffusion guidance (CFG)": "הנחיה דיפוזית ללא מסווג (CFG)",
-    "Contrastive Language Image Pre-training (CLIP)": "קדם-אימון שפה-תמונה קונטרסטיבי (CLIP)",
+    "Contrastive Language Image Pre-training (CLIP)": "CLIP",
     "DDIM Sampler": "דוגם DDIM",
-    "Implementation of $\\tau _\\theta $ transformer for conditional LDMs": "מימוש של טרנספורמר ‎$\\tau _\\theta$‎ עבור LDMs מותנים",
-    "Details on Autoencoders Models": "פרטים על מודלים של מקודדים אוטומטיים",
+    "Implementation of $\\tau _\\theta $ transformer for conditional LDMs": "מימוש טרנספורמר ‎$\\tau _\\theta$‎ עבור LDMs מותנים",
+    "Details on Autoencoders Models": "פרטים על מודלים של אוטואנקודרים",
     "Experiments": "ניסויים",
     "Imagen": "Imagen",
-    "Text-to-Text Transfer Transformer (T5)": "טרנספורמר להעברת טקסט לטקסט (T5)",
+    "Text-to-Text Transfer Transformer (T5)": "טרנספורמר טקסט-טקסט (T5)",
     "Pre-trained text encoders": "מקודדי טקסט מאומנים מראש",
     "Diffusion guidance weight": "משקל הנחיית דיפוזיה",
-    "Super-resolution via Repeated Refinement (SR3)": "שיפור רזולוציה באמצעות עידון חוזר (SR3)",
+    "Super-resolution via Repeated Refinement (SR3)": "שיפור רזולוציה באמצעות עידון חוזר ונשנה (SR3)",
     "Cascaded diffusion models (CDMs)": "מודלים דיפוזיים מדורגים (CDMs)",
     "DrawBench": "DrawBench",
-    "Results": "תוצאות",
-    "Video Synthesis": "סינתזת וידאו",
+    "Video Synthesis": "חילול וידאו",
     "Previous works": "עבודות קודמות",
     "Spatiotemporal feature learning": "למידת מאפיינים מרחביים-זמניים",
-    "Practices \& techniques in vision domain": "שיטות וטכניקות בתחום הראייה",
+    "Practices \\& techniques in vision domain": "שיטות וטכניקות בתחום הראייה",
     "VideoGPT": "VideoGPT",
     "Video generation": "חילול וידאו",
-    "Video-LDM": "Video-LDM",
-    "Imagen-Video": "Imagen-Video",
-    "Architecture & Method": "ארכיטקטורה ושיטה",
+    "Video-LDM": "\textenglish{Video-LDM}",
+    "Imagen-Video": "\\textenglish{Imagen-Video}",
+    "Architecture \& Method": "ארכיטקטורה ושיטה",
     "Video-image joint training": "אימון משותף של וידאו ותמונה",
     "v-prediction": "חיזוי-v",
     "Progressive distillation with guidance and stochastic samplers": "דיסטילציה הדרגתית עם הנחיה ודוגמים סטוכסטיים",
     "Make-a-Video": "Make-a-Video",
     "The T2I model": "המודל T2I",
-    "DALL-E 2": "DALL-E 2",
+    "DALL-E 2": "\\textenglish{DALL-E 2}",
     "Expanding the T2I model to video domain": "הרחבת מודל T2I לתחום הווידאו",
     "Spatiotemporal layers": "שכבות מרחביות-זמניות",
     "Pseudo-3D convolutional layers": "שכבות קונבולוציה מדומות-תלת-ממד",
@@ -72,7 +69,7 @@ title_map = {
     "Conclusion": "סיכום",
     "References": "ביבליוגרפיה",
     "Appendix": "נספח",
-    "Likelihood function": "פונקציית הסתברות",
+    "Likelihood function": "פונקציית הסבירות",
     "Activation functions": "פונקציות הפעלה",
     "Common neural network blocks": "בלוקים נפוצים ברשתות נוירונים",
     "Multi-layer perception (MLP)": "תפיסה מרובת שכבות (MLP)",
@@ -89,8 +86,19 @@ title_map = {
     "Diffusion Transformer (DiT)": "טרנספורמר דיפוזי (DiT)",
     "Diffusion models samplers": "דוגמים של מודלים דיפוזיים",
     "DDPM / Stochastic Sampler": "דוגם דיפוזי / דוגם סטוכסטי",
-    "DDIM Sampler": "דוגם DDIM"
+    "DDIM Sampler": "דוגם DDIM",
+
+    # Move to the end so titles that begin with these are replaced by higher-up titles (priority to complex titles)
+    "Training": "אימון",
+    "Results": "תוצאות",
+    "Architecture": "ארכיטקטורה",
 }
+with open("main.toc", "r", encoding="utf-8") as f:
+    lines = f.readlines()
+    pattern = re.compile(r'\\contentsline\s*{[^}]+}{(?:\\numberline\s*{[^}]+})?([^{}]+)}{[^}]*}')
+
+    # Extract english titles
+    titles = [match.group(1).strip() for line in lines if (match := pattern.search(line))]
 
 hebrew_toc = open("hebrew_toc.toc", "w", encoding="utf-8")
 
@@ -99,7 +107,7 @@ with open("main.toc", "r", encoding="utf-8") as f:
     lines = lines[2:] # Skip the first two lines
     lines = [line.strip() for line in lines if line.strip()]
     # Find title in english from the title_map
-    for line in lines:
+    for i, line in enumerate(lines):
         found = False
         for title in title_map.keys():
             if title in line:
@@ -118,6 +126,8 @@ with open("main.toc", "r", encoding="utf-8") as f:
                 # print("Hebrew text found in line:", line)
                 continue
             else:
+                if line.startswith("\\selectlanguage"):
+                    continue
                 # If no hebrew text and title not found, exit
                 hebrew_toc.close()
                 raise ValueError("No hebrew text and title not found in line:", line)

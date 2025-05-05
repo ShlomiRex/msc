@@ -23,21 +23,21 @@
             "args": [
                 "scripts/toc_to_hebrew_toc.py"
             ]
-        }
+        },
     ],
     "latex-workshop.latex.recipes": [
         {
-            "name": "Build my PDF",
+            "name": "build-pdf",
             "tools": [
                 "xelatex",
-                "biber",
-                "xelatex",
-                "build-hebrew-toc",
-                "xelatex"
+                // "biber",
+                // "xelatex",
+                // "build-hebrew-toc",
+                // "xelatex"
             ]
-        },
+        }
     ],
-    "latex-workshop.latex.autoBuild.run": "never",
+    "latex-workshop.latex.autoBuild.run": "onSave",
     "latex-workshop.check.duplicatedLabels.enabled": true,
     "latex-workshop.linting.chktex.enabled": true,
     "latex-workshop.linting.lacheck.enabled": false,
@@ -52,8 +52,6 @@
         "-e16",
         "-q"
     ],
-
-
     "editor.wordWrap": "on",
     "workbench.colorCustomizations": {
         "activityBar.background": "#0F3423",
